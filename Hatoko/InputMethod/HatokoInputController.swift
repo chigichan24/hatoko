@@ -588,7 +588,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             resetComposition()
             return
         }
-        commitText(composingText.convertTarget, to: client)
+        commitText(japaneseInputState.selectedCandidate?.text ?? composingText.convertTarget, to: client)
         resetComposition()
     }
 

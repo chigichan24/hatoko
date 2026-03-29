@@ -10,3 +10,4 @@ default.profraw
 *.swp
 *~
 mockup.html
+.claude/worktrees/

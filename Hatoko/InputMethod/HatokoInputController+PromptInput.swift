@@ -12,6 +12,7 @@ extension HatokoInputController {
             commitText(composingText.convertTarget, to: client)
             resetComposition()
         }
+        llmBaseMode = inputMode
         inputMode = .llmPrompt
         promptBuffer = ""
         updatePromptMarkedText(client: client)
@@ -128,6 +129,14 @@ extension HatokoInputController {
             return false
         }
 
+        // Roman base mode: append characters directly without kana conversion
+        if llmBaseMode == .roman {
+            promptBuffer.append(characters)
+            updatePromptMarkedText(client: client)
+            return true
+        }
+
+        // Japanese base mode: use romaji-to-kana conversion pipeline
         if let candidate = japaneseInputState.selectedCandidate {
             promptConfirmCandidate(candidate)
         }
@@ -149,6 +158,13 @@ extension HatokoInputController {
     }
 
     private func handlePromptSpace(client: any IMKTextInput, reverse: Bool) -> Bool {
+        // Roman base mode: space is always a literal space
+        if llmBaseMode == .roman {
+            promptBuffer.append(" ")
+            updatePromptMarkedText(client: client)
+            return true
+        }
+
         switch japaneseInputState {
         case .composing:
             guard !composingText.convertTarget.isEmpty else {

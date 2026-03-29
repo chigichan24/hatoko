@@ -37,6 +37,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // LLM prompt state
     var promptBuffer = ""
+    /// The input mode that was active before entering LLM prompt mode.
+    var llmBaseMode: InputMode = .japanese
     private var llmSuggestion: String?
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
@@ -193,7 +195,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func resetLLMState() {
-        inputMode = .japanese
+        inputMode = llmBaseMode
         promptBuffer = ""
         llmSuggestion = nil
     }

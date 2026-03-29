@@ -171,17 +171,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }
 
-    private func activateLLMMode(client: any IMKTextInput) {
-        // Commit any in-progress Japanese text first
-        if !composingText.convertTarget.isEmpty {
-            commitText(composingText.convertTarget, to: client)
-            resetComposition()
-        }
-        inputMode = .llmPrompt
-        promptBuffer = ""
-        updatePromptMarkedText(client: client)
-    }
-
     func cancelLLMMode(client: (any IMKTextInput)? = nil) {
         if inputMode == .llmPrompt || inlineSuggestionWindow.isVisible || chatWindowController.isVisible {
             inlineSuggestionWindow.hide()
@@ -434,7 +423,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetComposition()
     }
 
-    private func commitText(_ text: String, to client: any IMKTextInput) {
+    func commitText(_ text: String, to client: any IMKTextInput) {
         client.insertText(text, replacementRange: Self.noReplacementRange)
     }
 

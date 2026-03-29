@@ -4,6 +4,19 @@ import KanaKanjiConverterModuleWithDefaultDictionary
 
 extension HatokoInputController {
 
+    // MARK: - LLM Mode Activation
+
+    func activateLLMMode(client: any IMKTextInput) {
+        // Commit any in-progress Japanese text first
+        if !composingText.convertTarget.isEmpty {
+            commitText(composingText.convertTarget, to: client)
+            resetComposition()
+        }
+        inputMode = .llmPrompt
+        promptBuffer = ""
+        updatePromptMarkedText(client: client)
+    }
+
     // MARK: - Prompt Input Handling
 
     func handlePromptInput(event: NSEvent, client: any IMKTextInput) -> Bool {
@@ -176,7 +189,7 @@ extension HatokoInputController {
         resetComposition()
     }
 
-    func updatePromptMarkedText(client: any IMKTextInput) {
+    private func updatePromptMarkedText(client: any IMKTextInput) {
         let prefix = "✦ "
         let result = NSMutableAttributedString()
 

@@ -24,6 +24,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
+    private static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、"]
     private static let llmSystemPrompt = """
         You are an IME assistant. Generate the text the user is asking for. \
         Respond ONLY with the generated text, no explanations.
@@ -486,17 +487,16 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
 
         for char in characters {
-            guard char.isASCII, char.isLetter || char == "-" else {
+            if let mapped = Self.hankakuToZenkakuMap[char] {
+                composingText.insertAtCursorPosition(String(mapped), inputStyle: .direct)
+            } else if char.isASCII, char.isLetter {
+                composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
+            } else {
                 if !composingText.convertTarget.isEmpty {
                     commitText(composingText.convertTarget, to: client)
                     resetComposition()
                 }
                 return false
-            }
-            if char == "-" {
-                composingText.insertAtCursorPosition("ー", inputStyle: .direct)
-            } else {
-                composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
             }
         }
 

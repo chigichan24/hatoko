@@ -1,6 +1,7 @@
 import Cocoa
 import InputMethodKit
 
+@main
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
 

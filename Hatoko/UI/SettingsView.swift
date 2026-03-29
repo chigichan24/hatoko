@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    private static let apiKeyKeychainKey = "claude_api_key"
+    private static let apiKeyKeychainKey = LLMBackend.apiKeyKeychainKey
 
     @State private var apiKey: String = ""
     @State private var selectedBackend: LLMBackend = .current
@@ -75,7 +75,7 @@ struct SettingsView: View {
         .onAppear {
             apiKey = KeychainHelper.load(key: Self.apiKeyKeychainKey) ?? ""
             selectedBackend = .current
-            cliPath = UserDefaults.standard.string(forKey: "claude_cli_path") ?? ""
+            cliPath = UserDefaults.standard.string(forKey: LLMBackend.cliPathDefaultsKey) ?? ""
         }
     }
 
@@ -91,9 +91,9 @@ struct SettingsView: View {
     private func saveCLIPath() {
         let trimmed = cliPath.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
-            UserDefaults.standard.removeObject(forKey: "claude_cli_path")
+            UserDefaults.standard.removeObject(forKey: LLMBackend.cliPathDefaultsKey)
         } else {
-            UserDefaults.standard.set(trimmed, forKey: "claude_cli_path")
+            UserDefaults.standard.set(trimmed, forKey: LLMBackend.cliPathDefaultsKey)
         }
         showSaved()
     }

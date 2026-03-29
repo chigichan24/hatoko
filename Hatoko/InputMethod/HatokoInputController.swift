@@ -10,24 +10,36 @@ final class HatokoInputController: IMKInputController {
     private let conversionService = ConversionService()
 
     private lazy var convertOptions: ConvertRequestOptions = {
-        let applicationSupportDir = FileManager.default.urls(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask
-        ).first!.appending(path: "Hatoko", directoryHint: .isDirectory)
-        try? FileManager.default.createDirectory(at: applicationSupportDir, withIntermediateDirectories: true)
+        let dir = applicationSupportDirectory()
         return ConvertRequestOptions(
             N_best: 9,
             requireJapanesePrediction: .disabled,
             requireEnglishPrediction: .disabled,
             keyboardLanguage: .ja_JP,
             learningType: .nothing,
-            memoryDirectoryURL: applicationSupportDir,
-            sharedContainerURL: applicationSupportDir,
+            memoryDirectoryURL: dir,
+            sharedContainerURL: dir,
             textReplacer: .empty,
             specialCandidateProviders: nil,
             metadata: .init(versionString: "Hatoko \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0")")
         )
     }()
+
+    private func applicationSupportDirectory() -> URL {
+        guard let base = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else {
+            fatalError("Application Support directory is unavailable")
+        }
+        let dir = base.appending(path: "Hatoko", directoryHint: .isDirectory)
+        do {
+            try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        } catch {
+            NSLog("[Hatoko] Failed to create application support directory: \(error)")
+        }
+        return dir
+    }
 
     // MARK: - IMKInputController Overrides
 

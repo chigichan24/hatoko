@@ -89,8 +89,11 @@ final class ChatWindowController {
         let hostingView = NSHostingView(rootView: chatView)
         hostingView.frame.size = hostingView.fittingSize
 
+        let size = hostingView.fittingSize
+        let adjustedOrigin = Self.adjustedOrigin(for: size, cursorOrigin: origin)
+
         let panel = NSPanel(
-            contentRect: NSRect(origin: origin, size: hostingView.fittingSize),
+            contentRect: NSRect(origin: adjustedOrigin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -104,6 +107,30 @@ final class ChatWindowController {
 
         window?.orderOut(nil)
         window = panel
+    }
+
+    private static func adjustedOrigin(for size: NSSize, cursorOrigin: NSPoint) -> NSPoint {
+        let screenFrame = NSScreen.main?.visibleFrame ?? NSRect(origin: .zero, size: NSSize(width: 1920, height: 1080))
+
+        var x = cursorOrigin.x
+        var y = cursorOrigin.y
+
+        // Place below cursor; if not enough space below, place above
+        if y - size.height < screenFrame.minY {
+            y = cursorOrigin.y + 20
+        } else {
+            y = cursorOrigin.y - size.height
+        }
+
+        // Clamp horizontally
+        if x + size.width > screenFrame.maxX {
+            x = screenFrame.maxX - size.width
+        }
+        if x < screenFrame.minX {
+            x = screenFrame.minX
+        }
+
+        return NSPoint(x: x, y: y)
     }
 
     private func refreshContent() {

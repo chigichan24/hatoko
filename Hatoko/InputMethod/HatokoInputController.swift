@@ -104,10 +104,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     override func setValue(_ value: Any!, forTag tag: Int, client sender: Any!) {
         guard let value = value as? String else { return }
-        if !chatWindowController.isVisible {
-            let client = (sender as? (any IMKTextInput)) ?? self.client()
-            cancelLLMMode(client: client)
+        if chatWindowController.isVisible {
+            // Preserve LLM state during transient IME reactivation
+            super.setValue(value, forTag: tag, client: sender)
+            return
         }
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         inputMode = InputMode(modeIdentifier: value)
         super.setValue(value, forTag: tag, client: sender)
@@ -256,9 +259,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             cancelLLMMode(client: client)
             return true
         }
-        // Forward key events to the chat window since the panel is
-        // non-activating and cannot receive keyboard focus directly.
-        return chatWindowController.handleKeyInput(keyCode: event.keyCode, characters: event.characters)
+        // Chat window is key (KeyablePanel) and handles its own input
+        return false
     }
 
     private func acceptChatText(_ text: String, client: any IMKTextInput) {

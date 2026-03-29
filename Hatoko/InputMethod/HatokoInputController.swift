@@ -77,6 +77,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func activateServer(_ sender: Any!) {
+        NSLog("[Hatoko] activateServer called")
         super.activateServer(sender)
         resetComposition()
         if let client = sender as? (any IMKTextInput) {
@@ -101,9 +102,16 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
         guard let event else { return false }
+
+        // Only handle keyDown events
+        guard event.type == .keyDown else { return false }
+
         guard let client = (sender as? (any IMKTextInput)) ?? self.client() else {
+            NSLog("[Hatoko] handle: no client available")
             return false
         }
+
+        NSLog("[Hatoko] handle: keyCode=%d chars=%@ mode=%@", event.keyCode, event.characters ?? "nil", "\(inputMode)")
 
         // Handle chat window interactions (Stage 2)
         if chatWindowController.isVisible {

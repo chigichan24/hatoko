@@ -10,6 +10,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard let connectionName = Bundle.main.infoDictionary?["InputMethodConnectionName"] as? String else {
             fatalError("InputMethodConnectionName is not configured in Info.plist")
         }
+        NSLog("[Hatoko] Starting IMKServer with connection: %@ bundle: %@", connectionName, Bundle.main.bundleIdentifier ?? "nil")
         server = IMKServer(name: connectionName, bundleIdentifier: Bundle.main.bundleIdentifier)
+        NSLog("[Hatoko] IMKServer created: %@", server?.description ?? "nil")
     }
 }

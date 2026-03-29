@@ -5,6 +5,15 @@ import KanaKanjiConverterModuleWithDefaultDictionary
 @objc(HatokoInputController)
 final class HatokoInputController: IMKInputController {
 
+    private enum KeyCode {
+        static let enter: UInt16 = 36
+        static let backspace: UInt16 = 51
+        static let escape: UInt16 = 53
+        static let space: UInt16 = 49
+    }
+
+    private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
+
     private var inputMode: InputMode = .japanese
     private var composingText = ComposingText()
     private let conversionService = ConversionService()
@@ -60,11 +69,7 @@ final class HatokoInputController: IMKInputController {
     override func setValue(_ value: Any!, forTag tag: Int, client sender: Any!) {
         guard let value = value as? String else { return }
         commitCurrentText(sender)
-        if value.hasSuffix("Roman") {
-            inputMode = .roman
-        } else {
-            inputMode = .japanese
-        }
+        inputMode = InputMode(modeIdentifier: value)
         super.setValue(value, forTag: tag, client: sender)
     }
 
@@ -88,22 +93,20 @@ final class HatokoInputController: IMKInputController {
     // MARK: - Japanese Input Handling
 
     private func handleJapaneseInput(event: NSEvent, client: any IMKTextInput) -> Bool {
-        let keyCode = event.keyCode
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
-        // Ignore events with modifier keys (except shift)
         if !modifiers.subtracting(.shift).isEmpty {
             return false
         }
 
-        switch keyCode {
-        case 36: // Enter
+        switch event.keyCode {
+        case KeyCode.enter:
             return handleEnter(client: client)
-        case 51: // Backspace
+        case KeyCode.backspace:
             return handleBackspace(client: client)
-        case 53: // Escape
+        case KeyCode.escape:
             return handleEscape(client: client)
-        case 49: // Space
+        case KeyCode.space:
             return handleSpace(client: client)
         default:
             return handleCharacterInput(event: event, client: client)
@@ -112,8 +115,7 @@ final class HatokoInputController: IMKInputController {
 
     private func handleEnter(client: any IMKTextInput) -> Bool {
         guard !composingText.convertTarget.isEmpty else { return false }
-        let text = composingText.convertTarget
-        client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+        commitText(composingText.convertTarget, to: client)
         resetComposition()
         return true
     }
@@ -123,7 +125,7 @@ final class HatokoInputController: IMKInputController {
         composingText.deleteBackwardFromCursorPosition(count: 1)
         if composingText.convertTarget.isEmpty {
             resetComposition()
-            client.setMarkedText("", selectionRange: NSRange(location: 0, length: 0), replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+            clearMarkedText(client: client)
         } else {
             updateMarkedText(client: client)
         }
@@ -133,7 +135,7 @@ final class HatokoInputController: IMKInputController {
     private func handleEscape(client: any IMKTextInput) -> Bool {
         guard !composingText.convertTarget.isEmpty else { return false }
         resetComposition()
-        client.setMarkedText("", selectionRange: NSRange(location: 0, length: 0), replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+        clearMarkedText(client: client)
         return true
     }
 
@@ -144,7 +146,7 @@ final class HatokoInputController: IMKInputController {
             options: convertOptions
         )
         if let topCandidate = result.mainResults.first {
-            client.insertText(topCandidate.text, replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+            commitText(topCandidate.text, to: client)
             composingText.prefixComplete(composingCount: topCandidate.composingCount)
             resetComposition()
         }
@@ -159,9 +161,7 @@ final class HatokoInputController: IMKInputController {
         for char in characters {
             guard char.isASCII, char.isLetter || char == "-" else {
                 if !composingText.convertTarget.isEmpty {
-                    // Non-letter while composing: commit current text first
-                    let text = composingText.convertTarget
-                    client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: NSNotFound))
+                    commitText(composingText.convertTarget, to: client)
                     resetComposition()
                 }
                 return false
@@ -173,7 +173,19 @@ final class HatokoInputController: IMKInputController {
         return true
     }
 
-    // MARK: - Display
+    // MARK: - Client Communication
+
+    private func commitText(_ text: String, to client: any IMKTextInput) {
+        client.insertText(text, replacementRange: Self.noReplacementRange)
+    }
+
+    private func clearMarkedText(client: any IMKTextInput) {
+        client.setMarkedText(
+            "",
+            selectionRange: NSRange(location: 0, length: 0),
+            replacementRange: Self.noReplacementRange
+        )
+    }
 
     private func updateMarkedText(client: any IMKTextInput) {
         let text = composingText.convertTarget
@@ -187,7 +199,7 @@ final class HatokoInputController: IMKInputController {
         client.setMarkedText(
             attributed,
             selectionRange: NSRange(location: text.utf16.count, length: 0),
-            replacementRange: NSRange(location: NSNotFound, length: NSNotFound)
+            replacementRange: Self.noReplacementRange
         )
     }
 
@@ -195,12 +207,12 @@ final class HatokoInputController: IMKInputController {
 
     private func commitCurrentText(_ sender: Any?) {
         guard !composingText.convertTarget.isEmpty else { return }
-        if let client = sender as? (any IMKTextInput) {
-            client.insertText(
-                composingText.convertTarget,
-                replacementRange: NSRange(location: NSNotFound, length: NSNotFound)
-            )
+        guard let client = sender as? (any IMKTextInput) else {
+            NSLog("[Hatoko] Warning: Could not commit composing text - sender is not IMKTextInput")
+            resetComposition()
+            return
         }
+        commitText(composingText.convertTarget, to: client)
         resetComposition()
     }
 

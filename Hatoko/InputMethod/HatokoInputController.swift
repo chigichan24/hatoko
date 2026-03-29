@@ -90,14 +90,16 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func deactivateServer(_ sender: Any!) {
-        cancelLLMMode()
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         super.deactivateServer(sender)
     }
 
     override func setValue(_ value: Any!, forTag tag: Int, client sender: Any!) {
         guard let value = value as? String else { return }
-        cancelLLMMode()
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         inputMode = InputMode(modeIdentifier: value)
         super.setValue(value, forTag: tag, client: sender)
@@ -159,7 +161,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func commitComposition(_ sender: Any!) {
-        cancelLLMMode()
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         super.commitComposition(sender)
     }
@@ -203,7 +206,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return true
         case KeyCode.escape:
             // Cancel
-            cancelLLMMode()
+            cancelLLMMode(client: client)
             return true
         case KeyCode.tab:
             transitionToChat(client: client)
@@ -242,7 +245,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func handleChatInput(event: NSEvent, client: any IMKTextInput) -> Bool {
         if event.keyCode == KeyCode.escape {
-            cancelLLMMode()
+            cancelLLMMode(client: client)
             return true
         }
         // Let the chat window handle other keys via its own TextField

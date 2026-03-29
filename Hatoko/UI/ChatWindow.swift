@@ -13,29 +13,31 @@ final class ChatWindowController {
     private var messages: [ChatMessage] = []
     private var isLoading = false
     private var inputText = ""
+    struct Configuration: Sendable {
+        let initialPrompt: String
+        let initialResponse: String
+        let origin: NSPoint
+        let onUse: @Sendable (String) -> Void
+        let onSend: @Sendable (String) -> Void
+        let onCancel: @Sendable () -> Void
+    }
+
     private var onUseText: (@Sendable (String) -> Void)?
     private var onSendMessage: (@Sendable (String) -> Void)?
     private var onCancel: (@Sendable () -> Void)?
 
-    nonisolated func show(
-        initialPrompt: String,
-        initialResponse: String,
-        at origin: NSPoint,
-        onUse: @escaping @Sendable (String) -> Void,
-        onSend: @escaping @Sendable (String) -> Void,
-        onCancel: @escaping @Sendable () -> Void
-    ) {
+    nonisolated func show(configuration: Configuration) {
         MainActor.assumeIsolated {
             self.messages = [
-                ChatMessage(role: .user, text: initialPrompt),
-                ChatMessage(role: .assistant, text: initialResponse),
+                ChatMessage(role: .user, text: configuration.initialPrompt),
+                ChatMessage(role: .assistant, text: configuration.initialResponse),
             ]
             self.isLoading = false
             self.inputText = ""
-            self.onUseText = onUse
-            self.onSendMessage = onSend
-            self.onCancel = onCancel
-            self.updateWindow(at: origin)
+            self.onUseText = configuration.onUse
+            self.onSendMessage = configuration.onSend
+            self.onCancel = configuration.onCancel
+            self.updateWindow(at: configuration.origin)
         }
     }
 

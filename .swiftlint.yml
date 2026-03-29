@@ -1,0 +1,55 @@
+included:
+  - Hatoko
+  - HatokoTests
+
+excluded:
+  - DerivedData
+  - .build
+  - "*.xcodeproj"
+
+disabled_rules:
+  - trailing_comma
+  - todo
+
+opt_in_rules:
+  - closure_spacing
+  - empty_count
+  - force_unwrapping
+  - implicit_return
+  - modifier_order
+  - overridden_super_call
+  - private_action
+  - private_outlet
+  - redundant_nil_coalescing
+  - vertical_whitespace_closing_braces
+
+line_length:
+  warning: 150
+  error: 200
+
+type_body_length:
+  warning: 500
+  error: 700
+
+file_length:
+  warning: 600
+  error: 800
+
+function_body_length:
+  warning: 50
+  error: 80
+
+identifier_name:
+  min_length:
+    warning: 1
+  excluded:
+    - id
+    - i
+    - x
+    - y
+
+type_name:
+  min_length:
+    warning: 3
+  excluded:
+    - ID

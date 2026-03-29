@@ -22,7 +22,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
-    private static let llmSystemPrompt = "You are an IME assistant. Generate the text the user is asking for. Respond ONLY with the generated text, no explanations."
+    private static let llmSystemPrompt = """
+        You are an IME assistant. Generate the text the user is asking for. \
+        Respond ONLY with the generated text, no explanations.
+        """
 
     private var inputMode: InputMode = .japanese
     private var composingText = ComposingText()
@@ -292,10 +295,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
         inlineSuggestionWindow.hide()
 
-        chatWindowController.show(
+        chatWindowController.show(configuration: .init(
             initialPrompt: prompt,
             initialResponse: suggestion,
-            at: lastCursorOrigin,
+            origin: lastCursorOrigin,
             onUse: { [weak self] text in
                 self?.acceptChatText(text, client: capturedClient)
             },
@@ -305,7 +308,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             onCancel: { [weak self] in
                 self?.cancelLLMMode()
             }
-        )
+        ))
     }
 
     private func handleChatInput(event: NSEvent, client: any IMKTextInput) -> Bool {

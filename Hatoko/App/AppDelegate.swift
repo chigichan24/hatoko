@@ -2,7 +2,7 @@ import Cocoa
 import InputMethodKit
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate, Sendable {
+final class AppDelegate: NSObject, NSApplicationDelegate {
 
     private var server: IMKServer?
 

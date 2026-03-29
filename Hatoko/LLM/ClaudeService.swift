@@ -36,9 +36,11 @@ final class ClaudeService: LLMService, Sendable {
 
     // MARK: - Internal helpers exposed for testing
 
+    // swiftlint:disable:next force_unwrapping
+    private static let apiURL = URL(string: "https://api.anthropic.com/v1/messages")!
+
     func buildRequest(messages: [LLMMessage], systemPrompt: String?) throws -> URLRequest {
-        let url = URL(string: "https://api.anthropic.com/v1/messages")!
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: Self.apiURL)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "content-type")
         request.setValue(apiKey, forHTTPHeaderField: "x-api-key")

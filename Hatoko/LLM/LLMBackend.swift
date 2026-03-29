@@ -58,10 +58,8 @@ enum LLMBackend: String, CaseIterable, Sendable {
             "/opt/homebrew/bin/claude",
             NSString("~/.claude/local/claude").expandingTildeInPath,
         ]
-        for path in candidates {
-            if FileManager.default.isExecutableFile(atPath: path) {
-                return path
-            }
+        for path in candidates where FileManager.default.isExecutableFile(atPath: path) {
+            return path
         }
         return "claude"
     }

@@ -85,7 +85,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
     }
 
-
     override func deactivateServer(_ sender: Any!) {
         cancelLLMMode()
         commitCurrentText(sender)

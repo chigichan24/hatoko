@@ -468,9 +468,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func cycleCandidate(reverse: Bool, client: any IMKTextInput) -> Bool {
         japaneseInputState = japaneseInputState.cycled(reverse: reverse)
-        if let candidate = japaneseInputState.selectedCandidate {
-            updateMarkedText(candidate.text, style: .thick, client: client)
+        guard let candidate = japaneseInputState.selectedCandidate else {
+            assertionFailure("cycleCandidate called in non-converting state")
+            return false
         }
+        updateMarkedText(candidate.text, style: .thick, client: client)
         return true
     }
 

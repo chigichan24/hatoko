@@ -164,6 +164,10 @@ extension HatokoInputController {
 
     private func promptCycleCandidate(reverse: Bool, client: any IMKTextInput) -> Bool {
         japaneseInputState = japaneseInputState.cycled(reverse: reverse)
+        guard japaneseInputState.selectedCandidate != nil else {
+            assertionFailure("promptCycleCandidate called in non-converting state")
+            return false
+        }
         updatePromptMarkedText(client: client)
         return true
     }

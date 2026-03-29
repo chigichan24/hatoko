@@ -1,11 +1,19 @@
 import Cocoa
 import SwiftUI
 
+/// A non-activating panel that can still become key window,
+/// allowing SwiftUI TextField to receive keyboard focus.
+private class KeyablePanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+}
+
 /// Manages the ephemeral chat window for LLM refinement.
 ///
-/// Same isolation strategy as InlineSuggestionWindow: `@preconcurrency @MainActor`
-/// with `nonisolated` + `MainActor.assumeIsolated` for methods called from
-/// IMKInputController's main-thread callbacks.
+/// The chat panel uses `KeyablePanel` (canBecomeKey = true) with
+/// `makeKeyAndOrderFront` so that the SwiftUI TextField receives
+/// keyboard focus. This causes transient IME deactivation, which
+/// is handled by `HatokoInputController.deactivateServer` skipping
+/// `cancelLLMMode` when the chat window is visible.
 @preconcurrency @MainActor
 final class ChatWindowController {
 
@@ -73,6 +81,8 @@ final class ChatWindowController {
         }
     }
 
+    // MARK: - Window Management
+
     private func updateWindow(at origin: NSPoint) {
         let chatView = ChatView(
             messages: messages,
@@ -89,8 +99,11 @@ final class ChatWindowController {
         let hostingView = NSHostingView(rootView: chatView)
         hostingView.frame.size = hostingView.fittingSize
 
-        let panel = NSPanel(
-            contentRect: NSRect(origin: origin, size: hostingView.fittingSize),
+        let size = hostingView.fittingSize
+        let adjustedOrigin = Self.adjustedOrigin(for: size, cursorOrigin: origin)
+
+        let panel = KeyablePanel(
+            contentRect: NSRect(origin: adjustedOrigin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -100,10 +113,35 @@ final class ChatWindowController {
         panel.backgroundColor = .clear
         panel.hasShadow = true
         panel.contentView = hostingView
-        panel.orderFront(nil)
+        panel.makeKeyAndOrderFront(nil)
 
         window?.orderOut(nil)
         window = panel
+    }
+
+    private static func adjustedOrigin(for size: NSSize, cursorOrigin: NSPoint) -> NSPoint {
+        let screenFrame = NSScreen.main?.visibleFrame
+            ?? NSRect(origin: .zero, size: NSSize(width: 1920, height: 1080))
+
+        var x = cursorOrigin.x
+        var y = cursorOrigin.y
+
+        // Place below cursor; if not enough space below, place above
+        if y - size.height < screenFrame.minY {
+            y = cursorOrigin.y + 20
+        } else {
+            y = cursorOrigin.y - size.height
+        }
+
+        // Clamp horizontally
+        if x + size.width > screenFrame.maxX {
+            x = screenFrame.maxX - size.width
+        }
+        if x < screenFrame.minX {
+            x = screenFrame.minX
+        }
+
+        return NSPoint(x: x, y: y)
     }
 
     private func refreshContent() {

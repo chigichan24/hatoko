@@ -33,6 +33,10 @@ final class CLIService: LLMService, Sendable {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executablePath)
         process.arguments = ["-p", prompt]
+        // Use /tmp as working directory to avoid TCC prompts for
+        // protected user directories (Music, Photos, etc.) when the
+        // CLI process is spawned from the IME process context.
+        process.currentDirectoryURL = URL(fileURLWithPath: "/tmp")
 
         let outputPipe = Pipe()
         let errorPipe = Pipe()

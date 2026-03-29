@@ -37,6 +37,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // LLM prompt state
     var promptBuffer = ""
+    /// The input mode that was active before entering LLM prompt mode.
+    var llmBaseMode: InputMode = .japanese
     private var llmSuggestion: String?
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
@@ -90,14 +92,23 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func deactivateServer(_ sender: Any!) {
-        let client = (sender as? (any IMKTextInput)) ?? self.client()
-        cancelLLMMode(client: client)
+        // Don't cancel LLM mode if the chat window is active — transient
+        // deactivate/activate cycles from InputMethodKit would close it.
+        if !chatWindowController.isVisible {
+            let client = (sender as? (any IMKTextInput)) ?? self.client()
+            cancelLLMMode(client: client)
+        }
         commitCurrentText(sender)
         super.deactivateServer(sender)
     }
 
     override func setValue(_ value: Any!, forTag tag: Int, client sender: Any!) {
         guard let value = value as? String else { return }
+        if chatWindowController.isVisible {
+            // Preserve LLM state during transient IME reactivation
+            super.setValue(value, forTag: tag, client: sender)
+            return
+        }
         let client = (sender as? (any IMKTextInput)) ?? self.client()
         cancelLLMMode(client: client)
         commitCurrentText(sender)
@@ -187,7 +198,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func resetLLMState() {
-        inputMode = .japanese
+        inputMode = llmBaseMode
         promptBuffer = ""
         llmSuggestion = nil
     }
@@ -248,7 +259,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             cancelLLMMode(client: client)
             return true
         }
-        // Let the chat window handle other keys via its own TextField
+        // Chat window is key (KeyablePanel) and handles its own input
         return false
     }
 

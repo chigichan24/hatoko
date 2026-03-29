@@ -7,11 +7,11 @@ APP_NAME="Hatoko.app"
 echo "=== Hatoko IME Installer ==="
 
 # 1. Generate Xcode project
-echo "[1/4] Generating Xcode project..."
+echo "[1/5] Generating Xcode project..."
 mint run xcodegen generate
 
 # 2. Build
-echo "[2/4] Building..."
+echo "[2/5] Building..."
 xcodebuild -project Hatoko.xcodeproj \
   -scheme Hatoko \
   -configuration Debug \
@@ -33,21 +33,22 @@ if [ ! -d "$APP_PATH" ]; then
 fi
 
 # 3. Kill existing process
-echo "[3/4] Installing..."
+echo "[3/5] Installing..."
 killall Hatoko 2>/dev/null || true
 sleep 0.5
 
-# 4. Copy to Input Methods
+# 4. Remove old and copy fresh (avoids overwrite prompts)
+sudo rm -rf "${INSTALL_DIR}/${APP_NAME}"
 sudo cp -R "$APP_PATH" "$INSTALL_DIR/"
 echo "  Copied to ${INSTALL_DIR}/${APP_NAME}"
 
 # 5. Launch
-echo "[4/4] Launching..."
+echo "[4/5] Launching..."
 open "${INSTALL_DIR}/${APP_NAME}"
+sleep 2
 
 # 6. Enable input source via TIS API
 echo "[5/5] Registering input source..."
-sleep 1
 swift scripts/enable-input-source.swift
 
 echo ""

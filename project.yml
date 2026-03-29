@@ -30,8 +30,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.chigichan24.inputmethod.Hatoko
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: 1
-        ENABLE_APP_SANDBOX: true
-        ENABLE_HARDENED_RUNTIME: true
+        ENABLE_APP_SANDBOX: false
+        ENABLE_HARDENED_RUNTIME: false
         CODE_SIGN_ENTITLEMENTS: Hatoko/Hatoko.entitlements
   HatokoTests:
     type: bundle.unit-test

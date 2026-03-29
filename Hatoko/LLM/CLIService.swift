@@ -18,8 +18,6 @@ final class CLIService: LLMService, Sendable {
         if let systemPrompt {
             parts.append(systemPrompt)
         }
-        // For CLI mode, concatenate messages into a single prompt.
-        // The last user message is the primary request.
         for message in messages {
             switch message.role {
             case .user:
@@ -32,40 +30,41 @@ final class CLIService: LLMService, Sendable {
     }
 
     private func runCLI(prompt: String) async throws -> String {
-        try await withCheckedThrowingContinuation { continuation in
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: executablePath)
-            process.arguments = ["-p", prompt]
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: executablePath)
+        process.arguments = ["-p", prompt]
 
-            let outputPipe = Pipe()
-            let errorPipe = Pipe()
-            process.standardOutput = outputPipe
-            process.standardError = errorPipe
+        let outputPipe = Pipe()
+        let errorPipe = Pipe()
+        process.standardOutput = outputPipe
+        process.standardError = errorPipe
 
-            process.terminationHandler = { proc in
-                let outputData = outputPipe.fileHandleForReading.readDataToEndOfFile()
-                let output = String(data: outputData, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-
-                if proc.terminationStatus != 0 {
-                    let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
-                    let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-                    continuation.resume(throwing: CLIServiceError.processExited(
-                        status: proc.terminationStatus,
-                        stderr: errorMessage
-                    ))
-                } else if output.isEmpty {
-                    continuation.resume(throwing: CLIServiceError.emptyOutput)
-                } else {
-                    continuation.resume(returning: output)
-                }
-            }
-
-            do {
-                try process.run()
-            } catch {
-                continuation.resume(throwing: CLIServiceError.launchFailed(error))
-            }
+        do {
+            try process.run()
+        } catch {
+            throw CLIServiceError.launchFailed(error)
         }
+
+        // Read pipe data and wait for exit on a detached task to avoid
+        // deadlock when output exceeds the pipe buffer.
+        let result: (output: Data, error: Data, status: Int32) = await Task.detached {
+            let outData = outputPipe.fileHandleForReading.readDataToEndOfFile()
+            let errData = errorPipe.fileHandleForReading.readDataToEndOfFile()
+            process.waitUntilExit()
+            return (outData, errData, process.terminationStatus)
+        }.value
+
+        let output = String(data: result.output, encoding: .utf8)?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+
+        if result.status != 0 {
+            let errorMessage = String(data: result.error, encoding: .utf8) ?? "Unknown error"
+            throw CLIServiceError.processExited(status: result.status, stderr: errorMessage)
+        }
+        if output.isEmpty {
+            throw CLIServiceError.emptyOutput
+        }
+        return output
     }
 }
 

@@ -454,7 +454,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 }
                 return false
             }
-            composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
+            if char == "-" {
+                composingText.insertAtCursorPosition("ー", inputStyle: .direct)
+            } else {
+                composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
+            }
         }
 
         updateMarkedText(client: client)

@@ -19,6 +19,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         static let escape: UInt16 = 53
         static let space: UInt16 = 49
         static let tab: UInt16 = 48
+        static let arrowUp: UInt16 = 126
+        static let arrowDown: UInt16 = 125
     }
 
     private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
@@ -29,6 +31,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private var inputMode: InputMode = .japanese
     private var composingText = ComposingText()
+    private var japaneseInputState: JapaneseInputState = .composing
     private let conversionService = ConversionService()
 
     // LLM prompt state
@@ -547,6 +550,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func resetComposition() {
         composingText = ComposingText()
+        japaneseInputState = .composing
         conversionService.stopComposition()
     }
 }

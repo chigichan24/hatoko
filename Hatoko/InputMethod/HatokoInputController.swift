@@ -90,16 +90,22 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func deactivateServer(_ sender: Any!) {
-        let client = (sender as? (any IMKTextInput)) ?? self.client()
-        cancelLLMMode(client: client)
+        // Don't cancel LLM mode if the chat window is active — transient
+        // deactivate/activate cycles from InputMethodKit would close it.
+        if !chatWindowController.isVisible {
+            let client = (sender as? (any IMKTextInput)) ?? self.client()
+            cancelLLMMode(client: client)
+        }
         commitCurrentText(sender)
         super.deactivateServer(sender)
     }
 
     override func setValue(_ value: Any!, forTag tag: Int, client sender: Any!) {
         guard let value = value as? String else { return }
-        let client = (sender as? (any IMKTextInput)) ?? self.client()
-        cancelLLMMode(client: client)
+        if !chatWindowController.isVisible {
+            let client = (sender as? (any IMKTextInput)) ?? self.client()
+            cancelLLMMode(client: client)
+        }
         commitCurrentText(sender)
         inputMode = InputMode(modeIdentifier: value)
         super.setValue(value, forTag: tag, client: sender)

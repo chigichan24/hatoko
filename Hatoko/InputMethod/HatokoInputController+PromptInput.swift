@@ -153,7 +153,7 @@ extension HatokoInputController {
                 composingText: composingText,
                 options: convertOptions
             ).mainResults
-            guard candidates.first != nil else { return true }
+            guard !candidates.isEmpty else { return true }
             japaneseInputState = .converting(candidates: candidates, selectedIndex: 0)
             updatePromptMarkedText(client: client)
             return true

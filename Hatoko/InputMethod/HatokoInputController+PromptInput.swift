@@ -138,6 +138,8 @@ extension HatokoInputController {
             } else if char.isASCII, char.isLetter {
                 composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
             } else {
+                // In prompt mode, non-letter characters (digits, symbols) are captured
+                // into promptBuffer rather than passed through to the system.
                 if !composingText.convertTarget.isEmpty {
                     promptBuffer.append(composingText.convertTarget)
                     resetComposition()

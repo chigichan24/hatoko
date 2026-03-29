@@ -1,0 +1,48 @@
+name: Hatoko
+options:
+  bundleIdPrefix: com.chigichan24
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "16.0"
+  groupSortPosition: top
+
+packages:
+  AzooKeyKanaKanjiConverter:
+    url: https://github.com/azooKey/AzooKeyKanaKanjiConverter
+    branch: main
+
+targets:
+  Hatoko:
+    type: application
+    platform: macOS
+    sources: [Hatoko]
+    dependencies:
+      - package: AzooKeyKanaKanjiConverter
+        product: KanaKanjiConverterModuleWithDefaultDictionary
+    settings:
+      base:
+        INFOPLIST_FILE: Resources/Info.plist
+        GENERATE_INFOPLIST_FILE: false
+        SWIFT_VERSION: "6"
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_TREAT_WARNINGS_AS_ERRORS: true
+        GCC_TREAT_WARNINGS_AS_ERRORS: true
+        PRODUCT_BUNDLE_IDENTIFIER: com.chigichan24.inputmethod.Hatoko
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: 1
+        ENABLE_APP_SANDBOX: true
+        ENABLE_HARDENED_RUNTIME: true
+        CODE_SIGN_ENTITLEMENTS: Hatoko/Hatoko.entitlements
+  HatokoTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources: [HatokoTests]
+    settings:
+      base:
+        SWIFT_VERSION: "6"
+        SWIFT_STRICT_CONCURRENCY: complete
+        SWIFT_TREAT_WARNINGS_AS_ERRORS: true
+        GCC_TREAT_WARNINGS_AS_ERRORS: true
+        GENERATE_INFOPLIST_FILE: true
+    dependencies:
+      - target: Hatoko

@@ -1,0 +1,12 @@
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+.build/
+.swiftpm/
+build/
+default.profraw
+.DS_Store
+*.swp
+*~
+mockup.html

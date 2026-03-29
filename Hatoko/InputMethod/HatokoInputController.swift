@@ -1,7 +1,15 @@
 import Cocoa
-import InputMethodKit
+@preconcurrency import InputMethodKit
 import KanaKanjiConverterModuleWithDefaultDictionary
 
+/// macOS IME input controller.
+///
+/// ## Concurrency Safety
+/// IMKInputController is always instantiated and called on the main thread by the
+/// Input Method Kit framework. All mutable state (`composingText`, `inputMode`, etc.)
+/// is only accessed from these main-thread callbacks. `@unchecked Sendable` is required
+/// solely to allow capturing `self` in `Task {}` closures for async LLM calls, where
+/// we immediately bounce back to `MainActor.run {}` before touching any state.
 @objc(HatokoInputController)
 final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
@@ -278,7 +286,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     private func transitionToChat(client: any IMKTextInput) {
         guard let suggestion = llmSuggestion else { return }
         let prompt = promptBuffer
-        // IMKTextInput is not Sendable but we're always on the main thread.
+        // IMKTextInput is not Sendable, but this closure runs on the main thread
+        // where the client was originally provided by InputMethodKit.
         nonisolated(unsafe) let capturedClient = client
 
         inlineSuggestionWindow.hide()

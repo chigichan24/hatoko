@@ -1,6 +1,12 @@
 import Cocoa
 import SwiftUI
 
+/// Manages the inline LLM suggestion popup near the cursor.
+///
+/// Marked `@preconcurrency @MainActor` because all NSWindow operations require the
+/// main thread. Public methods are `nonisolated` with `MainActor.assumeIsolated`
+/// because they are called from IMKInputController (which always runs on main thread)
+/// but cannot be statically proven to be MainActor-isolated.
 @preconcurrency @MainActor
 final class InlineSuggestionWindow {
 

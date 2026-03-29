@@ -1,6 +1,11 @@
 import Cocoa
 import SwiftUI
 
+/// Manages the ephemeral chat window for LLM refinement.
+///
+/// Same isolation strategy as InlineSuggestionWindow: `@preconcurrency @MainActor`
+/// with `nonisolated` + `MainActor.assumeIsolated` for methods called from
+/// IMKInputController's main-thread callbacks.
 @preconcurrency @MainActor
 final class ChatWindowController {
 

@@ -1,6 +1,12 @@
 import Cocoa
 import SwiftUI
 
+/// A non-activating panel that can still become key window,
+/// allowing SwiftUI TextField to receive keyboard focus.
+private class KeyablePanel: NSPanel {
+    override var canBecomeKey: Bool { true }
+}
+
 /// Manages the ephemeral chat window for LLM refinement.
 ///
 /// Same isolation strategy as InlineSuggestionWindow: `@preconcurrency @MainActor`
@@ -92,7 +98,7 @@ final class ChatWindowController {
         let size = hostingView.fittingSize
         let adjustedOrigin = Self.adjustedOrigin(for: size, cursorOrigin: origin)
 
-        let panel = NSPanel(
+        let panel = KeyablePanel(
             contentRect: NSRect(origin: adjustedOrigin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
@@ -103,7 +109,7 @@ final class ChatWindowController {
         panel.backgroundColor = .clear
         panel.hasShadow = true
         panel.contentView = hostingView
-        panel.orderFront(nil)
+        panel.makeKeyAndOrderFront(nil)
 
         window?.orderOut(nil)
         window = panel

@@ -322,6 +322,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             service = try LLMBackend.current.createService()
         } catch {
             NSLog("[Hatoko] LLM backend configuration error: \(error)")
+            chatWindowController.addAssistantMessage("設定エラー: バックエンドの構成を確認してください。")
             return
         }
 

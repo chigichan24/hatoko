@@ -68,16 +68,17 @@ struct JapaneseInputStateTests {
     }
 
     @Test
-    func cycledOnComposingReturnsComposing() {
-        let state = JapaneseInputState.composing
-        let next = state.cycled(reverse: false)
-        #expect(!next.isConverting)
+    func cycleReverseDecrementsIndex() {
+        let state = JapaneseInputState.converting(candidates: Self.sampleCandidates, selectedIndex: 2)
+        let next = state.cycled(reverse: true)
+        #expect(next.selectedCandidate?.text == "京は雨")
     }
 
     @Test
     func cycledWithEmptyCandidatesReturnsSelf() {
         let state = JapaneseInputState.converting(candidates: [], selectedIndex: 0)
         let next = state.cycled(reverse: false)
+        #expect(next.isConverting)
         #expect(next.selectedCandidate == nil)
     }
 }

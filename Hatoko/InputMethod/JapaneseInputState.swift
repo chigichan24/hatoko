@@ -16,7 +16,10 @@ enum JapaneseInputState {
     }
 
     func cycled(reverse: Bool) -> JapaneseInputState {
-        guard case .converting(let candidates, let index) = self else { return self }
+        guard case .converting(let candidates, let index) = self else {
+            assertionFailure("cycled called in non-converting state")
+            return self
+        }
         guard !candidates.isEmpty else { return self }
         let count = candidates.count
         let next = reverse ? (index - 1 + count) % count : (index + 1) % count

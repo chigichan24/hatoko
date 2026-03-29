@@ -86,8 +86,7 @@ extension HatokoInputController {
         }
 
         // (d) Both empty — cancel LLM mode
-        cancelLLMMode()
-        clearMarkedText(client: client)
+        cancelLLMMode(client: client)
         return true
     }
 
@@ -107,8 +106,7 @@ extension HatokoInputController {
         }
 
         // (c) Nothing composing — cancel LLM mode entirely
-        cancelLLMMode()
-        clearMarkedText(client: client)
+        cancelLLMMode(client: client)
         return true
     }
 

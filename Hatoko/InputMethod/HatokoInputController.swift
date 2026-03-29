@@ -182,7 +182,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         updatePromptMarkedText(client: client)
     }
 
-    func cancelLLMMode() {
+    func cancelLLMMode(client: (any IMKTextInput)? = nil) {
         if inputMode == .llmPrompt || inlineSuggestionWindow.isVisible || chatWindowController.isVisible {
             inlineSuggestionWindow.hide()
             chatWindowController.hide()
@@ -190,6 +190,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             inputMode = .japanese
             promptBuffer = ""
             llmSuggestion = nil
+            if let client {
+                clearMarkedText(client: client)
+            }
         }
     }
 

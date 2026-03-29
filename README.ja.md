@@ -1,5 +1,9 @@
 # Hatoko
 
+<p align="center">
+  <img src="Hatoko/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512@2x.png" alt="Hatoko" width="200">
+</p>
+
 > A macOS IME where keystrokes meet intelligence.
 
 [![CI](https://github.com/chigichan24/hatoko/actions/workflows/ci.yml/badge.svg)](https://github.com/chigichan24/hatoko/actions/workflows/ci.yml)

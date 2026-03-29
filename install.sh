@@ -37,7 +37,7 @@ echo "[3/5] Installing..."
 killall Hatoko 2>/dev/null || true
 sleep 0.5
 
-# 4. Remove old and copy fresh (avoids overwrite prompts)
+# 4. Remove old and copy fresh
 sudo rm -rf "${INSTALL_DIR}/${APP_NAME}"
 sudo cp -R "$APP_PATH" "$INSTALL_DIR/"
 echo "  Copied to ${INSTALL_DIR}/${APP_NAME}"
@@ -47,9 +47,33 @@ echo "[4/5] Launching..."
 open "${INSTALL_DIR}/${APP_NAME}"
 sleep 2
 
-# 6. Enable input source via TIS API
+# 6. Register and enable input source
 echo "[5/5] Registering input source..."
-swift scripts/enable-input-source.swift
+swift -e '
+import Carbon
+import Foundation
+
+let appURL = URL(fileURLWithPath: "/Library/Input Methods/Hatoko.app") as CFURL
+let regStatus = TISRegisterInputSource(appURL)
+if regStatus != 0 && regStatus != -1 {
+    print("WARNING: TISRegisterInputSource returned \(regStatus)")
+}
+
+let sources = TISCreateInputSourceList(nil, true)?.takeRetainedValue() as? [TISInputSource] ?? []
+var found = false
+for source in sources {
+    guard let idPtr = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else { continue }
+    let id = Unmanaged<CFString>.fromOpaque(idPtr).takeUnretainedValue() as String
+    if id.hasPrefix("com.chigichan24.inputmethod.Hatoko") {
+        found = true
+        TISEnableInputSource(source)
+        print("  Enabled: \(id)")
+    }
+}
+if !found {
+    print("ERROR: Input source not found after registration")
+}
+'
 
 echo ""
 echo "=== Done! ==="

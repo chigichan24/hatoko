@@ -14,6 +14,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
+    private static let llmSystemPrompt = "You are an IME assistant. Generate the text the user is asking for. Respond ONLY with the generated text, no explanations."
 
     private var inputMode: InputMode = .japanese
     private var composingText = ComposingText()
@@ -337,7 +338,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             do {
                 let result = try await service.generate(
                     messages: llmMessages,
-                    systemPrompt: "You are an IME assistant. Generate the text the user is asking for. Respond ONLY with the generated text, no explanations."
+                    systemPrompt: Self.llmSystemPrompt
                 )
                 await MainActor.run {
                     self.llmSuggestion = result
@@ -345,6 +346,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 }
             } catch {
                 NSLog("[Hatoko] LLM chat generation failed: \(error)")
+                await MainActor.run {
+                    self.chatWindowController.addAssistantMessage("エラーが発生しました。もう一度お試しください。")
+                }
             }
         }
     }
@@ -483,7 +487,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             do {
                 let result = try await service.generate(
                     messages: [LLMMessage(role: .user, content: prompt)],
-                    systemPrompt: "You are an IME assistant. Generate the text the user is asking for. Respond ONLY with the generated text, no explanations."
+                    systemPrompt: Self.llmSystemPrompt
                 )
                 await MainActor.run {
                     self.llmSuggestion = result

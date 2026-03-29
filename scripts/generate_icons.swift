@@ -52,16 +52,19 @@ func createRepresentation(glyph: String, resolution: Resolution) -> NSBitmapImag
     NSGraphicsContext.saveGraphicsState()
     NSGraphicsContext.current = context
 
-    let rect = NSRect(x: 0, y: 0, width: size, height: size)
+    // Draw in point coordinates (not pixel coordinates)
+    // The @2x bitmap rep automatically renders at higher resolution
+    let drawSize = pointSize
+    let rect = NSRect(x: 0, y: 0, width: drawSize, height: drawSize)
 
     // Draw rounded rectangle background
-    let cornerRadius = CGFloat(size) * 3.0 / 16.0
+    let cornerRadius = drawSize * 3.0 / 16.0
     let path = NSBezierPath(roundedRect: rect, xRadius: cornerRadius, yRadius: cornerRadius)
     pink.setFill()
     path.fill()
 
     // Draw glyph text
-    let fontSize = CGFloat(size) * 0.7
+    let fontSize = drawSize * 0.7
     let font: NSFont
     if glyph == "A" {
         font = NSFont.boldSystemFont(ofSize: fontSize)
@@ -79,8 +82,8 @@ func createRepresentation(glyph: String, resolution: Resolution) -> NSBitmapImag
     let attrString = NSAttributedString(string: glyph, attributes: attributes)
     let textSize = attrString.size()
 
-    let textX = (CGFloat(size) - textSize.width) / 2.0
-    let textY = (CGFloat(size) - textSize.height) / 2.0
+    let textX = (drawSize - textSize.width) / 2.0
+    let textY = (drawSize - textSize.height) / 2.0
     attrString.draw(at: NSPoint(x: textX, y: textY))
 
     NSGraphicsContext.restoreGraphicsState()

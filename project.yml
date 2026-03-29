@@ -32,6 +32,7 @@ targets:
         CURRENT_PROJECT_VERSION: 1
         ENABLE_APP_SANDBOX: false
         ENABLE_HARDENED_RUNTIME: false
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: Hatoko/Hatoko.entitlements
   HatokoTests:
     type: bundle.unit-test

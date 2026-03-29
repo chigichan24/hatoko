@@ -176,13 +176,17 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             inlineSuggestionWindow.hide()
             chatWindowController.hide()
             resetComposition()
-            inputMode = .japanese
-            promptBuffer = ""
-            llmSuggestion = nil
+            resetLLMState()
             if let client {
                 clearMarkedText(client: client)
             }
         }
+    }
+
+    private func resetLLMState() {
+        inputMode = .japanese
+        promptBuffer = ""
+        llmSuggestion = nil
     }
 
     // MARK: - Inline Suggestion Handling (Stage 1)
@@ -195,9 +199,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 commitText(suggestion, to: client)
             }
             inlineSuggestionWindow.hide()
-            inputMode = .japanese
-            promptBuffer = ""
-            llmSuggestion = nil
+            resetLLMState()
             return true
         case KeyCode.escape:
             // Cancel
@@ -250,9 +252,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     private func acceptChatText(_ text: String, client: any IMKTextInput) {
         chatWindowController.hide()
         commitText(text, to: client)
-        inputMode = .japanese
-        promptBuffer = ""
-        llmSuggestion = nil
+        resetLLMState()
     }
 
     private func sendChatMessage(_ message: String, previousPrompt: String) {

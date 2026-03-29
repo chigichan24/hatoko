@@ -1,17 +1,11 @@
 import Cocoa
 import SwiftUI
 
-/// A non-activating panel that can still become key window,
-/// allowing SwiftUI TextField to receive keyboard focus.
-private class KeyablePanel: NSPanel {
-    override var canBecomeKey: Bool { true }
-}
-
 /// Manages the ephemeral chat window for LLM refinement.
 ///
-/// Same isolation strategy as InlineSuggestionWindow: `@preconcurrency @MainActor`
-/// with `nonisolated` + `MainActor.assumeIsolated` for methods called from
-/// IMKInputController's main-thread callbacks.
+/// Because the chat panel must remain non-activating (stealing key focus
+/// from the host app triggers IME deactivation), keyboard input is
+/// forwarded from the IME's `handle(_:client:)` via `handleKeyInput`.
 @preconcurrency @MainActor
 final class ChatWindowController {
 
@@ -79,6 +73,35 @@ final class ChatWindowController {
         }
     }
 
+    // MARK: - IME Key Input Forwarding
+
+    /// Called from HatokoInputController.handleChatInput to forward key events.
+    /// Returns true if the event was consumed.
+    nonisolated func handleKeyInput(keyCode: UInt16, characters: String?) -> Bool {
+        MainActor.assumeIsolated {
+            switch keyCode {
+            case 36: // Enter
+                self.handleSend()
+                return true
+            case 51: // Backspace
+                if !self.inputText.isEmpty {
+                    self.inputText.removeLast()
+                    self.refreshContent()
+                }
+                return true
+            default:
+                guard let characters, !characters.isEmpty else {
+                    return false
+                }
+                self.inputText.append(characters)
+                self.refreshContent()
+                return true
+            }
+        }
+    }
+
+    // MARK: - Window Management
+
     private func updateWindow(at origin: NSPoint) {
         let chatView = ChatView(
             messages: messages,
@@ -98,7 +121,7 @@ final class ChatWindowController {
         let size = hostingView.fittingSize
         let adjustedOrigin = Self.adjustedOrigin(for: size, cursorOrigin: origin)
 
-        let panel = KeyablePanel(
+        let panel = NSPanel(
             contentRect: NSRect(origin: adjustedOrigin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
@@ -109,14 +132,15 @@ final class ChatWindowController {
         panel.backgroundColor = .clear
         panel.hasShadow = true
         panel.contentView = hostingView
-        panel.makeKeyAndOrderFront(nil)
+        panel.orderFront(nil)
 
         window?.orderOut(nil)
         window = panel
     }
 
     private static func adjustedOrigin(for size: NSSize, cursorOrigin: NSPoint) -> NSPoint {
-        let screenFrame = NSScreen.main?.visibleFrame ?? NSRect(origin: .zero, size: NSSize(width: 1920, height: 1080))
+        let screenFrame = NSScreen.main?.visibleFrame
+            ?? NSRect(origin: .zero, size: NSSize(width: 1920, height: 1080))
 
         var x = cursorOrigin.x
         var y = cursorOrigin.y

@@ -248,8 +248,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             cancelLLMMode(client: client)
             return true
         }
-        // Let the chat window handle other keys via its own TextField
-        return false
+        // Forward key events to the chat window since the panel is
+        // non-activating and cannot receive keyboard focus directly.
+        return chatWindowController.handleKeyInput(keyCode: event.keyCode, characters: event.characters)
     }
 
     private func acceptChatText(_ text: String, client: any IMKTextInput) {

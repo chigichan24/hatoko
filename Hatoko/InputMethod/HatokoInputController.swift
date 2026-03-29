@@ -23,6 +23,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     private var promptBuffer = ""
     private var llmSuggestion: String?
     private let inlineSuggestionWindow = InlineSuggestionWindow()
+    private let chatWindowController = ChatWindowController()
+    private var lastCursorOrigin: NSPoint = .zero
 
     private lazy var convertOptions: ConvertRequestOptions = {
         let dir = applicationSupportDirectory()
@@ -86,6 +88,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return false
         }
 
+        // Handle chat window interactions (Stage 2)
+        if chatWindowController.isVisible {
+            return handleChatInput(event: event, client: client)
+        }
+
         // Handle inline suggestion interactions (Stage 1)
         if inlineSuggestionWindow.isVisible {
             return handleInlineSuggestionInput(event: event, client: client)
@@ -134,8 +141,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func cancelLLMMode() {
-        if inputMode == .llmPrompt || inlineSuggestionWindow.isVisible {
+        if inputMode == .llmPrompt || inlineSuggestionWindow.isVisible || chatWindowController.isVisible {
             inlineSuggestionWindow.hide()
+            chatWindowController.hide()
             inputMode = .japanese
             promptBuffer = ""
             llmSuggestion = nil
@@ -169,8 +177,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         // Clear marked text
         clearMarkedText(client: client)
 
-        // Show loading indicator
+        // Show loading indicator at cursor position
         let cursorOrigin = cursorScreenPosition(client: client)
+        lastCursorOrigin = cursorOrigin
         inlineSuggestionWindow.showLoading(at: cursorOrigin)
 
         let prompt = promptBuffer
@@ -242,10 +251,82 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             cancelLLMMode()
             return true
         case KeyCode.tab:
-            // TODO: 1-4b Stage 2 チャットウィンドウへ移行
+            transitionToChat(client: client)
             return true
         default:
             return true
+        }
+    }
+
+    // MARK: - Chat Window (Stage 2)
+
+    private func transitionToChat(client: any IMKTextInput) {
+        guard let suggestion = llmSuggestion else { return }
+        let prompt = promptBuffer
+        // IMKTextInput is not Sendable but we're always on the main thread.
+        nonisolated(unsafe) let capturedClient = client
+
+        inlineSuggestionWindow.hide()
+
+        chatWindowController.show(
+            initialPrompt: prompt,
+            initialResponse: suggestion,
+            at: lastCursorOrigin,
+            onUse: { [weak self] text in
+                self?.acceptChatText(text, client: capturedClient)
+            },
+            onSend: { [weak self] message in
+                self?.sendChatMessage(message, previousPrompt: prompt)
+            },
+            onCancel: { [weak self] in
+                self?.cancelLLMMode()
+            }
+        )
+    }
+
+    private func handleChatInput(event: NSEvent, client: any IMKTextInput) -> Bool {
+        if event.keyCode == KeyCode.escape {
+            cancelLLMMode()
+            return true
+        }
+        // Let the chat window handle other keys via its own TextField
+        return false
+    }
+
+    private func acceptChatText(_ text: String, client: any IMKTextInput) {
+        chatWindowController.hide()
+        commitText(text, to: client)
+        inputMode = .japanese
+        promptBuffer = ""
+        llmSuggestion = nil
+    }
+
+    private func sendChatMessage(_ message: String, previousPrompt: String) {
+        let apiKey = ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
+        let service = ClaudeService(apiKey: apiKey)
+
+        // Build conversation history from chat messages
+        var llmMessages = [
+            LLMMessage(role: .user, content: previousPrompt),
+        ]
+        if let suggestion = llmSuggestion {
+            llmMessages.append(LLMMessage(role: .assistant, content: suggestion))
+        }
+        llmMessages.append(LLMMessage(role: .user, content: message))
+
+        Task {
+            do {
+                let result = try await service.generate(
+                    messages: llmMessages,
+                    systemPrompt: "You are an IME assistant. Generate the text the user is asking for. Respond ONLY with the generated text, no explanations."
+                )
+                await MainActor.run {
+                    self.llmSuggestion = result
+                    self.chatWindowController.addAssistantMessage(result)
+                }
+            } catch {
+                NSLog("[Hatoko] LLM chat generation failed: \(error)")
+            }
         }
     }
 

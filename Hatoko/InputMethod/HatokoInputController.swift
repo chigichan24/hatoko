@@ -84,10 +84,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
     }
 
-    override func recognizedEvents(_ sender: Any!) -> Int {
-        let events: NSEvent.EventTypeMask = [.keyDown, .flagsChanged]
-        return Int(events.rawValue)
-    }
 
     override func deactivateServer(_ sender: Any!) {
         cancelLLMMode()
@@ -104,7 +100,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
-        guard let event, let client = sender as? (any IMKTextInput) else {
+        guard let event else { return false }
+        guard let client = (sender as? (any IMKTextInput)) ?? self.client() else {
             return false
         }
 
@@ -528,8 +525,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func commitCurrentText(_ sender: Any?) {
         guard !composingText.convertTarget.isEmpty else { return }
-        guard let client = sender as? (any IMKTextInput) else {
-            NSLog("[Hatoko] Warning: Could not commit composing text - sender is not IMKTextInput")
+        guard let client = (sender as? (any IMKTextInput)) ?? self.client() else {
+            NSLog("[Hatoko] Warning: Could not commit composing text - no IMKTextInput client available")
             resetComposition()
             return
         }

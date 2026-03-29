@@ -397,22 +397,34 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             confirmCandidate(candidate, client: client)
         }
 
+        if insertCharactersIntoComposition(characters) != nil {
+            if !composingText.convertTarget.isEmpty {
+                commitText(composingText.convertTarget, to: client)
+                resetComposition()
+            }
+            return false
+        }
+
+        updateMarkedText(composingText.convertTarget, client: client)
+        return true
+    }
+
+    // MARK: - Shared Composition Helpers
+
+    /// Inserts characters into composingText using kana conversion rules.
+    /// Returns the first character that couldn't be classified (non-letter,
+    /// non-mapped), or nil if all characters were successfully inserted.
+    func insertCharactersIntoComposition(_ characters: String) -> Character? {
         for char in characters {
             if let mapped = Self.hankakuToZenkakuMap[char] {
                 composingText.insertAtCursorPosition(String(mapped), inputStyle: .direct)
             } else if char.isASCII, char.isLetter {
                 composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
             } else {
-                if !composingText.convertTarget.isEmpty {
-                    commitText(composingText.convertTarget, to: client)
-                    resetComposition()
-                }
-                return false
+                return char
             }
         }
-
-        updateMarkedText(composingText.convertTarget, client: client)
-        return true
+        return nil
     }
 
     // MARK: - Client Communication

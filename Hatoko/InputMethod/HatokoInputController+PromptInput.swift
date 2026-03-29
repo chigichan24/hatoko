@@ -132,22 +132,16 @@ extension HatokoInputController {
             promptConfirmCandidate(candidate)
         }
 
-        for char in characters {
-            if let mapped = Self.hankakuToZenkakuMap[char] {
-                composingText.insertAtCursorPosition(String(mapped), inputStyle: .direct)
-            } else if char.isASCII, char.isLetter {
-                composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
-            } else {
-                // In prompt mode, non-letter characters (digits, symbols) are captured
-                // into promptBuffer rather than passed through to the system.
-                if !composingText.convertTarget.isEmpty {
-                    promptBuffer.append(composingText.convertTarget)
-                    resetComposition()
-                }
-                promptBuffer.append(char)
-                updatePromptMarkedText(client: client)
-                return true
+        // In prompt mode, non-letter characters (digits, symbols) are captured
+        // into promptBuffer rather than passed through to the system.
+        if let remaining = insertCharactersIntoComposition(characters) {
+            if !composingText.convertTarget.isEmpty {
+                promptBuffer.append(composingText.convertTarget)
+                resetComposition()
             }
+            promptBuffer.append(remaining)
+            updatePromptMarkedText(client: client)
+            return true
         }
 
         updatePromptMarkedText(client: client)

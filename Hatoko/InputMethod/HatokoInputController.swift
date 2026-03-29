@@ -316,8 +316,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func sendChatMessage(_ message: String, previousPrompt: String) {
-        let apiKey = KeychainHelper.load(key: "claude_api_key") ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
-        let service = ClaudeService(apiKey: apiKey)
+        let service = LLMBackend.current.createService()
 
         // Build conversation history from chat messages
         var llmMessages = [
@@ -466,8 +465,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // MARK: - LLM Generation
 
     private func requestLLMGeneration(prompt: String, cursorOrigin: NSPoint) {
-        let apiKey = KeychainHelper.load(key: "claude_api_key") ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
-        let service = ClaudeService(apiKey: apiKey)
+        let service = LLMBackend.current.createService()
 
         Task {
             do {

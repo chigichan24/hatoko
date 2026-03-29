@@ -54,6 +54,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
     private func resolvedCLIPath() -> String {
         // Common installation paths for Claude CLI
         let candidates = [
+            NSString("~/.local/bin/claude").expandingTildeInPath,
             "/usr/local/bin/claude",
             "/opt/homebrew/bin/claude",
             NSString("~/.claude/local/claude").expandingTildeInPath,

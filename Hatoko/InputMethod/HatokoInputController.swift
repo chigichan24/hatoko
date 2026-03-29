@@ -19,9 +19,12 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         static let escape: UInt16 = 53
         static let space: UInt16 = 49
         static let tab: UInt16 = 48
+        static let arrowUp: UInt16 = 126
+        static let arrowDown: UInt16 = 125
     }
 
     private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
+    private static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、"]
     private static let llmSystemPrompt = """
         You are an IME assistant. Generate the text the user is asking for. \
         Respond ONLY with the generated text, no explanations.
@@ -29,6 +32,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private var inputMode: InputMode = .japanese
     private var composingText = ComposingText()
+    private var japaneseInputState: JapaneseInputState = .composing
     private let conversionService = ConversionService()
 
     // LLM prompt state
@@ -387,6 +391,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return false
         }
 
+        let isShift = modifiers.contains(.shift)
+
         switch event.keyCode {
         case KeyCode.enter:
             return handleEnter(client: client)
@@ -395,13 +401,20 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         case KeyCode.escape:
             return handleEscape(client: client)
         case KeyCode.space:
-            return handleSpace(client: client)
+            return handleSpace(client: client, reverse: isShift)
+        case KeyCode.arrowDown, KeyCode.arrowUp:
+            guard japaneseInputState.isConverting else { return false }
+            return cycleCandidate(reverse: event.keyCode == KeyCode.arrowUp, client: client)
         default:
             return handleCharacterInput(event: event, client: client)
         }
     }
 
     private func handleEnter(client: any IMKTextInput) -> Bool {
+        if let candidate = japaneseInputState.selectedCandidate {
+            confirmCandidate(candidate, client: client)
+            return true
+        }
         guard !composingText.convertTarget.isEmpty else { return false }
         commitText(composingText.convertTarget, to: client)
         resetComposition()
@@ -410,34 +423,57 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func handleBackspace(client: any IMKTextInput) -> Bool {
         guard !composingText.convertTarget.isEmpty else { return false }
+        if japaneseInputState.isConverting {
+            japaneseInputState = .composing
+            updateMarkedText(composingText.convertTarget, client: client)
+            return true
+        }
         composingText.deleteBackwardFromCursorPosition(count: 1)
         if composingText.convertTarget.isEmpty {
             resetComposition()
             clearMarkedText(client: client)
         } else {
-            updateMarkedText(client: client)
+            updateMarkedText(composingText.convertTarget, client: client)
         }
         return true
     }
 
     private func handleEscape(client: any IMKTextInput) -> Bool {
         guard !composingText.convertTarget.isEmpty else { return false }
+        if japaneseInputState.isConverting {
+            japaneseInputState = .composing
+            updateMarkedText(composingText.convertTarget, client: client)
+            return true
+        }
         resetComposition()
         clearMarkedText(client: client)
         return true
     }
 
-    private func handleSpace(client: any IMKTextInput) -> Bool {
-        guard !composingText.convertTarget.isEmpty else { return false }
-        let result = conversionService.requestCandidates(
-            composingText: composingText,
-            options: convertOptions
-        )
-        if let topCandidate = result.mainResults.first {
-            commitText(topCandidate.text, to: client)
-            composingText.prefixComplete(composingCount: topCandidate.composingCount)
-            resetComposition()
+    private func handleSpace(client: any IMKTextInput, reverse: Bool) -> Bool {
+        switch japaneseInputState {
+        case .composing:
+            guard !composingText.convertTarget.isEmpty else { return false }
+            let candidates = conversionService.requestCandidates(
+                composingText: composingText,
+                options: convertOptions
+            ).mainResults
+            guard let first = candidates.first else { return true }
+            japaneseInputState = .converting(candidates: candidates, selectedIndex: 0)
+            updateMarkedText(first.text, style: .thick, client: client)
+            return true
+        case .converting:
+            return cycleCandidate(reverse: reverse, client: client)
         }
+    }
+
+    private func cycleCandidate(reverse: Bool, client: any IMKTextInput) -> Bool {
+        japaneseInputState = japaneseInputState.cycled(reverse: reverse)
+        guard let candidate = japaneseInputState.selectedCandidate else {
+            assertionFailure("cycleCandidate called in non-converting state")
+            return false
+        }
+        updateMarkedText(candidate.text, style: .thick, client: client)
         return true
     }
 
@@ -446,22 +482,35 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return false
         }
 
+        if let candidate = japaneseInputState.selectedCandidate {
+            confirmCandidate(candidate, client: client)
+        }
+
         for char in characters {
-            guard char.isASCII, char.isLetter || char == "-" else {
+            if let mapped = Self.hankakuToZenkakuMap[char] {
+                composingText.insertAtCursorPosition(String(mapped), inputStyle: .direct)
+            } else if char.isASCII, char.isLetter {
+                composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
+            } else {
                 if !composingText.convertTarget.isEmpty {
                     commitText(composingText.convertTarget, to: client)
                     resetComposition()
                 }
                 return false
             }
-            composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
         }
 
-        updateMarkedText(client: client)
+        updateMarkedText(composingText.convertTarget, client: client)
         return true
     }
 
     // MARK: - Client Communication
+
+    private func confirmCandidate(_ candidate: Candidate, client: any IMKTextInput) {
+        commitText(candidate.text, to: client)
+        composingText.prefixComplete(composingCount: candidate.composingCount)
+        resetComposition()
+    }
 
     private func commitText(_ text: String, to client: any IMKTextInput) {
         client.insertText(text, replacementRange: Self.noReplacementRange)
@@ -475,12 +524,15 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         )
     }
 
-    private func updateMarkedText(client: any IMKTextInput) {
-        let text = composingText.convertTarget
+    private func updateMarkedText(
+        _ text: String,
+        style: NSUnderlineStyle = .single,
+        client: any IMKTextInput
+    ) {
         let attributed = NSAttributedString(
             string: text,
             attributes: [
-                .underlineStyle: NSUnderlineStyle.single.rawValue,
+                .underlineStyle: style.rawValue,
                 .foregroundColor: NSColor.textColor,
             ]
         )
@@ -529,7 +581,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     // MARK: - State Management
-
     private func commitCurrentText(_ sender: Any?) {
         guard !composingText.convertTarget.isEmpty else { return }
         guard let client = (sender as? (any IMKTextInput)) ?? self.client() else {
@@ -537,12 +588,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             resetComposition()
             return
         }
-        commitText(composingText.convertTarget, to: client)
+        commitText(japaneseInputState.selectedCandidate?.text ?? composingText.convertTarget, to: client)
         resetComposition()
     }
 
     private func resetComposition() {
         composingText = ComposingText()
+        japaneseInputState = .composing
         conversionService.stopComposition()
     }
 }

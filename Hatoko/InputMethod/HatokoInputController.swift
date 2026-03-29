@@ -37,9 +37,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // LLM prompt state
     var promptBuffer = ""
-    var llmSuggestion: String?
+    private var llmSuggestion: String?
     let inlineSuggestionWindow = InlineSuggestionWindow()
-    let chatWindowController = ChatWindowController()
+    private let chatWindowController = ChatWindowController()
     var lastCursorOrigin: NSPoint = .zero
 
     lazy var convertOptions: ConvertRequestOptions = {

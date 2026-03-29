@@ -36,8 +36,12 @@ final class ClaudeService: LLMService, Sendable {
 
     // MARK: - Internal helpers exposed for testing
 
-    // swiftlint:disable:next force_unwrapping
-    private static let apiURL = URL(string: "https://api.anthropic.com/v1/messages")!
+    private static let apiURL: URL = {
+        guard let url = URL(string: "https://api.anthropic.com/v1/messages") else {
+            fatalError("Invalid API URL literal")
+        }
+        return url
+    }()
 
     func buildRequest(messages: [LLMMessage], systemPrompt: String?) throws -> URLRequest {
         var request = URLRequest(url: Self.apiURL)

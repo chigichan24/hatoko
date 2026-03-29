@@ -45,10 +45,11 @@ echo "  Copied to ${INSTALL_DIR}/${APP_NAME}"
 echo "[4/4] Launching..."
 open "${INSTALL_DIR}/${APP_NAME}"
 
+# 6. Enable input source via TIS API
+echo "[5/5] Registering input source..."
+sleep 1
+swift scripts/enable-input-source.swift
+
 echo ""
 echo "=== Done! ==="
-echo "Next steps:"
-echo "  1. Open System Settings → Keyboard → Input Sources"
-echo "  2. Click '+' and add 'Hatoko'"
-echo "  3. Select Hatoko from the menu bar input source"
-echo "  4. Try typing in any text field"
+echo "Select Hatoko from the menu bar input source to start using it."

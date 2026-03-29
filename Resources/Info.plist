@@ -34,12 +34,37 @@
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
+			<key>com.chigichan24.inputmethod.Hatoko.Roman</key>
+			<dict>
+				<key>TISInputSourceID</key>
+				<string>com.chigichan24.inputmethod.Hatoko.Roman</string>
+				<key>TISIntendedLanguage</key>
+				<string>en</string>
+				<key>TISIconIsTemplate</key>
+				<true/>
+				<key>tsInputModeScriptKey</key>
+				<string>smRoman</string>
+				<key>tsInputModeDefaultStateKey</key>
+				<true/>
+				<key>tsInputModeIsVisibleKey</key>
+				<true/>
+				<key>tsInputModeMenuIconFileKey</key>
+				<string>en.tiff</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>en.tiff</string>
+				<key>tsInputModePaletteIconFileKey</key>
+				<string>en.tiff</string>
+				<key>tsInputModeJISKeyboardShortcutKey</key>
+				<integer>3</integer>
+			</dict>
 			<key>com.chigichan24.inputmethod.Hatoko.Japanese</key>
 			<dict>
 				<key>TISInputSourceID</key>
 				<string>com.chigichan24.inputmethod.Hatoko.Japanese</string>
 				<key>TISIntendedLanguage</key>
 				<string>ja</string>
+				<key>TISIconIsTemplate</key>
+				<true/>
 				<key>tsInputModeScriptKey</key>
 				<string>smJapanese</string>
 				<key>tsInputModeDefaultStateKey</key>
@@ -50,29 +75,27 @@
 				<true/>
 				<key>tsInputModeIsVisibleKey</key>
 				<true/>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>main</string>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>main</string>
-			</dict>
-			<key>com.chigichan24.inputmethod.Hatoko.Roman</key>
-			<dict>
-				<key>TISInputSourceID</key>
-				<string>com.chigichan24.inputmethod.Hatoko.Roman</string>
-				<key>TISIntendedLanguage</key>
-				<string>en</string>
-				<key>tsInputModeScriptKey</key>
-				<string>smRoman</string>
-				<key>tsInputModeDefaultStateKey</key>
-				<true/>
-				<key>tsInputModeIsVisibleKey</key>
-				<true/>
+				<string>main.tiff</string>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>en</string>
-				<key>tsInputModeMenuIconFileKey</key>
-				<string>en</string>
+				<string>main.tiff</string>
+				<key>tsInputModePaletteIconFileKey</key>
+				<string>main.tiff</string>
+				<key>tsInputMethodAlternateIconFileKey</key>
+				<string>main.tiff</string>
+				<key>tsInputModeKeyEquivalentModifiersKey</key>
+				<integer>4608</integer>
+				<key>tsInputModeKeyEquivalentKey</key>
+				<string>J</string>
+				<key>tsInputModeJISKeyboardShortcutKey</key>
+				<integer>1</integer>
 			</dict>
 		</dict>
+		<key>tsVisibleInputModeOrderedArrayKey</key>
+		<array>
+			<string>com.apple.inputmethod.Japanese</string>
+			<string>com.apple.inputmethod.Roman</string>
+		</array>
 	</dict>
 </dict>
 </plist>

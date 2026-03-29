@@ -410,16 +410,14 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func handleEnter(client: any IMKTextInput) -> Bool {
-        switch japaneseInputState {
-        case .composing:
-            guard !composingText.convertTarget.isEmpty else { return false }
-            commitText(composingText.convertTarget, to: client)
-            resetComposition()
-            return true
-        case .converting(let candidates, let index):
-            confirmCandidate(candidates[index], client: client)
+        if let candidate = japaneseInputState.selectedCandidate {
+            confirmCandidate(candidate, client: client)
             return true
         }
+        guard !composingText.convertTarget.isEmpty else { return false }
+        commitText(composingText.convertTarget, to: client)
+        resetComposition()
+        return true
     }
 
     private func handleBackspace(client: any IMKTextInput) -> Bool {

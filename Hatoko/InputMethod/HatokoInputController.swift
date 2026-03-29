@@ -316,7 +316,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func sendChatMessage(_ message: String, previousPrompt: String) {
-        let service = LLMBackend.current.createService()
+        let service: any LLMService
+        do {
+            service = try LLMBackend.current.createService()
+        } catch {
+            NSLog("[Hatoko] LLM backend configuration error: \(error)")
+            return
+        }
 
         // Build conversation history from chat messages
         var llmMessages = [
@@ -465,7 +471,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // MARK: - LLM Generation
 
     private func requestLLMGeneration(prompt: String, cursorOrigin: NSPoint) {
-        let service = LLMBackend.current.createService()
+        let service: any LLMService
+        do {
+            service = try LLMBackend.current.createService()
+        } catch {
+            NSLog("[Hatoko] LLM backend configuration error: \(error)")
+            return
+        }
 
         Task {
             do {

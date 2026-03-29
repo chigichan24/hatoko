@@ -36,12 +36,14 @@ enum LLMBackend: String, CaseIterable, Sendable {
         }
     }
 
-    func createService() -> any LLMService {
+    func createService() throws -> any LLMService {
         switch self {
         case .claudeAPI:
-            let apiKey = KeychainHelper.load(key: Self.apiKeyKeychainKey)
-                ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"]
-                ?? ""
+            guard let apiKey = KeychainHelper.load(key: Self.apiKeyKeychainKey)
+                ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"],
+                  !apiKey.isEmpty else {
+                throw LLMBackendError.apiKeyNotConfigured
+            }
             return ClaudeService(apiKey: apiKey)
         case .claudeCLI:
             let path = UserDefaults.standard.string(forKey: Self.cliPathDefaultsKey) ?? resolvedCLIPath()
@@ -63,4 +65,8 @@ enum LLMBackend: String, CaseIterable, Sendable {
         }
         return "claude"
     }
+}
+
+enum LLMBackendError: Error {
+    case apiKeyNotConfigured
 }

@@ -41,7 +41,9 @@
 				<key>TISIntendedLanguage</key>
 				<string>en</string>
 				<key>TISIconIsTemplate</key>
-				<true/>
+				<false/>
+				<key>tsInputModeMenuNameKey</key>
+				<string>Alphabet</string>
 				<key>tsInputModeScriptKey</key>
 				<string>smRoman</string>
 				<key>tsInputModeDefaultStateKey</key>
@@ -64,7 +66,9 @@
 				<key>TISIntendedLanguage</key>
 				<string>ja</string>
 				<key>TISIconIsTemplate</key>
-				<true/>
+				<false/>
+				<key>tsInputModeMenuNameKey</key>
+				<string>Hiragana</string>
 				<key>tsInputModeScriptKey</key>
 				<string>smJapanese</string>
 				<key>tsInputModeDefaultStateKey</key>
@@ -93,8 +97,8 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>com.apple.inputmethod.Japanese</string>
-			<string>com.apple.inputmethod.Roman</string>
+			<string>com.chigichan24.inputmethod.Hatoko.Japanese</string>
+			<string>com.chigichan24.inputmethod.Hatoko.Roman</string>
 		</array>
 	</dict>
 </dict>

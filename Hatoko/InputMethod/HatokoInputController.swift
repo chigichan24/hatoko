@@ -116,6 +116,20 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         return handleJapaneseInput(event: event, client: client)
     }
 
+    override func menu() -> NSMenu! {
+        let menu = NSMenu()
+        let settingsItem = NSMenuItem(title: "Hatoko 設定...", action: #selector(openSettings), keyEquivalent: "")
+        settingsItem.target = self
+        menu.addItem(settingsItem)
+        return menu
+    }
+
+    @objc private func openSettings() {
+        MainActor.assumeIsolated {
+            SettingsWindowController.shared.showSettings()
+        }
+    }
+
     override func commitComposition(_ sender: Any!) {
         cancelLLMMode()
         commitCurrentText(sender)
@@ -302,7 +316,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func sendChatMessage(_ message: String, previousPrompt: String) {
-        let apiKey = ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
+        let apiKey = KeychainHelper.load(key: "claude_api_key") ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
         let service = ClaudeService(apiKey: apiKey)
 
         // Build conversation history from chat messages
@@ -452,7 +466,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // MARK: - LLM Generation
 
     private func requestLLMGeneration(prompt: String, cursorOrigin: NSPoint) {
-        let apiKey = ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
+        let apiKey = KeychainHelper.load(key: "claude_api_key") ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"] ?? ""
         let service = ClaudeService(apiKey: apiKey)
 
         Task {

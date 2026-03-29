@@ -13,7 +13,7 @@ import KanaKanjiConverterModuleWithDefaultDictionary
 @objc(HatokoInputController)
 final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
-    private enum KeyCode {
+    enum KeyCode {
         static let enter: UInt16 = 36
         static let backspace: UInt16 = 51
         static let escape: UInt16 = 53
@@ -23,26 +23,26 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         static let arrowDown: UInt16 = 125
     }
 
-    private static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
-    private static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、"]
+    static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
+    static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、"]
     private static let llmSystemPrompt = """
         You are an IME assistant. Generate the text the user is asking for. \
         Respond ONLY with the generated text, no explanations.
         """
 
-    private var inputMode: InputMode = .japanese
-    private var composingText = ComposingText()
-    private var japaneseInputState: JapaneseInputState = .composing
-    private let conversionService = ConversionService()
+    var inputMode: InputMode = .japanese
+    var composingText = ComposingText()
+    var japaneseInputState: JapaneseInputState = .composing
+    let conversionService = ConversionService()
 
     // LLM prompt state
-    private var promptBuffer = ""
+    var promptBuffer = ""
     private var llmSuggestion: String?
-    private let inlineSuggestionWindow = InlineSuggestionWindow()
+    let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
-    private var lastCursorOrigin: NSPoint = .zero
+    var lastCursorOrigin: NSPoint = .zero
 
-    private lazy var convertOptions: ConvertRequestOptions = {
+    lazy var convertOptions: ConvertRequestOptions = {
         let dir = applicationSupportDirectory()
         return ConvertRequestOptions(
             N_best: 9,
@@ -90,14 +90,16 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func deactivateServer(_ sender: Any!) {
-        cancelLLMMode()
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         super.deactivateServer(sender)
     }
 
     override func setValue(_ value: Any!, forTag tag: Int, client sender: Any!) {
         guard let value = value as? String else { return }
-        cancelLLMMode()
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         inputMode = InputMode(modeIdentifier: value)
         super.setValue(value, forTag: tag, client: sender)
@@ -159,7 +161,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     override func commitComposition(_ sender: Any!) {
-        cancelLLMMode()
+        let client = (sender as? (any IMKTextInput)) ?? self.client()
+        cancelLLMMode(client: client)
         commitCurrentText(sender)
         super.commitComposition(sender)
     }
@@ -171,107 +174,22 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }
 
-    private func activateLLMMode(client: any IMKTextInput) {
-        // Commit any in-progress Japanese text first
-        if !composingText.convertTarget.isEmpty {
-            commitText(composingText.convertTarget, to: client)
-            resetComposition()
-        }
-        inputMode = .llmPrompt
-        promptBuffer = ""
-        updatePromptMarkedText(client: client)
-    }
-
-    private func cancelLLMMode() {
+    func cancelLLMMode(client: (any IMKTextInput)? = nil) {
         if inputMode == .llmPrompt || inlineSuggestionWindow.isVisible || chatWindowController.isVisible {
             inlineSuggestionWindow.hide()
             chatWindowController.hide()
-            inputMode = .japanese
-            promptBuffer = ""
-            llmSuggestion = nil
+            resetComposition()
+            resetLLMState()
+            if let client {
+                clearMarkedText(client: client)
+            }
         }
     }
 
-    // MARK: - Prompt Input Handling
-
-    private func handlePromptInput(event: NSEvent, client: any IMKTextInput) -> Bool {
-        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-
-        if !modifiers.subtracting(.shift).isEmpty {
-            return false
-        }
-
-        switch event.keyCode {
-        case KeyCode.enter:
-            return handlePromptSubmit(client: client)
-        case KeyCode.backspace:
-            return handlePromptBackspace(client: client)
-        case KeyCode.escape:
-            return handlePromptEscape(client: client)
-        default:
-            return handlePromptCharacter(event: event, client: client)
-        }
-    }
-
-    private func handlePromptSubmit(client: any IMKTextInput) -> Bool {
-        guard !promptBuffer.isEmpty else { return true }
-
-        // Clear marked text
-        clearMarkedText(client: client)
-
-        // Show loading indicator at cursor position
-        let cursorOrigin = cursorScreenPosition(client: client)
-        lastCursorOrigin = cursorOrigin
-        inlineSuggestionWindow.showLoading(at: cursorOrigin)
-
-        let prompt = promptBuffer
-
-        // Request LLM generation
-        requestLLMGeneration(prompt: prompt, cursorOrigin: cursorOrigin)
-
-        return true
-    }
-
-    private func handlePromptBackspace(client: any IMKTextInput) -> Bool {
-        if promptBuffer.isEmpty {
-            cancelLLMMode()
-            clearMarkedText(client: client)
-            return true
-        }
-        promptBuffer.removeLast()
-        updatePromptMarkedText(client: client)
-        return true
-    }
-
-    private func handlePromptEscape(client: any IMKTextInput) -> Bool {
-        cancelLLMMode()
-        clearMarkedText(client: client)
-        return true
-    }
-
-    private func handlePromptCharacter(event: NSEvent, client: any IMKTextInput) -> Bool {
-        guard let characters = event.characters, !characters.isEmpty else {
-            return false
-        }
-        promptBuffer.append(characters)
-        updatePromptMarkedText(client: client)
-        return true
-    }
-
-    private func updatePromptMarkedText(client: any IMKTextInput) {
-        let display = "✦ \(promptBuffer)"
-        let attributed = NSAttributedString(
-            string: display,
-            attributes: [
-                .underlineStyle: NSUnderlineStyle.single.rawValue,
-                .foregroundColor: NSColor.systemPink,
-            ]
-        )
-        client.setMarkedText(
-            attributed,
-            selectionRange: NSRange(location: display.utf16.count, length: 0),
-            replacementRange: Self.noReplacementRange
-        )
+    private func resetLLMState() {
+        inputMode = .japanese
+        promptBuffer = ""
+        llmSuggestion = nil
     }
 
     // MARK: - Inline Suggestion Handling (Stage 1)
@@ -284,13 +202,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 commitText(suggestion, to: client)
             }
             inlineSuggestionWindow.hide()
-            inputMode = .japanese
-            promptBuffer = ""
-            llmSuggestion = nil
+            resetLLMState()
             return true
         case KeyCode.escape:
             // Cancel
-            cancelLLMMode()
+            cancelLLMMode(client: client)
             return true
         case KeyCode.tab:
             transitionToChat(client: client)
@@ -329,7 +245,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func handleChatInput(event: NSEvent, client: any IMKTextInput) -> Bool {
         if event.keyCode == KeyCode.escape {
-            cancelLLMMode()
+            cancelLLMMode(client: client)
             return true
         }
         // Let the chat window handle other keys via its own TextField
@@ -339,9 +255,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     private func acceptChatText(_ text: String, client: any IMKTextInput) {
         chatWindowController.hide()
         commitText(text, to: client)
-        inputMode = .japanese
-        promptBuffer = ""
-        llmSuggestion = nil
+        resetLLMState()
     }
 
     private func sendChatMessage(_ message: String, previousPrompt: String) {
@@ -469,10 +383,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     private func cycleCandidate(reverse: Bool, client: any IMKTextInput) -> Bool {
         japaneseInputState = japaneseInputState.cycled(reverse: reverse)
-        guard let candidate = japaneseInputState.selectedCandidate else {
-            assertionFailure("cycleCandidate called in non-converting state")
-            return false
-        }
+        // cycled() already asserts if called in composing state.
+        // This guard handles the Release-build fallback gracefully.
+        guard let candidate = japaneseInputState.selectedCandidate else { return false }
         updateMarkedText(candidate.text, style: .thick, client: client)
         return true
     }
@@ -486,22 +399,34 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             confirmCandidate(candidate, client: client)
         }
 
+        if insertCharactersIntoComposition(characters) != nil {
+            if !composingText.convertTarget.isEmpty {
+                commitText(composingText.convertTarget, to: client)
+                resetComposition()
+            }
+            return false
+        }
+
+        updateMarkedText(composingText.convertTarget, client: client)
+        return true
+    }
+
+    // MARK: - Shared Composition Helpers
+
+    /// Inserts characters into composingText using kana conversion rules.
+    /// Returns the first character that couldn't be classified (non-letter,
+    /// non-mapped), or nil if all characters were successfully inserted.
+    func insertCharactersIntoComposition(_ characters: String) -> Character? {
         for char in characters {
             if let mapped = Self.hankakuToZenkakuMap[char] {
                 composingText.insertAtCursorPosition(String(mapped), inputStyle: .direct)
             } else if char.isASCII, char.isLetter {
                 composingText.insertAtCursorPosition(String(char), inputStyle: .roman2kana)
             } else {
-                if !composingText.convertTarget.isEmpty {
-                    commitText(composingText.convertTarget, to: client)
-                    resetComposition()
-                }
-                return false
+                return char
             }
         }
-
-        updateMarkedText(composingText.convertTarget, client: client)
-        return true
+        return nil
     }
 
     // MARK: - Client Communication
@@ -512,11 +437,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetComposition()
     }
 
-    private func commitText(_ text: String, to client: any IMKTextInput) {
+    func commitText(_ text: String, to client: any IMKTextInput) {
         client.insertText(text, replacementRange: Self.noReplacementRange)
     }
 
-    private func clearMarkedText(client: any IMKTextInput) {
+    func clearMarkedText(client: any IMKTextInput) {
         client.setMarkedText(
             "",
             selectionRange: NSRange(location: 0, length: 0),
@@ -543,7 +468,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         )
     }
 
-    private func cursorScreenPosition(client: any IMKTextInput) -> NSPoint {
+    func cursorScreenPosition(client: any IMKTextInput) -> NSPoint {
         var rect = NSRect.zero
         client.attributes(forCharacterIndex: 0, lineHeightRectangle: &rect)
         return NSPoint(x: rect.origin.x, y: rect.origin.y - 4)
@@ -551,12 +476,14 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // MARK: - LLM Generation
 
-    private func requestLLMGeneration(prompt: String, cursorOrigin: NSPoint) {
+    func requestLLMGeneration(prompt: String, cursorOrigin: NSPoint) {
         let service: any LLMService
         do {
             service = try LLMBackend.current.createService()
         } catch {
             NSLog("[Hatoko] LLM backend configuration error: \(error)")
+            inlineSuggestionWindow.hide()
+            resetLLMState()
             return
         }
 
@@ -592,7 +519,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetComposition()
     }
 
-    private func resetComposition() {
+    func resetComposition() {
         composingText = ComposingText()
         japaneseInputState = .composing
         conversionService.stopComposition()

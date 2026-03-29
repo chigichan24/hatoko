@@ -79,6 +79,14 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     override func activateServer(_ sender: Any!) {
         super.activateServer(sender)
         resetComposition()
+        if let client = sender as? (any IMKTextInput) {
+            client.overrideKeyboard(withKeyboardNamed: "com.apple.keylayout.US")
+        }
+    }
+
+    override func recognizedEvents(_ sender: Any!) -> Int {
+        let events: NSEvent.EventTypeMask = [.keyDown, .flagsChanged]
+        return Int(events.rawValue)
     }
 
     override func deactivateServer(_ sender: Any!) {

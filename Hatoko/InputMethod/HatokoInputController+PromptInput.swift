@@ -12,7 +12,7 @@ extension HatokoInputController {
             commitText(composingText.convertTarget, to: client)
             resetComposition()
         }
-        llmBaseMode = inputMode
+        llmBaseMode = LLMBaseMode(from: inputMode)
         inputMode = .llmPrompt
         promptBuffer = ""
         updatePromptMarkedText(client: client)
@@ -212,7 +212,7 @@ extension HatokoInputController {
             promptBuffer.append(composingText.convertTarget)
             resetComposition()
         }
-        llmBaseMode = (llmBaseMode == .japanese) ? .roman : .japanese
+        llmBaseMode = llmBaseMode.toggled
         updatePromptMarkedText(client: client)
     }
 

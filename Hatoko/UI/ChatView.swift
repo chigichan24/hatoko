@@ -52,7 +52,7 @@ struct ChatView: View {
             Spacer()
             Text("Esc で閉じる")
                 .font(.caption)
-                .foregroundStyle(.tertiary)
+                .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)

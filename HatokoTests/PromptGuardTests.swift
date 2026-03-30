@@ -26,9 +26,10 @@ struct PromptGuardTests {
 
     @Test
     func overMaxPromptLength() {
-        let longString = String(repeating: "a", count: PromptGuard.maxPromptLength + 1)
+        let length = PromptGuard.maxPromptLength + 500
+        let longString = String(repeating: "a", count: length)
         let result = PromptGuard.validate(longString)
-        #expect(result == .tooLong(length: PromptGuard.maxPromptLength + 1, limit: PromptGuard.maxPromptLength))
+        #expect(result == .tooLong(length: length, limit: PromptGuard.maxPromptLength))
     }
 
     @Test

@@ -47,22 +47,14 @@ extension HatokoInputController {
     }
 
     private func handlePromptEnter(client: any IMKTextInput) -> Bool {
-        // (a) If converting, confirm the selected candidate into promptBuffer
-        if let candidate = japaneseInputState.selectedCandidate {
-            promptConfirmCandidate(candidate)
+        // (a) If converting or composing, flush to promptBuffer
+        if japaneseInputState.isConverting || !composingText.convertTarget.isEmpty {
+            flushCompositionToPromptBuffer()
             updatePromptMarkedText(client: client)
             return true
         }
 
-        // (b) If composing, confirm composing text into promptBuffer
-        if !composingText.convertTarget.isEmpty {
-            promptBuffer.append(composingText.convertTarget)
-            resetComposition()
-            updatePromptMarkedText(client: client)
-            return true
-        }
-
-        // (c) Nothing being composed — submit the full prompt to LLM
+        // (b) Nothing being composed — submit the full prompt to LLM
         let validation = PromptGuard.validate(promptBuffer)
         switch validation {
         case .valid(let prompt):
@@ -198,6 +190,15 @@ extension HatokoInputController {
         guard japaneseInputState.selectedCandidate != nil else { return false }
         updatePromptMarkedText(client: client)
         return true
+    }
+
+    private func flushCompositionToPromptBuffer() {
+        if let candidate = japaneseInputState.selectedCandidate {
+            promptConfirmCandidate(candidate)
+        } else if !composingText.convertTarget.isEmpty {
+            promptBuffer.append(composingText.convertTarget)
+            resetComposition()
+        }
     }
 
     private func promptConfirmCandidate(_ candidate: Candidate) {

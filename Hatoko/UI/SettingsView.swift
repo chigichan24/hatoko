@@ -68,6 +68,8 @@ struct SettingsView: View {
             Section("キーバインド") {
                 Text("Ctrl + Space: LLMアシストモード")
                     .foregroundStyle(.secondary)
+                Text("Ctrl + Space (LLM入力中): 日本語/英語切替")
+                    .foregroundStyle(.secondary)
             }
         }
         .formStyle(.grouped)

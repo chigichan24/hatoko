@@ -10,27 +10,34 @@ enum WindowPositioning {
     /// cursor rect, with a small gap. If the window would extend beyond the
     /// screen edges, it is clamped to remain fully visible.
     static func origin(for windowSize: NSSize, cursorRect: NSRect) -> NSPoint {
-        let screen = NSScreen.screens.first { $0.frame.contains(cursorRect.origin) }
-            ?? NSScreen.main ?? NSScreen.screens[0]
-        let visibleFrame = screen.visibleFrame
+        guard let screen = NSScreen.screens.first(where: { $0.frame.contains(cursorRect.origin) })
+            ?? NSScreen.main
+            ?? NSScreen.screens.first else {
+            return NSPoint(x: cursorRect.maxX + cursorGap,
+                           y: cursorRect.minY - cursorGap - windowSize.height)
+        }
+        return origin(for: windowSize, cursorRect: cursorRect, screenFrame: screen.visibleFrame)
+    }
 
+    /// Calculates origin with an explicit screen frame. Exposed for testing.
+    static func origin(for windowSize: NSSize, cursorRect: NSRect, screenFrame: NSRect) -> NSPoint {
         var x = cursorRect.maxX + cursorGap
         var y = cursorRect.minY - cursorGap - windowSize.height
 
-        if y < visibleFrame.minY {
+        if y < screenFrame.minY {
             y = cursorRect.maxY + cursorGap
         }
 
-        if y + windowSize.height > visibleFrame.maxY {
-            y = visibleFrame.maxY - windowSize.height
+        if y + windowSize.height > screenFrame.maxY {
+            y = screenFrame.maxY - windowSize.height
         }
 
-        if x + windowSize.width > visibleFrame.maxX {
-            x = visibleFrame.maxX - windowSize.width
+        if x + windowSize.width > screenFrame.maxX {
+            x = screenFrame.maxX - windowSize.width
         }
 
-        if x < visibleFrame.minX {
-            x = visibleFrame.minX
+        if x < screenFrame.minX {
+            x = screenFrame.minX
         }
 
         return NSPoint(x: x, y: y)

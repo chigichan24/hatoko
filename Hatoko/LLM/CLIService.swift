@@ -13,6 +13,8 @@ final class CLIService: LLMService, Sendable {
         return try await runCLI(prompt: prompt)
     }
 
+    // MARK: - Internal helpers exposed for testing
+
     func buildPrompt(messages: [LLMMessage], systemPrompt: String?) -> String {
         var parts: [String] = []
         if let systemPrompt {

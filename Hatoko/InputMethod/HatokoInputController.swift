@@ -127,6 +127,15 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
         NSLog("[Hatoko] handle: keyCode=%d chars=%@ mode=%@", event.keyCode, event.characters ?? "nil", "\(inputMode)")
 
+        // Open settings with ⌘,
+        if event.keyCode == KeyCode.comma
+            && event.modifierFlags.intersection(.deviceIndependentFlagsMask) == .command {
+            MainActor.assumeIsolated {
+                SettingsWindowController.shared.showSettings()
+            }
+            return true
+        }
+
         // Handle chat window interactions (Stage 2)
         if chatWindowController.isVisible {
             return handleChatInput(event: event, client: client)

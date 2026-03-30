@@ -6,4 +6,5 @@ enum KeyCode {
     static let tab: UInt16 = 48
     static let arrowUp: UInt16 = 126
     static let arrowDown: UInt16 = 125
+    static let comma: UInt16 = 43
 }

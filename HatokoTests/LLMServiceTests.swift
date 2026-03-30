@@ -145,4 +145,12 @@ struct CLIServiceTests {
         #expect(!prompt.contains("[END SYSTEM INSTRUCTIONS]"))
         #expect(prompt.contains("[CONVERSATION START]"))
     }
+
+    @Test
+    func buildPromptWithEmptyMessages() {
+        let service = CLIService()
+        let prompt = service.buildPrompt(messages: [], systemPrompt: nil)
+
+        #expect(prompt == "[CONVERSATION START]")
+    }
 }

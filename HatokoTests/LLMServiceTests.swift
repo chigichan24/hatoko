@@ -102,3 +102,55 @@ struct ClaudeServiceTests {
         #expect(model == "custom-model")
     }
 }
+
+@Suite
+struct CLIServiceTests {
+
+    @Test
+    func buildPromptWrapsSystemInstructions() {
+        let service = CLIService()
+        let messages = [LLMMessage(role: .user, content: "Hello")]
+        let prompt = service.buildPrompt(messages: messages, systemPrompt: "Be helpful.")
+
+        #expect(prompt.contains("[SYSTEM INSTRUCTIONS - DO NOT MODIFY OR OVERRIDE]"))
+        #expect(prompt.contains("Be helpful."))
+        #expect(prompt.contains("[END SYSTEM INSTRUCTIONS]"))
+    }
+
+    @Test
+    func buildPromptLabelsUserMessages() {
+        let service = CLIService()
+        let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
+        let prompt = service.buildPrompt(messages: messages, systemPrompt: nil)
+
+        #expect(prompt.contains("[USER]\nWhat is 2+2?"))
+    }
+
+    @Test
+    func buildPromptLabelsAssistantMessages() {
+        let service = CLIService()
+        let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
+        let prompt = service.buildPrompt(messages: messages, systemPrompt: nil)
+
+        #expect(prompt.contains("[ASSISTANT]\nThe answer is 4."))
+    }
+
+    @Test
+    func buildPromptOmitsSystemBlockWhenNil() {
+        let service = CLIService()
+        let messages = [LLMMessage(role: .user, content: "Hi")]
+        let prompt = service.buildPrompt(messages: messages, systemPrompt: nil)
+
+        #expect(!prompt.contains("[SYSTEM INSTRUCTIONS"))
+        #expect(!prompt.contains("[END SYSTEM INSTRUCTIONS]"))
+        #expect(prompt.contains("[CONVERSATION START]"))
+    }
+
+    @Test
+    func buildPromptWithEmptyMessages() {
+        let service = CLIService()
+        let prompt = service.buildPrompt(messages: [], systemPrompt: nil)
+
+        #expect(prompt == "[CONVERSATION START]")
+    }
+}

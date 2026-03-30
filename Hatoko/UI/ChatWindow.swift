@@ -30,10 +30,19 @@ private class KeyablePanel: NSPanel {
 /// keyboard focus. This causes transient IME deactivation, which
 /// is handled by `HatokoInputController.deactivateServer` skipping
 /// `cancelLLMMode` when the chat window is visible.
+///
+/// Public methods are `nonisolated` with `MainActor.assumeIsolated`
+/// because they are called from IMKInputController (which always runs
+/// on main thread) but cannot be statically proven to be MainActor-isolated.
 @preconcurrency @MainActor
 final class ChatWindowController {
 
-    private var window: NSPanel?
+    private struct ActivePanel {
+        let panel: KeyablePanel
+        let hostingController: NSHostingController<ChatView>
+    }
+
+    private var activePanel: ActivePanel?
     private var messages: [ChatMessage] = []
     private var isLoading = false
     private var inputText = ""
@@ -83,8 +92,8 @@ final class ChatWindowController {
 
     nonisolated func hide() {
         MainActor.assumeIsolated {
-            self.window?.orderOut(nil)
-            self.window = nil
+            self.activePanel?.panel.orderOut(nil)
+            self.activePanel = nil
             self.messages = []
             self.onUseText = nil
             self.onSendMessage = nil
@@ -94,15 +103,14 @@ final class ChatWindowController {
 
     nonisolated var isVisible: Bool {
         MainActor.assumeIsolated {
-            self.window?.isVisible ?? false
+            self.activePanel?.panel.isVisible ?? false
         }
     }
 
     // MARK: - Window Management
 
-    private func updateWindow(cursorRect: NSRect) {
-        lastCursorRect = cursorRect
-        let chatView = ChatView(
+    private func makeChatView() -> ChatView {
+        ChatView(
             messages: messages,
             isLoading: isLoading,
             inputText: Binding(
@@ -113,11 +121,32 @@ final class ChatWindowController {
             onUse: { [weak self] text in self?.handleUse(text) },
             onCancel: { [weak self] in self?.handleCancel() }
         )
+    }
 
-        let hostingView = NSHostingView(rootView: chatView)
-        hostingView.frame.size = hostingView.fittingSize
+    private func updateWindow(cursorRect: NSRect) {
+        lastCursorRect = cursorRect
+        let chatView = makeChatView()
 
-        let size = hostingView.fittingSize
+        if let active = activePanel, active.panel.isVisible {
+            active.hostingController.rootView = chatView
+            active.hostingController.view.layoutSubtreeIfNeeded()
+            let size = active.hostingController.view.fittingSize
+            active.panel.setContentSize(size)
+            let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
+            active.panel.setFrameOrigin(origin)
+            return
+        }
+
+        // Clean up stale panel before creating a new one
+        activePanel?.panel.orderOut(nil)
+        activePanel = nil
+        createPanel(chatView: chatView, cursorRect: cursorRect)
+    }
+
+    private func createPanel(chatView: ChatView, cursorRect: NSRect) {
+        let controller = NSHostingController(rootView: chatView)
+        controller.view.layoutSubtreeIfNeeded()
+        let size = controller.view.fittingSize
         let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
 
         let panel = KeyablePanel(
@@ -129,13 +158,12 @@ final class ChatWindowController {
         panel.level = .popUpMenu
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.hasShadow = true
-        panel.contentView = hostingView
+        panel.hasShadow = false
+        panel.contentViewController = controller
         panel.onEscape = { [weak self] in self?.handleCancel() }
         panel.makeKeyAndOrderFront(nil)
 
-        window?.orderOut(nil)
-        window = panel
+        activePanel = ActivePanel(panel: panel, hostingController: controller)
     }
 
     private func refreshContent() {

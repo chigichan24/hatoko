@@ -15,6 +15,7 @@ struct SettingsView: View {
                 Text("Hatoko 設定")
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .accessibilityAddTraits(.isHeader)
             }
 
             Section("LLM バックエンド") {
@@ -39,6 +40,7 @@ struct SettingsView: View {
                 Section("Claude API") {
                     SecureField("API Key", text: $apiKey)
                         .textFieldStyle(.roundedBorder)
+                        .accessibilityLabel("Claude API キー")
                     Button("保存") {
                         saveAPIKey()
                     }
@@ -55,6 +57,7 @@ struct SettingsView: View {
                 Section("Claude CLI") {
                     TextField("パス", text: $cliPath, prompt: Text("自動検出"))
                         .textFieldStyle(.roundedBorder)
+                        .accessibilityLabel("Claude CLI パス")
                     Button("保存") {
                         saveCLIPath()
                     }

@@ -127,6 +127,14 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
         NSLog("[Hatoko] handle: keyCode=%d chars=%@ mode=%@", event.keyCode, event.characters ?? "nil", "\(inputMode)")
 
+        // Open settings with ⌘,
+        if isCommandComma(event: event) {
+            MainActor.assumeIsolated {
+                SettingsWindowController.shared.showSettings()
+            }
+            return true
+        }
+
         // Handle chat window interactions (Stage 2)
         if chatWindowController.isVisible {
             return handleChatInput(event: event, client: client)
@@ -181,6 +189,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     func isCtrlSpace(event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         return event.keyCode == KeyCode.space && modifiers.contains(.control)
+    }
+
+    private func isCommandComma(event: NSEvent) -> Bool {
+        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        return event.keyCode == KeyCode.comma
+            && modifiers.contains(.command)
+            && modifiers.subtracting([.command, .function]).isEmpty
     }
 
     func cancelLLMMode(client: (any IMKTextInput)? = nil) {

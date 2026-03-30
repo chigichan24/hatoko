@@ -55,7 +55,7 @@ final class InlineSuggestionWindow {
         panel.level = .popUpMenu
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.hasShadow = true
+        panel.hasShadow = false
         panel.contentView = hostingView
         panel.orderFront(nil)
 

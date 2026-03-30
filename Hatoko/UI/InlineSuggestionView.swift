@@ -15,12 +15,7 @@ struct InlineSuggestionView: View {
             footer
         }
         .frame(minWidth: 320, maxWidth: 480)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .glassEffect(.regular, in: .rect(cornerRadius: 10))
     }
 
     private var header: some View {
@@ -41,6 +36,7 @@ struct InlineSuggestionView: View {
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .accessibilityLabel("提案: \(text)")
     }
 
     private var loadingBody: some View {
@@ -53,6 +49,7 @@ struct InlineSuggestionView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .accessibilityLabel("提案を生成中")
     }
 
     private var footer: some View {
@@ -63,7 +60,6 @@ struct InlineSuggestionView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(.regularMaterial)
     }
 
     private func keyHint(_ key: String, action: String, primary: Bool = false) -> some View {
@@ -78,5 +74,7 @@ struct InlineSuggestionView: View {
                 .font(.caption2)
         }
         .foregroundStyle(primary ? .primary : .secondary)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(key)キーで\(action)")
     }
 }

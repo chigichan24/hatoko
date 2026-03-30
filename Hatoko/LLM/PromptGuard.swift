@@ -10,6 +10,7 @@ struct PromptGuard: Sendable {
     }
 
     static func validate(_ input: String, maxLength: Int = maxPromptLength) -> ValidationResult {
+        precondition(maxLength > 0, "maxLength must be positive")
         let trimmed = input.trimmingCharacters(in: .whitespacesAndNewlines)
         if trimmed.isEmpty {
             return .empty

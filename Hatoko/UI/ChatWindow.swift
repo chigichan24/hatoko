@@ -34,6 +34,7 @@ private class KeyablePanel: NSPanel {
 final class ChatWindowController {
 
     private var window: NSPanel?
+    private var hostingController: NSHostingController<ChatView>?
     private var messages: [ChatMessage] = []
     private var isLoading = false
     private var inputText = ""
@@ -85,6 +86,7 @@ final class ChatWindowController {
         MainActor.assumeIsolated {
             self.window?.orderOut(nil)
             self.window = nil
+            self.hostingController = nil
             self.messages = []
             self.onUseText = nil
             self.onSendMessage = nil
@@ -100,9 +102,8 @@ final class ChatWindowController {
 
     // MARK: - Window Management
 
-    private func updateWindow(cursorRect: NSRect) {
-        lastCursorRect = cursorRect
-        let chatView = ChatView(
+    private func makeChatView() -> ChatView {
+        ChatView(
             messages: messages,
             isLoading: isLoading,
             inputText: Binding(
@@ -113,11 +114,29 @@ final class ChatWindowController {
             onUse: { [weak self] text in self?.handleUse(text) },
             onCancel: { [weak self] in self?.handleCancel() }
         )
+    }
 
-        let hostingView = NSHostingView(rootView: chatView)
-        hostingView.frame.size = hostingView.fittingSize
+    private func updateWindow(cursorRect: NSRect) {
+        lastCursorRect = cursorRect
+        let chatView = makeChatView()
 
-        let size = hostingView.fittingSize
+        if let hostingController, let panel = window {
+            hostingController.rootView = chatView
+            hostingController.view.layoutSubtreeIfNeeded()
+            let size = hostingController.view.fittingSize
+            panel.setContentSize(size)
+            let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
+            panel.setFrameOrigin(origin)
+            return
+        }
+
+        createPanel(chatView: chatView, cursorRect: cursorRect)
+    }
+
+    private func createPanel(chatView: ChatView, cursorRect: NSRect) {
+        let controller = NSHostingController(rootView: chatView)
+        controller.view.layoutSubtreeIfNeeded()
+        let size = controller.view.fittingSize
         let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
 
         let panel = KeyablePanel(
@@ -130,11 +149,11 @@ final class ChatWindowController {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
-        panel.contentView = hostingView
+        panel.contentViewController = controller
         panel.onEscape = { [weak self] in self?.handleCancel() }
         panel.makeKeyAndOrderFront(nil)
 
-        window?.orderOut(nil)
+        hostingController = controller
         window = panel
     }
 

@@ -27,6 +27,6 @@ final class SettingsWindowController {
 
         window = newWindow
 
-        NSApp.activate(ignoringOtherApps: true)
+        NSApp.activate()
     }
 }

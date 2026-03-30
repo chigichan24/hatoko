@@ -517,6 +517,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             service = try LLMBackend.current.createService()
         } catch {
             NSLog("[Hatoko] LLM backend configuration error: \(error)")
+            NSSound.beep()
             inlineSuggestionWindow.hide()
             resetLLMState()
             return

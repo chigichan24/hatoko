@@ -63,14 +63,19 @@ extension HatokoInputController {
         }
 
         // (c) Nothing being composed — submit the full prompt to LLM
-        guard !promptBuffer.isEmpty else { return true }
-
-        clearMarkedText(client: client)
-        let cursorOrigin = cursorScreenPosition(client: client)
-        lastCursorOrigin = cursorOrigin
-        inlineSuggestionWindow.showLoading(at: cursorOrigin)
-        let prompt = promptBuffer
-        requestLLMGeneration(prompt: prompt, cursorOrigin: cursorOrigin)
+        let validation = PromptGuard.validate(promptBuffer)
+        switch validation {
+        case .valid(let prompt):
+            clearMarkedText(client: client)
+            let cursorOrigin = cursorScreenPosition(client: client)
+            lastCursorOrigin = cursorOrigin
+            inlineSuggestionWindow.showLoading(at: cursorOrigin)
+            requestLLMGeneration(prompt: prompt, cursorOrigin: cursorOrigin)
+        case .tooLong(let length, let limit):
+            NSLog("[Hatoko] Prompt too long (%d chars, limit %d)", length, limit)
+        case .empty:
+            break
+        }
         return true
     }
 

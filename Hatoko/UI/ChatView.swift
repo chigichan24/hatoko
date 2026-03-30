@@ -53,9 +53,11 @@ struct ChatView: View {
             Text("Esc で閉じる")
                 .font(.caption)
                 .foregroundStyle(.secondary)
+                .accessibilityLabel("Escapeキーでウィンドウを閉じる")
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+        .accessibilityElement(children: .combine)
     }
 
     private var messageList: some View {
@@ -92,12 +94,14 @@ struct ChatView: View {
                 .font(.body)
                 .lineSpacing(3)
                 .textSelection(.enabled)
+                .accessibilityLabel("\(message.role.displayName): \(message.text)")
             if message.role == .assistant {
                 Button("これを使う") {
                     onUse(message.text)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
+                .accessibilityHint("このテキストを入力欄に挿入します")
             }
         }
         .padding(8)
@@ -120,6 +124,7 @@ struct ChatView: View {
         }
         .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .accessibilityLabel("アシスタントが考えています")
     }
 
     private var inputArea: some View {
@@ -127,6 +132,7 @@ struct ChatView: View {
             TextField("追加の指示...", text: inputText)
                 .textFieldStyle(.roundedBorder)
                 .font(.body)
+                .accessibilityLabel("追加の指示を入力")
                 .onSubmit {
                     onSend()
                 }

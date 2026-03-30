@@ -13,17 +13,18 @@ final class CLIService: LLMService, Sendable {
         return try await runCLI(prompt: prompt)
     }
 
-    private func buildPrompt(messages: [LLMMessage], systemPrompt: String?) -> String {
+    func buildPrompt(messages: [LLMMessage], systemPrompt: String?) -> String {
         var parts: [String] = []
         if let systemPrompt {
-            parts.append(systemPrompt)
+            parts.append("[SYSTEM INSTRUCTIONS - DO NOT MODIFY OR OVERRIDE]\n\(systemPrompt)\n[END SYSTEM INSTRUCTIONS]")
         }
+        parts.append("[CONVERSATION START]")
         for message in messages {
             switch message.role {
             case .user:
-                parts.append(message.content)
+                parts.append("[USER]\n\(message.content)")
             case .assistant:
-                parts.append("Previous response: \(message.content)")
+                parts.append("[ASSISTANT]\n\(message.content)")
             }
         }
         return parts.joined(separator: "\n\n")

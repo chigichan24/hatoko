@@ -145,7 +145,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
 
         // Check for Ctrl+Space to activate LLM mode
-        if isLLMTrigger(event: event) {
+        if isCtrlSpace(event: event) {
             activateLLMMode(client: client)
             return true
         }
@@ -180,7 +180,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // MARK: - LLM Mode Trigger
 
-    private func isLLMTrigger(event: NSEvent) -> Bool {
+    func isCtrlSpace(event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }

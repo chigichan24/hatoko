@@ -22,7 +22,7 @@ extension HatokoInputController {
 
     func handlePromptInput(event: NSEvent, client: any IMKTextInput) -> Bool {
         // Toggle base input mode with Ctrl+Space while in LLM prompt
-        if isLLMBaseModeToggle(event: event) {
+        if isCtrlSpace(event: event) {
             toggleLLMBaseMode(client: client)
             return true
         }
@@ -198,11 +198,6 @@ extension HatokoInputController {
         guard japaneseInputState.selectedCandidate != nil else { return false }
         updatePromptMarkedText(client: client)
         return true
-    }
-
-    private func isLLMBaseModeToggle(event: NSEvent) -> Bool {
-        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }
 
     private func toggleLLMBaseMode(client: any IMKTextInput) {

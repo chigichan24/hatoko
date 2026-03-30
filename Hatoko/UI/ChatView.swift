@@ -8,6 +8,13 @@ struct ChatMessage: Identifiable {
     enum ChatRole {
         case user
         case assistant
+
+        var displayName: String {
+            switch self {
+            case .user: "あなた"
+            case .assistant: "アシスタント"
+            }
+        }
     }
 }
 
@@ -23,31 +30,32 @@ struct ChatView: View {
     var body: some View {
         VStack(spacing: 0) {
             header
+            Divider()
             messageList
+            Divider()
             inputArea
         }
         .frame(width: 340)
-        .background(Color(nsColor: .windowBackgroundColor))
-        .cornerRadius(12)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
     }
 
     private var header: some View {
         HStack {
-            Text("✦ Hatoko アシスト")
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.pink)
+            Text("Hatoko アシスト")
+                .font(.headline)
+                .foregroundStyle(.primary)
             Spacer()
             Text("Esc で閉じる")
-                .font(.system(size: 10))
-                .foregroundStyle(.secondary)
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(Color(nsColor: .controlBackgroundColor))
     }
 
     private var messageList: some View {
@@ -76,86 +84,60 @@ struct ChatView: View {
     }
 
     private func messageBubble(_ message: ChatMessage) -> some View {
-        HStack {
-            if message.role == .user { Spacer(minLength: 40) }
-            VStack(alignment: .leading, spacing: 4) {
-                if message.role == .assistant {
-                    Text("✦ Claude")
-                        .font(.system(size: 10))
-                        .foregroundStyle(.pink)
+        VStack(alignment: .leading, spacing: 4) {
+            Text(message.role.displayName)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            Text(message.text)
+                .font(.body)
+                .lineSpacing(3)
+                .textSelection(.enabled)
+            if message.role == .assistant {
+                Button("これを使う") {
+                    onUse(message.text)
                 }
-                Text(message.text)
-                    .font(.system(size: 13))
-                    .lineSpacing(3)
-                if message.role == .assistant {
-                    Button {
-                        onUse(message.text)
-                    } label: {
-                        Text("これを使う")
-                            .font(.system(size: 11))
-                    }
-                    .buttonStyle(UseButtonStyle())
-                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
             }
-            .padding(8)
-            .background(message.role == .user ? Color.pink : Color(nsColor: .controlBackgroundColor))
-            .foregroundStyle(message.role == .user ? .white : .primary)
-            .cornerRadius(10)
-            if message.role == .assistant { Spacer(minLength: 40) }
         }
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            message.role == .user
+                ? Color.accentColor.opacity(0.08)
+                : Color.clear
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 6))
     }
 
     private var loadingBubble: some View {
-        HStack {
-            HStack(spacing: 4) {
-                ProgressView()
-                    .controlSize(.small)
-                Text("考えています...")
-                    .font(.system(size: 12))
-                    .foregroundStyle(.secondary)
-            }
-            .padding(8)
-            .background(Color(nsColor: .controlBackgroundColor))
-            .cornerRadius(10)
-            Spacer(minLength: 40)
+        HStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+            Text("考えています...")
+                .font(.callout)
+                .foregroundStyle(.secondary)
         }
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var inputArea: some View {
         HStack(spacing: 8) {
             TextField("追加の指示...", text: inputText)
-                .textFieldStyle(.plain)
-                .font(.system(size: 13))
-                .padding(6)
-                .background(Color(nsColor: .textBackgroundColor))
-                .cornerRadius(6)
+                .textFieldStyle(.roundedBorder)
+                .font(.body)
                 .onSubmit {
                     onSend()
                 }
             Text("Enter")
-                .font(.system(size: 10, design: .monospaced))
+                .font(.caption2.monospaced().weight(.medium))
                 .padding(.horizontal, 4)
                 .padding(.vertical, 2)
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(3)
+                .background(.quaternary)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
                 .foregroundStyle(.secondary)
         }
-        .padding(10)
-        .background(Color(nsColor: .controlBackgroundColor))
-    }
-}
-
-private struct UseButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(configuration.isPressed ? Color.pink : Color.pink.opacity(0.15))
-            .foregroundStyle(configuration.isPressed ? .white : .pink)
-            .cornerRadius(4)
-            .overlay(
-                RoundedRectangle(cornerRadius: 4)
-                    .stroke(Color.pink.opacity(0.3), lineWidth: 1)
-            )
+        .padding(12)
     }
 }

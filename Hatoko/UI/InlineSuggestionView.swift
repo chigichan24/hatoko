@@ -15,45 +15,44 @@ struct InlineSuggestionView: View {
             footer
         }
         .frame(minWidth: 320, maxWidth: 480)
-        .background(Color(nsColor: .windowBackgroundColor))
-        .cornerRadius(8)
+        .background(.regularMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(
-            RoundedRectangle(cornerRadius: 8)
-                .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
         )
     }
 
     private var header: some View {
         HStack {
-            Text("✦ Claude")
-                .font(.system(size: 11, weight: .medium))
-                .foregroundStyle(.pink)
+            Text("Hatoko")
+                .font(.headline)
+                .foregroundStyle(.secondary)
             Spacer()
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .padding(.vertical, 8)
     }
 
     private func suggestionBody(_ text: String) -> some View {
         Text(text)
-            .font(.system(size: 13))
+            .font(.body)
             .lineSpacing(4)
             .padding(.horizontal, 12)
-            .padding(.vertical, 10)
+            .padding(.vertical, 8)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var loadingBody: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 8) {
             ProgressView()
                 .controlSize(.small)
             Text("生成中...")
-                .font(.system(size: 12))
+                .font(.callout)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 10)
+        .padding(.vertical, 8)
     }
 
     private var footer: some View {
@@ -63,21 +62,21 @@ struct InlineSuggestionView: View {
             keyHint("Esc", action: "キャンセル")
         }
         .padding(.horizontal, 12)
-        .padding(.vertical, 5)
-        .background(Color(nsColor: .controlBackgroundColor))
+        .padding(.vertical, 8)
+        .background(.regularMaterial)
     }
 
     private func keyHint(_ key: String, action: String, primary: Bool = false) -> some View {
-        HStack(spacing: 3) {
+        HStack(spacing: 4) {
             Text(key)
-                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .font(.caption2.monospaced().weight(.medium))
                 .padding(.horizontal, 4)
-                .padding(.vertical, 1)
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(3)
+                .padding(.vertical, 2)
+                .background(.quaternary)
+                .clipShape(RoundedRectangle(cornerRadius: 4))
             Text(action)
-                .font(.system(size: 10))
+                .font(.caption2)
         }
-        .foregroundStyle(primary ? .pink : .secondary)
+        .foregroundStyle(primary ? .primary : .secondary)
     }
 }

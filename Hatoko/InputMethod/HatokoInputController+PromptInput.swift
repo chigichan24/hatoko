@@ -73,6 +73,7 @@ extension HatokoInputController {
             requestLLMGeneration(prompt: prompt, cursorOrigin: cursorOrigin)
         case .tooLong(let length, let limit):
             NSLog("[Hatoko] Prompt too long (%d chars, limit %d)", length, limit)
+            NSSound.beep()
         case .empty:
             break
         }

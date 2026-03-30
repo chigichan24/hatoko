@@ -12,7 +12,7 @@ extension HatokoInputController {
             commitText(composingText.convertTarget, to: client)
             resetComposition()
         }
-        llmBaseMode = inputMode
+        llmBaseMode = LLMBaseMode(from: inputMode)
         inputMode = .llmPrompt
         promptBuffer = ""
         updatePromptMarkedText(client: client)
@@ -21,6 +21,12 @@ extension HatokoInputController {
     // MARK: - Prompt Input Handling
 
     func handlePromptInput(event: NSEvent, client: any IMKTextInput) -> Bool {
+        // Toggle base input mode with Ctrl+Space while in LLM prompt
+        if isCtrlSpace(event: event) {
+            toggleLLMBaseMode(client: client)
+            return true
+        }
+
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
         if !modifiers.subtracting(.shift).isEmpty {
@@ -192,6 +198,13 @@ extension HatokoInputController {
         return true
     }
 
+    private func toggleLLMBaseMode(client: any IMKTextInput) {
+        flushCompositionToPromptBuffer()
+        llmBaseMode = llmBaseMode.toggled
+        updatePromptMarkedText(client: client)
+    }
+
+    /// Flushes any in-progress composition (converting or composing) into promptBuffer.
     private func flushCompositionToPromptBuffer() {
         if let candidate = japaneseInputState.selectedCandidate {
             promptConfirmCandidate(candidate)
@@ -208,7 +221,7 @@ extension HatokoInputController {
     }
 
     private func updatePromptMarkedText(client: any IMKTextInput) {
-        let prefix = "✦ "
+        let prefix = llmBaseMode == .japanese ? "✦ あ " : "✦ A "
         let result = NSMutableAttributedString()
 
         // Prefix + promptBuffer: pink, single underline

@@ -47,7 +47,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
     var lastCursorOrigin: NSPoint = .zero
-    private static let rateLimiter = RateLimiter()
+    private static let inlineRateLimiter = RateLimiter()
+    private static let chatRateLimiter = RateLimiter()
 
     lazy var convertOptions: ConvertRequestOptions = {
         let dir = applicationSupportDirectory()
@@ -305,7 +306,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         llmMessages.append(LLMMessage(role: .user, content: validatedMessage))
 
         Task {
-            guard await Self.rateLimiter.tryAcquire() else {
+            guard await Self.chatRateLimiter.tryAcquire() else {
                 NSLog("[Hatoko] LLM chat request rate limited")
                 await MainActor.run {
                     self.chatWindowController.addAssistantMessage("リクエストが多すぎます。少し待ってからお試しください。")
@@ -522,7 +523,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
 
         Task {
-            guard await Self.rateLimiter.tryAcquire() else {
+            guard await Self.inlineRateLimiter.tryAcquire() else {
                 NSLog("[Hatoko] LLM request rate limited")
                 await MainActor.run {
                     self.inlineSuggestionWindow.hide()

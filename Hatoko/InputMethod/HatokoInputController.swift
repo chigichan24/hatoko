@@ -47,6 +47,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
     var lastCursorOrigin: NSPoint = .zero
+    /// Process-wide rate limiters shared across all input controller instances
+    /// to protect the LLM API from excessive requests.
     private static let inlineRateLimiter = RateLimiter()
     private static let chatRateLimiter = RateLimiter()
 

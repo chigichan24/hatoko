@@ -3,8 +3,20 @@ import SwiftUI
 
 /// A non-activating panel that can still become key window,
 /// allowing SwiftUI TextField to receive keyboard focus.
+/// Intercepts Escape key directly since IMKInputController.handle()
+/// may not receive events when this panel is key.
 private class KeyablePanel: NSPanel {
     override var canBecomeKey: Bool { true }
+
+    var onEscape: (() -> Void)?
+
+    override func keyDown(with event: NSEvent) {
+        if event.keyCode == 53 {
+            onEscape?()
+            return
+        }
+        super.keyDown(with: event)
+    }
 }
 
 /// Manages the ephemeral chat window for LLM refinement.
@@ -115,6 +127,7 @@ final class ChatWindowController {
         panel.backgroundColor = .clear
         panel.hasShadow = true
         panel.contentView = hostingView
+        panel.onEscape = { [weak self] in self?.handleCancel() }
         panel.makeKeyAndOrderFront(nil)
 
         window?.orderOut(nil)

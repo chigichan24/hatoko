@@ -236,7 +236,7 @@ extension HatokoInputController {
     }
 
     private func updatePromptMarkedText(client: any IMKTextInput) {
-        let prefix = llmBaseMode == .japanese ? "✦ あ " : "✦ A "
+        let prefix = "✦ "
         let result = NSMutableAttributedString()
 
         // Prefix + promptBuffer: pink, single underline

@@ -13,16 +13,6 @@ import KanaKanjiConverterModuleWithDefaultDictionary
 @objc(HatokoInputController)
 final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
-    enum KeyCode {
-        static let enter: UInt16 = 36
-        static let backspace: UInt16 = 51
-        static let escape: UInt16 = 53
-        static let space: UInt16 = 49
-        static let tab: UInt16 = 48
-        static let arrowUp: UInt16 = 126
-        static let arrowDown: UInt16 = 125
-    }
-
     static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
     static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、"]
     private static let llmSystemPrompt = """

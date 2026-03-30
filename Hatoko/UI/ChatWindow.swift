@@ -11,8 +11,12 @@ private class KeyablePanel: NSPanel {
     var onEscape: (() -> Void)?
 
     override func keyDown(with event: NSEvent) {
-        if event.keyCode == 53 {
-            onEscape?()
+        if event.keyCode == KeyCode.escape {
+            if let onEscape {
+                onEscape()
+            } else {
+                super.keyDown(with: event)
+            }
             return
         }
         super.keyDown(with: event)

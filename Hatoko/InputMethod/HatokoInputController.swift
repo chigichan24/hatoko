@@ -512,7 +512,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 NSLog("[Hatoko] LLM generation failed: \(error)")
                 await MainActor.run {
                     self.inlineSuggestionWindow.hide()
-                    self.inputMode = .japanese
+                    self.resetLLMState()
                 }
             }
         }

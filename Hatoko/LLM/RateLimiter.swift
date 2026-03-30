@@ -10,6 +10,8 @@ actor RateLimiter {
     private var timestamps: [Date] = []
 
     init(maxRequests: Int = 10, windowSeconds: TimeInterval = 60) {
+        precondition(maxRequests > 0, "maxRequests must be positive")
+        precondition(windowSeconds > 0, "windowSeconds must be positive")
         self.maxRequests = maxRequests
         self.windowSeconds = windowSeconds
     }

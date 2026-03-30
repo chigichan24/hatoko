@@ -275,11 +275,14 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func sendChatMessage(_ message: String, previousPrompt: String) {
-        let chatValidation = PromptGuard.validate(message, maxLength: PromptGuard.maxChatMessageLength)
-        guard case .valid(let validatedMessage) = chatValidation else {
-            if case .tooLong = chatValidation {
-                chatWindowController.addAssistantMessage("メッセージが長すぎます。短くしてください。")
-            }
+        let validatedMessage: String
+        switch PromptGuard.validate(message, maxLength: PromptGuard.maxChatMessageLength) {
+        case .valid(let text):
+            validatedMessage = text
+        case .tooLong:
+            chatWindowController.addAssistantMessage("メッセージが長すぎます。短くしてください。")
+            return
+        case .empty:
             return
         }
 

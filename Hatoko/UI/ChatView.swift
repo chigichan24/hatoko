@@ -8,6 +8,13 @@ struct ChatMessage: Identifiable {
     enum ChatRole {
         case user
         case assistant
+
+        var displayName: String {
+            switch self {
+            case .user: "あなた"
+            case .assistant: "アシスタント"
+            }
+        }
     }
 }
 
@@ -78,7 +85,7 @@ struct ChatView: View {
 
     private func messageBubble(_ message: ChatMessage) -> some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text(message.role == .user ? "あなた" : "アシスタント")
+            Text(message.role.displayName)
                 .font(.caption)
                 .foregroundStyle(.secondary)
             Text(message.text)

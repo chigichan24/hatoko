@@ -46,7 +46,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     private var llmSuggestion: String?
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
-    var lastCursorOrigin: NSPoint = .zero
+    var lastCursorRect: NSRect = .zero
     /// Process-wide rate limiters shared across all input controller instances
     /// to protect the LLM API from excessive requests.
     private static let inlineRateLimiter = RateLimiter()
@@ -249,7 +249,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         chatWindowController.show(configuration: .init(
             initialPrompt: prompt,
             initialResponse: suggestion,
-            origin: lastCursorOrigin,
+            cursorRect: lastCursorRect,
             onUse: { [weak self] text in
                 self?.acceptChatText(text, client: capturedClient)
             },
@@ -505,15 +505,15 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         )
     }
 
-    func cursorScreenPosition(client: any IMKTextInput) -> NSPoint {
+    func cursorRect(client: any IMKTextInput) -> NSRect {
         var rect = NSRect.zero
         client.attributes(forCharacterIndex: 0, lineHeightRectangle: &rect)
-        return NSPoint(x: rect.origin.x, y: rect.origin.y - 4)
+        return rect
     }
 
     // MARK: - LLM Generation
 
-    func requestLLMGeneration(prompt: String, cursorOrigin: NSPoint) {
+    func requestLLMGeneration(prompt: String, cursorRect: NSRect) {
         let service: any LLMService
         do {
             service = try LLMBackend.current.createService()
@@ -541,7 +541,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 )
                 await MainActor.run {
                     self.llmSuggestion = result
-                    self.inlineSuggestionWindow.show(suggestion: result, at: cursorOrigin)
+                    self.inlineSuggestionWindow.show(suggestion: result, cursorRect: cursorRect)
                 }
             } catch {
                 NSLog("[Hatoko] LLM generation failed: \(error)")

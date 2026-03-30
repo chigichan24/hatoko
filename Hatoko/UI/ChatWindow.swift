@@ -21,10 +21,11 @@ final class ChatWindowController {
     private var messages: [ChatMessage] = []
     private var isLoading = false
     private var inputText = ""
+    private var lastCursorRect: NSRect = .zero
     struct Configuration: Sendable {
         let initialPrompt: String
         let initialResponse: String
-        let origin: NSPoint
+        let cursorRect: NSRect
         let onUse: @Sendable (String) -> Void
         let onSend: @Sendable (String) -> Void
         let onCancel: @Sendable () -> Void
@@ -45,7 +46,7 @@ final class ChatWindowController {
             self.onUseText = configuration.onUse
             self.onSendMessage = configuration.onSend
             self.onCancel = configuration.onCancel
-            self.updateWindow(at: configuration.origin)
+            self.updateWindow(cursorRect: configuration.cursorRect)
         }
     }
 
@@ -83,7 +84,8 @@ final class ChatWindowController {
 
     // MARK: - Window Management
 
-    private func updateWindow(at origin: NSPoint) {
+    private func updateWindow(cursorRect: NSRect) {
+        lastCursorRect = cursorRect
         let chatView = ChatView(
             messages: messages,
             isLoading: isLoading,
@@ -100,10 +102,10 @@ final class ChatWindowController {
         hostingView.frame.size = hostingView.fittingSize
 
         let size = hostingView.fittingSize
-        let adjustedOrigin = Self.adjustedOrigin(for: size, cursorOrigin: origin)
+        let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
 
         let panel = KeyablePanel(
-            contentRect: NSRect(origin: adjustedOrigin, size: size),
+            contentRect: NSRect(origin: origin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -119,34 +121,8 @@ final class ChatWindowController {
         window = panel
     }
 
-    private static func adjustedOrigin(for size: NSSize, cursorOrigin: NSPoint) -> NSPoint {
-        let screenFrame = NSScreen.main?.visibleFrame
-            ?? NSRect(origin: .zero, size: NSSize(width: 1920, height: 1080))
-
-        var x = cursorOrigin.x
-        var y = cursorOrigin.y
-
-        // Place below cursor; if not enough space below, place above
-        if y - size.height < screenFrame.minY {
-            y = cursorOrigin.y + 20
-        } else {
-            y = cursorOrigin.y - size.height
-        }
-
-        // Clamp horizontally
-        if x + size.width > screenFrame.maxX {
-            x = screenFrame.maxX - size.width
-        }
-        if x < screenFrame.minX {
-            x = screenFrame.minX
-        }
-
-        return NSPoint(x: x, y: y)
-    }
-
     private func refreshContent() {
-        guard let origin = window?.frame.origin else { return }
-        updateWindow(at: origin)
+        updateWindow(cursorRect: lastCursorRect)
     }
 
     private func handleSend() {

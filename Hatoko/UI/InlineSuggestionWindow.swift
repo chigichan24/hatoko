@@ -12,15 +12,15 @@ final class InlineSuggestionWindow {
 
     private var window: NSWindow?
 
-    nonisolated func show(suggestion: String, at origin: NSPoint) {
+    nonisolated func show(suggestion: String, cursorRect: NSRect) {
         MainActor.assumeIsolated {
-            showImpl(view: InlineSuggestionView(suggestion: suggestion), at: origin)
+            showImpl(view: InlineSuggestionView(suggestion: suggestion), cursorRect: cursorRect)
         }
     }
 
-    nonisolated func showLoading(at origin: NSPoint) {
+    nonisolated func showLoading(cursorRect: NSRect) {
         MainActor.assumeIsolated {
-            showImpl(view: InlineSuggestionView(suggestion: nil), at: origin)
+            showImpl(view: InlineSuggestionView(suggestion: nil), cursorRect: cursorRect)
         }
     }
 
@@ -37,14 +37,17 @@ final class InlineSuggestionWindow {
         }
     }
 
-    private func showImpl(view: InlineSuggestionView, at origin: NSPoint) {
+    private func showImpl(view: InlineSuggestionView, cursorRect: NSRect) {
         hide()
 
         let hostingView = NSHostingView(rootView: view)
         hostingView.frame.size = hostingView.fittingSize
 
+        let size = hostingView.fittingSize
+        let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
+
         let panel = NSPanel(
-            contentRect: NSRect(origin: origin, size: hostingView.fittingSize),
+            contentRect: NSRect(origin: origin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false

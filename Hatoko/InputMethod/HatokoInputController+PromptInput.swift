@@ -65,10 +65,10 @@ extension HatokoInputController {
         switch validation {
         case .valid(let prompt):
             clearMarkedText(client: client)
-            let cursorOrigin = cursorScreenPosition(client: client)
-            lastCursorOrigin = cursorOrigin
-            inlineSuggestionWindow.showLoading(at: cursorOrigin)
-            requestLLMGeneration(prompt: prompt, cursorOrigin: cursorOrigin)
+            let rect = cursorRect(client: client)
+            lastCursorRect = rect
+            inlineSuggestionWindow.showLoading(cursorRect: rect)
+            requestLLMGeneration(prompt: prompt, cursorRect: rect)
         case .tooLong(let length, let limit):
             NSLog("[Hatoko] Prompt too long (%d chars, limit %d)", length, limit)
             NSSound.beep()

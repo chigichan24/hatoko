@@ -38,7 +38,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // LLM prompt state
     var promptBuffer = ""
     /// The input mode that was active before entering LLM prompt mode.
-    var llmBaseMode: InputMode = .japanese
+    var llmBaseMode: LLMBaseMode = .japanese
     private var llmSuggestion: String?
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
@@ -145,7 +145,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
 
         // Check for Ctrl+Space to activate LLM mode
-        if isLLMTrigger(event: event) {
+        if isCtrlSpace(event: event) {
             activateLLMMode(client: client)
             return true
         }
@@ -180,7 +180,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // MARK: - LLM Mode Trigger
 
-    private func isLLMTrigger(event: NSEvent) -> Bool {
+    func isCtrlSpace(event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }
@@ -198,7 +198,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func resetLLMState() {
-        inputMode = llmBaseMode
+        inputMode = llmBaseMode.inputMode
         promptBuffer = ""
         llmSuggestion = nil
     }
@@ -512,7 +512,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 NSLog("[Hatoko] LLM generation failed: \(error)")
                 await MainActor.run {
                     self.inlineSuggestionWindow.hide()
-                    self.inputMode = .japanese
+                    self.resetLLMState()
                 }
             }
         }

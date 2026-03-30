@@ -148,7 +148,7 @@ final class ChatWindowController {
         panel.level = .popUpMenu
         panel.isOpaque = false
         panel.backgroundColor = .clear
-        panel.hasShadow = true
+        panel.hasShadow = false
         panel.contentViewController = controller
         panel.onEscape = { [weak self] in self?.handleCancel() }
         panel.makeKeyAndOrderFront(nil)

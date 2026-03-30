@@ -36,12 +36,7 @@ struct ChatView: View {
             inputArea
         }
         .frame(width: 340)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .glassEffect(.regular, in: .rect(cornerRadius: 10))
     }
 
     private var header: some View {

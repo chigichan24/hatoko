@@ -15,12 +15,7 @@ struct InlineSuggestionView: View {
             footer
         }
         .frame(minWidth: 320, maxWidth: 480)
-        .background(.regularMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .overlay(
-            RoundedRectangle(cornerRadius: 10)
-                .stroke(Color.primary.opacity(0.1), lineWidth: 0.5)
-        )
+        .glassEffect(.regular, in: .rect(cornerRadius: 10))
     }
 
     private var header: some View {
@@ -65,7 +60,6 @@ struct InlineSuggestionView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-        .background(.regularMaterial)
     }
 
     private func keyHint(_ key: String, action: String, primary: Bool = false) -> some View {

@@ -145,6 +145,21 @@ extension HatokoInputController {
             promptConfirmCandidate(candidate)
         }
 
+        // Uppercase ASCII letters bypass romaji conversion and are appended directly as
+        // literal alphabet. This allows typing English words (e.g. "AI", "Python") while
+        // in Japanese base mode without needing to toggle to Roman base first.
+        // Any active composition (hiragana) is flushed to promptBuffer before inserting.
+        // `characters` is guaranteed non-empty by the guard above.
+        if characters.allSatisfy({ $0.isASCII && $0.isUppercase }) {
+            if !composingText.convertTarget.isEmpty {
+                promptBuffer.append(composingText.convertTarget)
+                resetComposition()
+            }
+            promptBuffer.append(characters)
+            updatePromptMarkedText(client: client)
+            return true
+        }
+
         // In prompt mode, non-letter characters (digits, symbols) are captured
         // into promptBuffer rather than passed through to the system.
         if let remaining = insertCharactersIntoComposition(characters) {

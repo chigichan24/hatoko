@@ -271,7 +271,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                 self?.acceptChatText(text, client: capturedClient)
             },
             onSend: { [weak self] message in
-                self?.sendChatMessage(message)
+                self?.sendChatMessage(message, previousPrompt: prompt)
             },
             onCancel: { [weak self] in
                 self?.cancelLLMMode()
@@ -296,10 +296,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetLLMState()
     }
 
-    private func sendChatMessage(_ message: String) {
+    private func sendChatMessage(_ message: String, previousPrompt: String) {
+        let validatedMessage: String
         switch PromptGuard.validate(message, maxLength: PromptGuard.maxChatMessageLength) {
-        case .valid:
-            break
+        case .valid(let text):
+            validatedMessage = text
         case .tooLong:
             chatWindowController.addAssistantMessage("メッセージが長すぎます。短くしてください。")
             return
@@ -316,14 +317,14 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
-        // Build full conversation history from chat window messages.
-        // handleSend() already appended the new user message before calling this.
-        let llmMessages = chatWindowController.currentMessages.map { msg in
-            LLMMessage(
-                role: msg.role == .user ? .user : .assistant,
-                content: msg.text
-            )
+        // Build conversation history from chat messages
+        var llmMessages = [
+            LLMMessage(role: .user, content: previousPrompt),
+        ]
+        if let suggestion = llmSuggestion {
+            llmMessages.append(LLMMessage(role: .assistant, content: suggestion))
         }
+        llmMessages.append(LLMMessage(role: .user, content: validatedMessage))
 
         Task {
             guard await Self.chatRateLimiter.tryAcquire() else {
@@ -339,6 +340,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
                     systemPrompt: Self.chatSystemPrompt
                 )
                 await MainActor.run {
+                    self.llmSuggestion = result
                     self.chatWindowController.addAssistantMessage(result)
                 }
             } catch {

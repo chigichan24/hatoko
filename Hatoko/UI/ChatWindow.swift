@@ -107,12 +107,6 @@ final class ChatWindowController {
         }
     }
 
-    nonisolated var currentMessages: [ChatMessage] {
-        MainActor.assumeIsolated {
-            self.messages
-        }
-    }
-
     // MARK: - Window Management
 
     private func makeChatView() -> ChatView {
@@ -167,8 +161,9 @@ final class ChatWindowController {
         panel.hasShadow = false
         panel.contentViewController = controller
         panel.onEscape = { [weak self] in self?.handleCancel() }
-        activePanel = ActivePanel(panel: panel, hostingController: controller)
         panel.makeKeyAndOrderFront(nil)
+
+        activePanel = ActivePanel(panel: panel, hostingController: controller)
     }
 
     private func refreshContent() {

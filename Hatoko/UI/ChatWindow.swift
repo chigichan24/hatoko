@@ -107,6 +107,12 @@ final class ChatWindowController {
         }
     }
 
+    nonisolated var currentMessages: [ChatMessage] {
+        MainActor.assumeIsolated {
+            self.messages
+        }
+    }
+
     // MARK: - Window Management
 
     private func makeChatView() -> ChatView {

@@ -45,6 +45,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     let inlineSuggestionWindow = InlineSuggestionWindow()
     private let chatWindowController = ChatWindowController()
     var lastCursorRect: NSRect = .zero
+    /// Text waiting to be committed after the host app regains focus from the chat window.
+    private var pendingChatText: String?
     /// Process-wide rate limiters shared across all input controller instances
     /// to protect the LLM API from excessive requests.
     private static let inlineRateLimiter = RateLimiter()
@@ -94,6 +96,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetComposition()
         if let client = sender as? (any IMKTextInput) {
             client.overrideKeyboard(withKeyboardNamed: "com.apple.keylayout.US")
+            if let text = pendingChatText {
+                pendingChatText = nil
+                commitText(text, to: client)
+            }
         }
     }
 
@@ -285,8 +291,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private func acceptChatText(_ text: String, client: any IMKTextInput) {
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        pendingChatText = text
         chatWindowController.hide()
-        commitText(text, to: client)
         resetLLMState()
     }
 

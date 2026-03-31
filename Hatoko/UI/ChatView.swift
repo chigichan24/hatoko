@@ -91,12 +91,12 @@ struct ChatView: View {
                 .textSelection(.enabled)
                 .accessibilityLabel("\(message.role.displayName): \(message.text)")
             if message.role == .assistant {
-                Button("これを使う") {
+                Button("これを使う ⌘V") {
                     onUse(message.text)
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
-                .accessibilityHint("このテキストを入力欄に挿入します")
+                .accessibilityHint("このテキストを入力欄に挿入し、クリップボードにもコピーします")
             }
         }
         .padding(8)

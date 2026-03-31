@@ -161,9 +161,8 @@ final class ChatWindowController {
         panel.hasShadow = false
         panel.contentViewController = controller
         panel.onEscape = { [weak self] in self?.handleCancel() }
-        panel.makeKeyAndOrderFront(nil)
-
         activePanel = ActivePanel(panel: panel, hostingController: controller)
+        panel.makeKeyAndOrderFront(nil)
     }
 
     private func refreshContent() {

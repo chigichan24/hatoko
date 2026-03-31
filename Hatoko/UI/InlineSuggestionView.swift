@@ -7,11 +7,10 @@ struct InlineSuggestionView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             header
-            if let suggestion {
-                suggestionBody(suggestion)
-            } else {
-                loadingBody
-            }
+            ThinkingAnimationView(
+                suggestion: suggestion,
+                onRevealComplete: {}
+            )
             footer
         }
         .frame(minWidth: 320, maxWidth: 480)
@@ -27,29 +26,6 @@ struct InlineSuggestionView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-    }
-
-    private func suggestionBody(_ text: String) -> some View {
-        Text(text)
-            .font(.body)
-            .lineSpacing(4)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .accessibilityLabel("提案: \(text)")
-    }
-
-    private var loadingBody: some View {
-        HStack(spacing: 8) {
-            ProgressView()
-                .controlSize(.small)
-            Text("生成中...")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 8)
-        .accessibilityLabel("提案を生成中")
     }
 
     private var footer: some View {

@@ -17,6 +17,7 @@ final class ThinkingAnimationState {
     private var mode: Mode = .thinking
     private var step: Step = .typing
     private var target = ""
+    private var targetChars: [Character] = []
     private var charIndex = 0
     private var waitTicks = 0
     private var phraseIterator: ShuffledPhraseIterator
@@ -35,8 +36,8 @@ final class ThinkingAnimationState {
     ]
 
     init() {
-        phraseIterator = ShuffledPhraseIterator(count: Self.phrases.count)
-        target = Self.phrases[phraseIterator.next()]
+        phraseIterator = ShuffledPhraseIterator(phraseCount: Self.phrases.count)
+        setTarget(Self.phrases[phraseIterator.next()])
     }
 
     // MARK: - Public API
@@ -44,12 +45,12 @@ final class ThinkingAnimationState {
     func receiveSuggestion(_ text: String) {
         mode = .revealing
         if displayedText.isEmpty {
-            target = text
+            setTarget(text)
             charIndex = 0
             step = .typing
         } else {
             step = .erasing
-            target = text
+            setTarget(text)
         }
     }
 
@@ -58,12 +59,18 @@ final class ThinkingAnimationState {
         switch step {
         case .typing: return tickTyping()
         case .erasing: return tickErasing()
-        case .waiting: return tickWaiting()
+        case .waitingToErase: return tickWaiting(then: .erasing)
+        case .waitingToType: return tickWaiting(then: .typing)
         }
     }
 
     func toggleCursor() {
         showCursor.toggle()
+    }
+
+    private func setTarget(_ text: String) {
+        target = text
+        targetChars = Array(text)
     }
 }
 
@@ -72,14 +79,15 @@ final class ThinkingAnimationState {
 extension ThinkingAnimationState {
 
     enum Mode { case thinking, revealing }
-    enum Step { case typing, erasing, waiting }
+    enum Step { case typing, erasing, waitingToErase, waitingToType }
 
     struct ShuffledPhraseIterator {
         private var order: [Int]
         private var index = 0
 
-        init(count: Int) {
-            order = Array(0..<count).shuffled()
+        init(phraseCount: Int) {
+            precondition(phraseCount > 0, "ShuffledPhraseIterator requires at least one element")
+            order = Array(0..<phraseCount).shuffled()
         }
 
         mutating func next() -> Int {
@@ -99,13 +107,12 @@ extension ThinkingAnimationState {
 extension ThinkingAnimationState {
 
     private func tickTyping() -> TimeInterval {
-        let chars = Array(target)
-        guard charIndex < chars.count else {
+        guard charIndex < targetChars.count else {
             return finishTyping()
         }
-        displayedText.append(chars[charIndex])
+        displayedText.append(targetChars[charIndex])
         charIndex += 1
-        return mode == .revealing ? Timing.revealInterval(for: chars.count) : Timing.typingInterval
+        return mode == .revealing ? Timing.revealInterval(for: targetChars.count) : Timing.typingInterval
     }
 
     private func finishTyping() -> TimeInterval {
@@ -114,7 +121,7 @@ extension ThinkingAnimationState {
             isComplete = true
             return 0
         }
-        step = .waiting
+        step = .waitingToErase
         waitTicks = Timing.pauseAfterTypeTicks
         return Timing.tickBase
     }
@@ -133,17 +140,17 @@ extension ThinkingAnimationState {
             step = .typing
             return Timing.pauseBeforeReveal
         }
-        target = Self.phrases[phraseIterator.next()]
+        setTarget(Self.phrases[phraseIterator.next()])
         charIndex = 0
-        step = .waiting
+        step = .waitingToType
         waitTicks = Timing.pauseAfterEraseTicks
         return Timing.tickBase
     }
 
-    private func tickWaiting() -> TimeInterval {
+    private func tickWaiting(then nextStep: Step) -> TimeInterval {
         waitTicks -= 1
         if waitTicks <= 0 {
-            step = .typing
+            step = nextStep
         }
         return Timing.tickBase
     }
@@ -161,9 +168,10 @@ extension ThinkingAnimationState {
         static let pauseBeforeReveal: TimeInterval = 0.15
         static let pauseAfterTypeTicks = 16   // ~0.8s at tickBase
         static let pauseAfterEraseTicks = 6   // ~0.3s at tickBase
+        static let fastRevealThreshold = 500
 
         static func revealInterval(for length: Int) -> TimeInterval {
-            length > 500 ? 0.005 : 0.02
+            length > fastRevealThreshold ? 0.005 : 0.02
         }
     }
 }

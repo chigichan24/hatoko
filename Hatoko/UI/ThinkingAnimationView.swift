@@ -44,8 +44,11 @@ struct ThinkingAnimationView: View {
     private func runAnimation() async {
         while !state.isComplete {
             let interval = state.tick()
-            if interval > 0 {
-                try? await Task.sleep(for: .seconds(interval))
+            guard interval > 0 else { continue }
+            do {
+                try await Task.sleep(for: .seconds(interval))
+            } catch {
+                return
             }
         }
         onRevealComplete()
@@ -53,7 +56,11 @@ struct ThinkingAnimationView: View {
 
     private func blinkCursor() async {
         while !state.isComplete {
-            try? await Task.sleep(for: .seconds(ThinkingAnimationState.Timing.cursorBlinkInterval))
+            do {
+                try await Task.sleep(for: .seconds(ThinkingAnimationState.Timing.cursorBlinkInterval))
+            } catch {
+                return
+            }
             if !state.isComplete {
                 state.toggleCursor()
             }

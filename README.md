@@ -16,15 +16,16 @@ Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanj
 
 - **Japanese Input** — Kana-kanji conversion from romaji input
 - **LLM-Assisted Input** — Switch to Claude-powered text generation with Ctrl+Space
-  - Inline suggestion: Popup near cursor showing generated candidates
+  - Inline suggestion: Popup near cursor with thinking animation and generated candidates
   - Chat window: Iteratively refine text through conversation
-- **Two LLM Backends** — Choose between Claude API or Claude CLI
+- **Two LLM Backends** — Choose between Claude API (claude-sonnet-4-20250514) or Claude CLI
+- **Liquid Glass UI** — Native macOS 26 glass morphism for suggestion and chat panels
 - **Settings UI** — Manage API key and CLI path via GUI
 
 ## Requirements
 
-- macOS 14.0+
-- Xcode 16.0+
+- macOS 26.0+
+- Xcode 26.0+
 - Swift 6
 
 ## Setup

@@ -9,12 +9,16 @@ import SwiftUI
 /// but cannot be statically proven to be MainActor-isolated.
 ///
 /// Uses NSHostingController to update rootView without recreating the panel,
-/// preserving ThinkingAnimationView's @State across loading → suggestion transitions.
+/// preserving ThinkingAnimationView's state across loading → suggestion transitions.
 @preconcurrency @MainActor
 final class InlineSuggestionWindow {
 
-    private var panel: NSPanel?
-    private var hostingController: NSHostingController<InlineSuggestionView>?
+    private struct ActivePanel {
+        let panel: NSPanel
+        let hostingController: NSHostingController<InlineSuggestionView>
+    }
+
+    private var activePanel: ActivePanel?
 
     nonisolated func show(suggestion: String, cursorRect: NSRect) {
         MainActor.assumeIsolated {
@@ -30,28 +34,27 @@ final class InlineSuggestionWindow {
 
     nonisolated func hide() {
         MainActor.assumeIsolated {
-            panel?.orderOut(nil)
-            panel = nil
-            hostingController = nil
+            activePanel?.panel.orderOut(nil)
+            activePanel = nil
         }
     }
 
     nonisolated var isVisible: Bool {
         MainActor.assumeIsolated {
-            panel?.isVisible ?? false
+            activePanel?.panel.isVisible ?? false
         }
     }
 
     private func updateOrCreate(suggestion: String?, cursorRect: NSRect) {
         let view = InlineSuggestionView(suggestion: suggestion)
 
-        if let hostingController, let panel {
-            hostingController.rootView = view
-            hostingController.view.layoutSubtreeIfNeeded()
-            let size = hostingController.view.fittingSize
-            panel.setContentSize(size)
+        if let active = activePanel {
+            active.hostingController.rootView = view
+            active.hostingController.view.layoutSubtreeIfNeeded()
+            let size = active.hostingController.view.fittingSize
+            active.panel.setContentSize(size)
             let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
-            panel.setFrameOrigin(origin)
+            active.panel.setFrameOrigin(origin)
             return
         }
 
@@ -64,20 +67,19 @@ final class InlineSuggestionWindow {
         let size = controller.view.fittingSize
         let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
 
-        let newPanel = NSPanel(
+        let panel = NSPanel(
             contentRect: NSRect(origin: origin, size: size),
             styleMask: [.nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
-        newPanel.level = .popUpMenu
-        newPanel.isOpaque = false
-        newPanel.backgroundColor = .clear
-        newPanel.hasShadow = false
-        newPanel.contentViewController = controller
-        newPanel.orderFront(nil)
+        panel.level = .popUpMenu
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = false
+        panel.contentViewController = controller
+        panel.orderFront(nil)
 
-        hostingController = controller
-        panel = newPanel
+        activePanel = ActivePanel(panel: panel, hostingController: controller)
     }
 }

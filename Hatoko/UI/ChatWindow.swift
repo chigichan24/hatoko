@@ -163,6 +163,11 @@ final class ChatWindowController {
         panel.onEscape = { [weak self] in self?.handleCancel() }
         activePanel = ActivePanel(panel: panel, hostingController: controller)
         panel.makeKeyAndOrderFront(nil)
+
+        // Re-measure after the panel is on screen. ScrollView reports near-zero
+        // height for fittingSize before the hosting view is attached to a window,
+        // so the initial panel size underestimates the message area.
+        refreshContent()
     }
 
     private func refreshContent() {

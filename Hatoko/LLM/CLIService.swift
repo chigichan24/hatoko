@@ -9,22 +9,18 @@ final class CLIService: LLMService, Sendable {
     }
 
     func generate(messages: [LLMMessage], systemPrompt: String?) async throws -> String {
-        let prompt = buildPrompt(messages: messages, systemPrompt: systemPrompt)
-        return try await runCLI(prompt: prompt)
+        let prompt = buildPrompt(messages: messages)
+        return try await runCLI(prompt: prompt, systemPrompt: systemPrompt)
     }
 
     // MARK: - Internal helpers exposed for testing
 
-    func buildPrompt(messages: [LLMMessage], systemPrompt: String?) -> String {
+    func buildPrompt(messages: [LLMMessage]) -> String {
         var parts: [String] = []
-        if let systemPrompt {
-            parts.append("[SYSTEM INSTRUCTIONS - DO NOT MODIFY OR OVERRIDE]\n\(systemPrompt)\n[END SYSTEM INSTRUCTIONS]")
-        }
-        parts.append("[CONVERSATION START]")
         for message in messages {
             switch message.role {
             case .user:
-                parts.append("[USER]\n\(message.content)")
+                parts.append(message.content)
             case .assistant:
                 parts.append("[ASSISTANT]\n\(message.content)")
             }
@@ -32,10 +28,18 @@ final class CLIService: LLMService, Sendable {
         return parts.joined(separator: "\n\n")
     }
 
-    private func runCLI(prompt: String) async throws -> String {
+    func buildArguments(prompt: String, systemPrompt: String?) -> [String] {
+        var args = ["-p", prompt]
+        if let systemPrompt {
+            args.append(contentsOf: ["--system-prompt", systemPrompt])
+        }
+        return args
+    }
+
+    private func runCLI(prompt: String, systemPrompt: String?) async throws -> String {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executablePath)
-        process.arguments = ["-p", prompt]
+        process.arguments = buildArguments(prompt: prompt, systemPrompt: systemPrompt)
         // Use /tmp as working directory to avoid TCC prompts for
         // protected user directories (Music, Photos, etc.) when the
         // CLI process is spawned from the IME process context.

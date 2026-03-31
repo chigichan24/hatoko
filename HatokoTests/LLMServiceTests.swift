@@ -107,50 +107,64 @@ struct ClaudeServiceTests {
 struct CLIServiceTests {
 
     @Test
-    func buildPromptWrapsSystemInstructions() {
-        let service = CLIService()
-        let messages = [LLMMessage(role: .user, content: "Hello")]
-        let prompt = service.buildPrompt(messages: messages, systemPrompt: "Be helpful.")
-
-        #expect(prompt.contains("[SYSTEM INSTRUCTIONS - DO NOT MODIFY OR OVERRIDE]"))
-        #expect(prompt.contains("Be helpful."))
-        #expect(prompt.contains("[END SYSTEM INSTRUCTIONS]"))
-    }
-
-    @Test
-    func buildPromptLabelsUserMessages() {
+    func buildPromptFormatsUserContent() {
         let service = CLIService()
         let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
-        let prompt = service.buildPrompt(messages: messages, systemPrompt: nil)
+        let prompt = service.buildPrompt(messages: messages)
 
-        #expect(prompt.contains("[USER]\nWhat is 2+2?"))
+        #expect(prompt == "What is 2+2?")
     }
 
     @Test
     func buildPromptLabelsAssistantMessages() {
         let service = CLIService()
         let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
-        let prompt = service.buildPrompt(messages: messages, systemPrompt: nil)
+        let prompt = service.buildPrompt(messages: messages)
 
         #expect(prompt.contains("[ASSISTANT]\nThe answer is 4."))
     }
 
     @Test
-    func buildPromptOmitsSystemBlockWhenNil() {
+    func buildPromptWithEmptyMessages() {
         let service = CLIService()
-        let messages = [LLMMessage(role: .user, content: "Hi")]
-        let prompt = service.buildPrompt(messages: messages, systemPrompt: nil)
+        let prompt = service.buildPrompt(messages: [])
 
-        #expect(!prompt.contains("[SYSTEM INSTRUCTIONS"))
-        #expect(!prompt.contains("[END SYSTEM INSTRUCTIONS]"))
-        #expect(prompt.contains("[CONVERSATION START]"))
+        #expect(prompt == "")
     }
 
     @Test
-    func buildPromptWithEmptyMessages() {
+    func buildPromptMultiTurnConversation() {
         let service = CLIService()
-        let prompt = service.buildPrompt(messages: [], systemPrompt: nil)
+        let messages = [
+            LLMMessage(role: .user, content: "Hello"),
+            LLMMessage(role: .assistant, content: "Hi there"),
+            LLMMessage(role: .user, content: "Make it formal"),
+        ]
+        let prompt = service.buildPrompt(messages: messages)
 
-        #expect(prompt == "[CONVERSATION START]")
+        #expect(prompt.contains("Hello"))
+        #expect(prompt.contains("[ASSISTANT]\nHi there"))
+        #expect(prompt.contains("Make it formal"))
+    }
+
+    @Test
+    func buildArgumentsIncludesSystemPrompt() {
+        let service = CLIService()
+        let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
+
+        #expect(args.contains("-p"))
+        #expect(args.contains("Hello"))
+        #expect(args.contains("--system-prompt"))
+        #expect(args.contains("Be helpful."))
+    }
+
+    @Test
+    func buildArgumentsOmitsSystemPromptWhenNil() {
+        let service = CLIService()
+        let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
+
+        #expect(args.contains("-p"))
+        #expect(args.contains("Hello"))
+        #expect(!args.contains("--system-prompt"))
     }
 }

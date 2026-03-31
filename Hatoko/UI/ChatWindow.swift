@@ -130,7 +130,11 @@ final class ChatWindowController {
         if let active = activePanel, active.panel.isVisible {
             active.hostingController.rootView = chatView
             active.hostingController.view.layoutSubtreeIfNeeded()
-            let size = active.hostingController.view.fittingSize
+            let fitting = active.hostingController.view.fittingSize
+            let size = NSSize(
+                width: fitting.width,
+                height: min(fitting.height, 500)
+            )
             active.panel.setContentSize(size)
             let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
             active.panel.setFrameOrigin(origin)
@@ -146,7 +150,11 @@ final class ChatWindowController {
     private func createPanel(chatView: ChatView, cursorRect: NSRect) {
         let controller = NSHostingController(rootView: chatView)
         controller.view.layoutSubtreeIfNeeded()
-        let size = controller.view.fittingSize
+        let fitting = controller.view.fittingSize
+        let size = NSSize(
+            width: fitting.width,
+            height: min(fitting.height, 500)
+        )
         let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
 
         let panel = KeyablePanel(

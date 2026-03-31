@@ -16,15 +16,16 @@ Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな
 
 - **日本語入力** — ローマ字入力からのかな漢字変換
 - **LLM アシスト入力** — Ctrl+Space で Claude による文章生成モードに切り替え
-  - インラインサジェスト: カーソル付近にポップアップで候補を表示
+  - インラインサジェスト: 思考アニメーション付きのポップアップでカーソル付近に候補を表示
   - チャットウィンドウ: 対話的に文章を推敲
-- **2つの LLM バックエンド** — Claude API または Claude CLI を選択可能
+- **2つの LLM バックエンド** — Claude API (claude-sonnet-4-20250514) または Claude CLI を選択可能
+- **Liquid Glass UI** — macOS 26 ネイティブのガラスモーフィズムによるサジェスト・チャットパネル
 - **設定画面** — API キー・CLI パスの設定を GUI で管理
 
 ## 動作環境
 
-- macOS 14.0+
-- Xcode 16.0+
+- macOS 26.0+
+- Xcode 26.0+
 - Swift 6
 
 ## セットアップ

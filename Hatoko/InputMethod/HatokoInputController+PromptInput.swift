@@ -248,6 +248,11 @@ extension HatokoInputController {
     }
 
     private func handlePromptPasteContext(client: any IMKTextInput) -> Bool {
+        if pasteContext != nil {
+            pasteContext = nil
+            updatePromptMarkedText(client: client)
+            return true
+        }
         guard let context = PasteContext.fromPasteboard() else {
             NSSound.beep()
             return true

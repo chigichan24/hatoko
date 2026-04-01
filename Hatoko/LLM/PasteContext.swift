@@ -8,6 +8,7 @@ struct PasteContext: Sendable, Equatable {
     }
 
     static func create(text: String) -> PasteContext? {
+        assert(PromptGuard.maxPasteContextLength > 0)
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return nil }
         let truncated = String(trimmed.prefix(PromptGuard.maxPasteContextLength))

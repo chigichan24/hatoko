@@ -28,7 +28,7 @@ extension HatokoInputController {
             return true
         }
 
-        // Import pasteboard text as LLM context with Ctrl+V
+        // Toggle pasteboard context with Ctrl+V: attach if absent, detach if present
         if isCtrlV(event: event) {
             return handlePromptPasteContext(client: client)
         }

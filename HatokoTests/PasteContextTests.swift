@@ -54,6 +54,18 @@ struct PasteContextTests {
     }
 
     @Test
+    func createPreservesInternalWhitespace() {
+        let context = PasteContext.create(text: "  hello world  ")
+        #expect(context?.text == "hello world")
+    }
+
+    @Test
+    func createPreservesInternalNewlines() {
+        let context = PasteContext.create(text: "\nline1\nline2\n")
+        #expect(context?.text == "line1\nline2")
+    }
+
+    @Test
     func createTruncatesLongText() {
         let longText = String(repeating: "a", count: PromptGuard.maxPasteContextLength + 500)
         let context = PasteContext.create(text: longText)

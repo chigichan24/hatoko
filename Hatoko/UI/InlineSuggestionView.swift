@@ -3,6 +3,7 @@ import SwiftUI
 struct InlineSuggestionView: View {
 
     let suggestion: String?
+    let hasContext: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -22,6 +23,10 @@ struct InlineSuggestionView: View {
             Text("Hatoko")
                 .font(.headline)
                 .foregroundStyle(.secondary)
+            if hasContext {
+                Text("📎")
+                    .accessibilityLabel("コンテキスト付き")
+            }
             Spacer()
         }
         .padding(.horizontal, 12)

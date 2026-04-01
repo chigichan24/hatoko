@@ -52,9 +52,4 @@ struct PromptGuardTests {
         let result = PromptGuard.validate(input)
         #expect(result == .tooLong(length: PromptGuard.maxPromptLength + 1, limit: PromptGuard.maxPromptLength))
     }
-
-    @Test
-    func maxPasteContextLengthIsPositive() {
-        #expect(PromptGuard.maxPasteContextLength > 0)
-    }
 }

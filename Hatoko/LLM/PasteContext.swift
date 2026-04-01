@@ -3,13 +3,22 @@ import Cocoa
 struct PasteContext: Sendable, Equatable {
     let text: String
 
+    private init(text: String) {
+        self.text = text
+    }
+
+    static func create(text: String) -> PasteContext? {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return nil }
+        let truncated = String(trimmed.prefix(PromptGuard.maxPasteContextLength))
+        return PasteContext(text: truncated)
+    }
+
     static func fromPasteboard() -> PasteContext? {
-        guard let text = NSPasteboard.general.string(forType: .string),
-              !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+        guard let text = NSPasteboard.general.string(forType: .string) else {
             return nil
         }
-        let trimmed = String(text.prefix(PromptGuard.maxPasteContextLength))
-        return PasteContext(text: trimmed)
+        return create(text: text)
     }
 
     static func buildSystemPrompt(base: String, context: PasteContext?) -> String {

@@ -16,7 +16,7 @@ struct PasteContextTests {
     @Test
     func buildSystemPromptWithContextInjectsText() {
         let base = "You are a helpful assistant."
-        let context = PasteContext(text: "clipboard content")
+        let context = PasteContext.create(text: "clipboard content")
         let result = PasteContext.buildSystemPrompt(base: base, context: context)
         #expect(result.contains("clipboard content"))
     }
@@ -24,16 +24,39 @@ struct PasteContextTests {
     @Test
     func buildSystemPromptPreservesBaseAtStart() {
         let base = "You are a helpful assistant."
-        let context = PasteContext(text: "some text")
+        let context = PasteContext.create(text: "some text")
         let result = PasteContext.buildSystemPrompt(base: base, context: context)
         #expect(result.hasPrefix(base))
     }
 
     @Test
-    func buildSystemPromptContainsContextText() {
+    func buildSystemPromptWrapsContextWithDelimiters() {
         let base = "Base prompt"
-        let context = PasteContext(text: "important reference")
+        let context = PasteContext.create(text: "important reference")
         let result = PasteContext.buildSystemPrompt(base: base, context: context)
-        #expect(result.contains("important reference"))
+        #expect(result.contains("---\nimportant reference\n---"))
+    }
+
+    @Test
+    func createReturnsNilForEmptyText() {
+        #expect(PasteContext.create(text: "") == nil)
+    }
+
+    @Test
+    func createReturnsNilForWhitespaceOnly() {
+        #expect(PasteContext.create(text: "   \n\t  ") == nil)
+    }
+
+    @Test
+    func createTrimsWhitespace() {
+        let context = PasteContext.create(text: "  hello  ")
+        #expect(context?.text == "hello")
+    }
+
+    @Test
+    func createTruncatesLongText() {
+        let longText = String(repeating: "a", count: PromptGuard.maxPasteContextLength + 500)
+        let context = PasteContext.create(text: longText)
+        #expect(context?.text.count == PromptGuard.maxPasteContextLength)
     }
 }

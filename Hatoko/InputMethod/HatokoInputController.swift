@@ -298,7 +298,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     private static func buildLLMMessages(from chatHistory: [ChatMessage]) -> [LLMMessage] {
-        chatHistory.suffix(PromptGuard.maxChatHistoryMessages).map { chatMessage in
+        let truncated = chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
+            .drop(while: { $0.role == .assistant })
+        return truncated.map { chatMessage in
             let role: LLMMessage.Role = switch chatMessage.role {
             case .user: .user
             case .assistant: .assistant
@@ -306,7 +308,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return LLMMessage(role: role, content: chatMessage.text)
         }
     }
-
     private func sendChatMessage(chatHistory: [ChatMessage]) {
         guard let lastMessage = chatHistory.last, lastMessage.role == .user else {
             assertionFailure("[Hatoko] sendChatMessage called without trailing user message")

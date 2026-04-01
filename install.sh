@@ -7,6 +7,18 @@ BUNDLE_ID="com.chigichan24.inputmethod.Hatoko"
 
 echo "=== Hatoko IME Installer ==="
 
+# Detect update vs fresh install
+IS_UPDATE=false
+if [ -d "${INSTALL_DIR}/${APP_NAME}" ]; then
+  IS_UPDATE=true
+fi
+
+# --clean flag forces fresh install path (full TIS re-registration)
+if [ "${1:-}" = "--clean" ]; then
+  IS_UPDATE=false
+  echo "(Clean install mode)"
+fi
+
 # 1. Generate Xcode project
 echo "[1/5] Generating Xcode project..."
 mint run xcodegen generate
@@ -33,13 +45,17 @@ if [ ! -d "$APP_PATH" ]; then
   exit 1
 fi
 
-# 3. Kill existing process and clean up
+# 3. Kill existing process
 echo "[3/5] Cleaning up..."
 killall Hatoko 2>/dev/null || true
-sleep 0.5
+for i in $(seq 1 10); do
+  pgrep -x Hatoko >/dev/null 2>&1 || break
+  sleep 0.5
+done
 
-# Unregister from TIS before removing
-swift -e '
+# On clean install, disable existing TIS sources before removing
+if [ "$IS_UPDATE" = false ]; then
+  swift -e '
 import Carbon
 import Foundation
 let sources = TISCreateInputSourceList(nil, true)?.takeRetainedValue() as? [TISInputSource] ?? []
@@ -51,11 +67,18 @@ for source in sources {
     }
 }
 ' 2>/dev/null || true
+fi
 
-# 4. Remove old and copy fresh
+# 4. Install
 echo "[4/5] Installing..."
-sudo rm -rf "${INSTALL_DIR}/${APP_NAME}"
-sudo cp -R "$APP_PATH" "$INSTALL_DIR/"
+if [ "$IS_UPDATE" = true ]; then
+  # Update: overwrite in place to preserve TIS registration
+  sudo rsync -a --delete "${APP_PATH}/" "${INSTALL_DIR}/${APP_NAME}/"
+else
+  # Fresh install: clean copy
+  sudo rm -rf "${INSTALL_DIR}/${APP_NAME}"
+  sudo cp -R "$APP_PATH" "$INSTALL_DIR/"
+fi
 
 # Re-register with LaunchServices
 /System/Library/Frameworks/CoreServices.framework/Versions/Current/Frameworks/LaunchServices.framework/Versions/Current/Support/lsregister -f "${INSTALL_DIR}/${APP_NAME}"
@@ -64,9 +87,10 @@ sudo cp -R "$APP_PATH" "$INSTALL_DIR/"
 open "${INSTALL_DIR}/${APP_NAME}"
 sleep 2
 
-# 5. Register and enable input source
+# 5. Register input source (fresh install only)
 echo "[5/5] Registering input source..."
-swift -e '
+if [ "$IS_UPDATE" = false ]; then
+  swift -e '
 import Carbon
 import Foundation
 
@@ -86,8 +110,17 @@ for source in sources {
 }
 if !found { print("  WARNING: Input source not found. Logout/login may be needed.") }
 '
+else
+  echo "  Skipped (update mode - TIS registration preserved)"
+fi
 
 echo ""
 echo "=== Done! ==="
-echo "If Hatoko appears in the menu bar input source, select it."
-echo "If not, logout and login once, then it should appear."
+if [ "$IS_UPDATE" = true ]; then
+  echo "Updated in place. Hatoko should be available immediately."
+  echo "If not working, try switching away from Hatoko and back."
+else
+  echo "First install complete."
+  echo "If Hatoko appears in the menu bar input source, select it."
+  echo "If not, logout and login once, then it should appear."
+fi

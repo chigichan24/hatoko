@@ -142,7 +142,7 @@ struct ChatView: View {
     }
 
     private func useButton(_ text: String) -> some View {
-        Button("これを使う ⌘V") {
+        Button("これを使う ⌘C") {
             onUse(text)
         }
         .buttonStyle(.bordered)

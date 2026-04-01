@@ -318,8 +318,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
-        // Build conversation history from full chat messages
-        let llmMessages = chatHistory.map { chatMessage in
+        // Truncate to recent messages to limit API cost and request size
+        let recentHistory = chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
+        let llmMessages = recentHistory.map { chatMessage in
             let role: LLMMessage.Role = switch chatMessage.role {
             case .user: .user
             case .assistant: .assistant

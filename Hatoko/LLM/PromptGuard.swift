@@ -2,6 +2,7 @@ struct PromptGuard: Sendable {
 
     static let maxPromptLength = 2000
     static let maxChatMessageLength = 1000
+    static let maxChatHistoryMessages = 20
 
     enum ValidationResult: Sendable, Equatable {
         case valid(String)

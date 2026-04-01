@@ -319,10 +319,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
         // Build conversation history from full chat messages
         let llmMessages = chatHistory.map { chatMessage in
-            LLMMessage(
-                role: chatMessage.role == .user ? .user : .assistant,
-                content: chatMessage.text
-            )
+            let role: LLMMessage.Role = switch chatMessage.role {
+            case .user: .user
+            case .assistant: .assistant
+            }
+            return LLMMessage(role: role, content: chatMessage.text)
         }
 
         Task {

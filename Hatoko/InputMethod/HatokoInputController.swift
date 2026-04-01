@@ -305,7 +305,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             case .user: .user
             case .assistant: .assistant
             }
-            return LLMMessage(role: role, content: chatMessage.text)
+            return LLMMessage(role: role, content: chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines))
         }
     }
     private func sendChatMessage(chatHistory: [ChatMessage]) {

@@ -24,9 +24,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         """
 
     private static let chatSystemPrompt = """
-        You are an IME text-refinement assistant. \
-        The user wants to revise or improve previously generated text. \
-        Reply with only the updated text — no explanations, no commentary. \
+        You are an IME text-generation assistant engaged in a multi-turn conversation. \
+        The user may ask you to generate, revise, or improve text based on the conversation so far. \
+        Use the full conversation history to understand context and intent. \
+        Reply with only the requested text — no explanations, no commentary. \
         Output plain text only (no markdown).
         """
 
@@ -83,7 +84,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     // MARK: - IMKInputController Overrides
-
     override init!(server: IMKServer!, delegate: Any!, client inputClient: Any!) {
         super.init(server: server, delegate: delegate, client: inputClient)
     }
@@ -270,8 +270,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             onUse: { [weak self] text in
                 self?.acceptChatText(text, client: capturedClient)
             },
-            onSend: { [weak self] message in
-                self?.sendChatMessage(message, previousPrompt: prompt)
+            onSend: { [weak self] chatHistory in
+                self?.sendChatMessage(chatHistory: chatHistory)
             },
             onCancel: { [weak self] in
                 self?.cancelLLMMode()
@@ -296,11 +296,26 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetLLMState()
     }
 
-    private func sendChatMessage(_ message: String, previousPrompt: String) {
-        let validatedMessage: String
-        switch PromptGuard.validate(message, maxLength: PromptGuard.maxChatMessageLength) {
-        case .valid(let text):
-            validatedMessage = text
+    static func buildLLMMessages(from chatHistory: [ChatMessage]) -> [LLMMessage] {
+        let truncated = chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
+            .drop(while: { $0.role == .assistant })
+        return truncated.map { chatMessage in
+            let role: LLMMessage.Role = switch chatMessage.role {
+            case .user: .user
+            case .assistant: .assistant
+            }
+            return LLMMessage(role: role, content: chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines))
+        }
+    }
+
+    private func sendChatMessage(chatHistory: [ChatMessage]) {
+        guard let lastMessage = chatHistory.last, lastMessage.role == .user else {
+            assertionFailure("[Hatoko] sendChatMessage called without trailing user message")
+            return
+        }
+        switch PromptGuard.validate(lastMessage.text, maxLength: PromptGuard.maxChatMessageLength) {
+        case .valid:
+            break
         case .tooLong:
             chatWindowController.addAssistantMessage("メッセージが長すぎます。短くしてください。")
             return
@@ -317,14 +332,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
-        // Build conversation history from chat messages
-        var llmMessages = [
-            LLMMessage(role: .user, content: previousPrompt),
-        ]
-        if let suggestion = llmSuggestion {
-            llmMessages.append(LLMMessage(role: .assistant, content: suggestion))
-        }
-        llmMessages.append(LLMMessage(role: .user, content: validatedMessage))
+        let llmMessages = Self.buildLLMMessages(from: chatHistory)
 
         Task {
             guard await Self.chatRateLimiter.tryAcquire() else {

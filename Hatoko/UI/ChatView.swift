@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct ChatMessage: Identifiable {
+struct ChatMessage: Identifiable, Sendable {
     let id = UUID()
     let role: ChatRole
     let text: String
 
-    enum ChatRole {
+    enum ChatRole: Sendable {
         case user
         case assistant
 

@@ -20,15 +20,15 @@ final class InlineSuggestionWindow {
 
     private var activePanel: ActivePanel?
 
-    nonisolated func show(suggestion: String, cursorRect: NSRect) {
+    nonisolated func show(suggestion: String, cursorRect: NSRect, hasContext: Bool = false) {
         MainActor.assumeIsolated {
-            updateOrCreate(suggestion: suggestion, cursorRect: cursorRect)
+            updateOrCreate(suggestion: suggestion, cursorRect: cursorRect, hasContext: hasContext)
         }
     }
 
-    nonisolated func showLoading(cursorRect: NSRect) {
+    nonisolated func showLoading(cursorRect: NSRect, hasContext: Bool = false) {
         MainActor.assumeIsolated {
-            updateOrCreate(suggestion: nil, cursorRect: cursorRect)
+            updateOrCreate(suggestion: nil, cursorRect: cursorRect, hasContext: hasContext)
         }
     }
 
@@ -45,8 +45,8 @@ final class InlineSuggestionWindow {
         }
     }
 
-    private func updateOrCreate(suggestion: String?, cursorRect: NSRect) {
-        let view = InlineSuggestionView(suggestion: suggestion)
+    private func updateOrCreate(suggestion: String?, cursorRect: NSRect, hasContext: Bool = false) {
+        let view = InlineSuggestionView(suggestion: suggestion, hasContext: hasContext)
 
         if let active = activePanel {
             active.hostingController.rootView = view

@@ -271,8 +271,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             onUse: { [weak self] text in
                 self?.acceptChatText(text, client: capturedClient)
             },
-            onSend: { [weak self] message, chatHistory in
-                self?.sendChatMessage(message, chatHistory: chatHistory)
+            onSend: { [weak self] chatHistory in
+                self?.sendChatMessage(chatHistory: chatHistory)
             },
             onCancel: { [weak self] in
                 self?.cancelLLMMode()
@@ -297,8 +297,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetLLMState()
     }
 
-    private func sendChatMessage(_ message: String, chatHistory: [ChatMessage]) {
-        switch PromptGuard.validate(message, maxLength: PromptGuard.maxChatMessageLength) {
+    private func sendChatMessage(chatHistory: [ChatMessage]) {
+        guard let lastMessage = chatHistory.last, lastMessage.role == .user else { return }
+        switch PromptGuard.validate(lastMessage.text, maxLength: PromptGuard.maxChatMessageLength) {
         case .valid:
             break
         case .tooLong:

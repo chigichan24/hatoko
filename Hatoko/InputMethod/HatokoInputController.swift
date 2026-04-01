@@ -14,7 +14,7 @@ import KanaKanjiConverterModuleWithDefaultDictionary
 final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
-    static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、"]
+    static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、", "~": "〜", "!": "！", "?": "？"]
     private static let inlineSystemPrompt = """
         You are an IME text-generation assistant. \
         The user gives a brief instruction; you reply with the requested text only. \

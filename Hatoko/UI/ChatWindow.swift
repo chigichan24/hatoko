@@ -52,12 +52,12 @@ final class ChatWindowController {
         let initialResponse: String
         let cursorRect: NSRect
         let onUse: @Sendable (String) -> Void
-        let onSend: @Sendable (String) -> Void
+        let onSend: @Sendable (String, [ChatMessage]) -> Void
         let onCancel: @Sendable () -> Void
     }
 
     private var onUseText: (@Sendable (String) -> Void)?
-    private var onSendMessage: (@Sendable (String) -> Void)?
+    private var onSendMessage: (@Sendable (String, [ChatMessage]) -> Void)?
     private var onCancel: (@Sendable () -> Void)?
 
     nonisolated func show(configuration: Configuration) {
@@ -189,7 +189,7 @@ final class ChatWindowController {
         inputText = ""
         isLoading = true
         refreshContent()
-        onSendMessage?(text)
+        onSendMessage?(text, messages)
     }
 
     private func handleUse(_ text: String) {

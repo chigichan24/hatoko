@@ -24,9 +24,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         """
 
     private static let chatSystemPrompt = """
-        You are an IME text-refinement assistant. \
-        The user wants to revise or improve previously generated text. \
-        Reply with only the updated text — no explanations, no commentary. \
+        You are an IME text-generation assistant engaged in a multi-turn conversation. \
+        The user may ask you to generate, revise, or improve text based on the conversation so far. \
+        Use the full conversation history to understand context and intent. \
+        Reply with only the requested text — no explanations, no commentary. \
         Output plain text only (no markdown).
         """
 
@@ -270,8 +271,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             onUse: { [weak self] text in
                 self?.acceptChatText(text, client: capturedClient)
             },
-            onSend: { [weak self] message in
-                self?.sendChatMessage(message, previousPrompt: prompt)
+            onSend: { [weak self] message, chatHistory in
+                self?.sendChatMessage(message, chatHistory: chatHistory)
             },
             onCancel: { [weak self] in
                 self?.cancelLLMMode()
@@ -296,11 +297,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetLLMState()
     }
 
-    private func sendChatMessage(_ message: String, previousPrompt: String) {
-        let validatedMessage: String
+    private func sendChatMessage(_ message: String, chatHistory: [ChatMessage]) {
         switch PromptGuard.validate(message, maxLength: PromptGuard.maxChatMessageLength) {
-        case .valid(let text):
-            validatedMessage = text
+        case .valid:
+            break
         case .tooLong:
             chatWindowController.addAssistantMessage("メッセージが長すぎます。短くしてください。")
             return
@@ -317,14 +317,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
-        // Build conversation history from chat messages
-        var llmMessages = [
-            LLMMessage(role: .user, content: previousPrompt),
-        ]
-        if let suggestion = llmSuggestion {
-            llmMessages.append(LLMMessage(role: .assistant, content: suggestion))
+        // Build conversation history from full chat messages
+        let llmMessages = chatHistory.map { chatMessage in
+            LLMMessage(
+                role: chatMessage.role == .user ? .user : .assistant,
+                content: chatMessage.text
+            )
         }
-        llmMessages.append(LLMMessage(role: .user, content: validatedMessage))
 
         Task {
             guard await Self.chatRateLimiter.tryAcquire() else {

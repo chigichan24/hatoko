@@ -297,8 +297,21 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetLLMState()
     }
 
+    private static func buildLLMMessages(from chatHistory: [ChatMessage]) -> [LLMMessage] {
+        chatHistory.suffix(PromptGuard.maxChatHistoryMessages).map { chatMessage in
+            let role: LLMMessage.Role = switch chatMessage.role {
+            case .user: .user
+            case .assistant: .assistant
+            }
+            return LLMMessage(role: role, content: chatMessage.text)
+        }
+    }
+
     private func sendChatMessage(chatHistory: [ChatMessage]) {
-        guard let lastMessage = chatHistory.last, lastMessage.role == .user else { return }
+        guard let lastMessage = chatHistory.last, lastMessage.role == .user else {
+            assertionFailure("[Hatoko] sendChatMessage called without trailing user message")
+            return
+        }
         switch PromptGuard.validate(lastMessage.text, maxLength: PromptGuard.maxChatMessageLength) {
         case .valid:
             break
@@ -318,15 +331,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
-        // Truncate to recent messages to limit API cost and request size
-        let recentHistory = chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
-        let llmMessages = recentHistory.map { chatMessage in
-            let role: LLMMessage.Role = switch chatMessage.role {
-            case .user: .user
-            case .assistant: .assistant
-            }
-            return LLMMessage(role: role, content: chatMessage.text)
-        }
+        let llmMessages = Self.buildLLMMessages(from: chatHistory)
 
         Task {
             guard await Self.chatRateLimiter.tryAcquire() else {

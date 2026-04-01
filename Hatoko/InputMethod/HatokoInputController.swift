@@ -38,6 +38,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // LLM prompt state
     var promptBuffer = ""
+    var pasteContext: PasteContext?
     /// The input mode that was active before entering LLM prompt mode.
     var llmBaseMode: LLMBaseMode = .japanese
     private var llmSuggestion: String?
@@ -151,27 +152,21 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         if chatWindowController.isVisible {
             return handleChatInput(event: event, client: client)
         }
-
         // Handle inline suggestion interactions (Stage 1)
         if inlineSuggestionWindow.isVisible {
             return handleInlineSuggestionInput(event: event, client: client)
         }
-
         // Handle LLM prompt input
         if inputMode == .llmPrompt {
             return handlePromptInput(event: event, client: client)
         }
-
         // Check for Ctrl+Space to activate LLM mode
         if isCtrlSpace(event: event) {
             activateLLMMode(client: client)
             return true
         }
 
-        if inputMode == .roman {
-            return false
-        }
-
+        if inputMode == .roman { return false }
         return handleJapaneseInput(event: event, client: client)
     }
 
@@ -226,6 +221,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         inputMode = llmBaseMode.inputMode
         promptBuffer = ""
         llmSuggestion = nil
+        pasteContext = nil
     }
 
     // MARK: - Inline Suggestion Handling (Stage 1)
@@ -540,7 +536,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     // MARK: - LLM Generation
 
-    func requestLLMGeneration(prompt: String, cursorRect: NSRect) {
+    func requestLLMGeneration(prompt: String, cursorRect: NSRect, pasteContext: PasteContext? = nil) {
         let service: any LLMService
         do {
             service = try LLMBackend.current.createService()
@@ -552,6 +548,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
+        let systemPrompt = PasteContext.buildSystemPrompt(base: Self.inlineSystemPrompt, context: pasteContext)
         Task {
             guard await Self.inlineRateLimiter.tryAcquire() else {
                 NSLog("[Hatoko] LLM request rate limited")
@@ -564,11 +561,12 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             do {
                 let result = try await service.generate(
                     messages: [LLMMessage(role: .user, content: prompt)],
-                    systemPrompt: Self.inlineSystemPrompt
+                    systemPrompt: systemPrompt
                 )
                 await MainActor.run {
                     self.llmSuggestion = result
-                    self.inlineSuggestionWindow.show(suggestion: result, cursorRect: cursorRect)
+                    self.inlineSuggestionWindow.show(
+                        suggestion: result, cursorRect: cursorRect, hasContext: pasteContext != nil)
                 }
             } catch {
                 NSLog("[Hatoko] LLM generation failed: \(error)")

@@ -15,6 +15,7 @@ extension HatokoInputController {
         llmBaseMode = LLMBaseMode(from: inputMode)
         inputMode = .llmPrompt
         promptBuffer = ""
+        pasteContext = nil
         updatePromptMarkedText(client: client)
     }
 
@@ -25,6 +26,11 @@ extension HatokoInputController {
         if isCtrlSpace(event: event) {
             toggleLLMBaseMode(client: client)
             return true
+        }
+
+        // Import pasteboard text as LLM context with Ctrl+V
+        if isCtrlV(event: event) {
+            return handlePromptPasteContext(client: client)
         }
 
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
@@ -67,8 +73,9 @@ extension HatokoInputController {
             clearMarkedText(client: client)
             let rect = cursorRect(client: client)
             lastCursorRect = rect
-            inlineSuggestionWindow.showLoading(cursorRect: rect)
-            requestLLMGeneration(prompt: prompt, cursorRect: rect)
+            let hasContext = pasteContext != nil
+            inlineSuggestionWindow.showLoading(cursorRect: rect, hasContext: hasContext)
+            requestLLMGeneration(prompt: prompt, cursorRect: rect, pasteContext: pasteContext)
         case .tooLong(let length, let limit):
             NSLog("[Hatoko] Prompt too long (%d chars, limit %d)", length, limit)
             NSSound.beep()
@@ -235,8 +242,23 @@ extension HatokoInputController {
         resetComposition()
     }
 
+    private func isCtrlV(event: NSEvent) -> Bool {
+        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        return event.keyCode == KeyCode.v && modifiers.contains(.control)
+    }
+
+    private func handlePromptPasteContext(client: any IMKTextInput) -> Bool {
+        guard let context = PasteContext.fromPasteboard() else {
+            NSSound.beep()
+            return true
+        }
+        pasteContext = context
+        updatePromptMarkedText(client: client)
+        return true
+    }
+
     private func updatePromptMarkedText(client: any IMKTextInput) {
-        let prefix = "✦ "
+        let prefix = pasteContext != nil ? "✦📎 " : "✦ "
         let result = NSMutableAttributedString()
 
         // Prefix + promptBuffer: pink, single underline

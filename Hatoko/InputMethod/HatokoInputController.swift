@@ -84,7 +84,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     // MARK: - IMKInputController Overrides
-
     override init!(server: IMKServer!, delegate: Any!, client inputClient: Any!) {
         super.init(server: server, delegate: delegate, client: inputClient)
     }
@@ -297,7 +296,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         resetLLMState()
     }
 
-    private static func buildLLMMessages(from chatHistory: [ChatMessage]) -> [LLMMessage] {
+    static func buildLLMMessages(from chatHistory: [ChatMessage]) -> [LLMMessage] {
         let truncated = chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
             .drop(while: { $0.role == .assistant })
         return truncated.map { chatMessage in
@@ -308,6 +307,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return LLMMessage(role: role, content: chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines))
         }
     }
+
     private func sendChatMessage(chatHistory: [ChatMessage]) {
         guard let lastMessage = chatHistory.last, lastMessage.role == .user else {
             assertionFailure("[Hatoko] sendChatMessage called without trailing user message")

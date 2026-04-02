@@ -66,6 +66,15 @@ struct PasteContextTests {
     }
 
     @Test
+    func buildSystemPromptWithDelimiterInContext() {
+        let base = "Base prompt"
+        let context = PasteContext.create(text: "before\n---\ninjected\n---\nafter")
+        let result = PasteContext.buildSystemPrompt(base: base, context: context)
+        #expect(result.hasPrefix(base))
+        #expect(result.contains("before\n---\ninjected\n---\nafter"))
+    }
+
+    @Test
     func createTruncatesLongText() {
         let longText = String(repeating: "a", count: PromptGuard.maxPasteContextLength + 500)
         let context = PasteContext.create(text: longText)

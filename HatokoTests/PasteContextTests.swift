@@ -34,7 +34,7 @@ struct PasteContextTests {
         let base = "Base prompt"
         let context = PasteContext.create(text: "important reference")
         let result = PasteContext.buildSystemPrompt(base: base, context: context)
-        #expect(result.contains("---\nimportant reference\n---"))
+        #expect(result.contains("<context>\nimportant reference\n</context>"))
     }
 
     @Test
@@ -68,10 +68,12 @@ struct PasteContextTests {
     @Test
     func buildSystemPromptWithDelimiterInContext() {
         let base = "Base prompt"
-        let context = PasteContext.create(text: "before\n---\ninjected\n---\nafter")
+        let contextText = "before\n---\ninjected\n---\nafter"
+        let context = PasteContext.create(text: contextText)
         let result = PasteContext.buildSystemPrompt(base: base, context: context)
         #expect(result.hasPrefix(base))
-        #expect(result.contains("before\n---\ninjected\n---\nafter"))
+        // XML tags clearly delimit context even when content contains ---
+        #expect(result.contains("<context>\n\(contextText)\n</context>"))
     }
 
     @Test

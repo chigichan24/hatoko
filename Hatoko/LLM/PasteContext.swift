@@ -30,9 +30,9 @@ struct PasteContext: Sendable, Equatable {
             \(base)
 
             The user has provided the following reference text as context:
-            ---
+            <context>
             \(context.text)
-            ---
+            </context>
             Use this context to understand what the user is referring to. \
             Generate text that is relevant to this context.
             """

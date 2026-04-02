@@ -169,7 +169,7 @@ struct ChatView: View {
         .background(Color.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("コンテキスト: \(String(context.text.prefix(200)))")
+        .accessibilityLabel("コンテキスト: \(String(context.text.prefix(PasteContext.maxAccessibilityPreviewLength)))")
     }
 
     private var inputArea: some View {

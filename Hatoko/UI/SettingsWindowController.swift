@@ -21,7 +21,10 @@ final class SettingsWindowController {
 
         let newWindow = NSWindow(contentViewController: hostingController)
         newWindow.title = "Hatoko 設定"
-        newWindow.styleMask = [.titled, .closable]
+        newWindow.styleMask = [.titled, .closable, .miniaturizable]
+        newWindow.titlebarSeparatorStyle = .none
+        newWindow.toolbarStyle = .unified
+        newWindow.level = .floating
         newWindow.center()
         newWindow.makeKeyAndOrderFront(nil)
 

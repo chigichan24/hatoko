@@ -330,7 +330,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
 
         let llmMessages = Self.buildLLMMessages(from: chatHistory)
-        // pasteContext is stable here: resetLLMState() only runs on cancel/accept, not mid-chat.
         let systemPrompt = PasteContext.buildSystemPrompt(base: Self.chatSystemPrompt, context: pasteContext)
 
         Task {

@@ -77,6 +77,18 @@ struct PasteContextTests {
     }
 
     @Test
+    func buildSystemPromptPreservesClosingTagInContext() {
+        // Context text containing </context> is passed through verbatim.
+        // LLM prompts are not programmatically parsed, so sanitization
+        // would alter user content without meaningful safety benefit.
+        let base = "Base"
+        let contextText = "code: </context> end"
+        let context = PasteContext.create(text: contextText)
+        let result = PasteContext.buildSystemPrompt(base: base, context: context)
+        #expect(result.contains(contextText))
+    }
+
+    @Test
     func createTruncatesLongText() {
         let longText = String(repeating: "a", count: PromptGuard.maxPasteContextLength + 500)
         let context = PasteContext.create(text: longText)

@@ -537,6 +537,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     // MARK: - LLM Generation
+
     func requestLLMGeneration(prompt: String, cursorRect: NSRect, pasteContext: PasteContext? = nil) {
         let service: any LLMService
         do {

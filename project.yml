@@ -34,6 +34,19 @@ targets:
         ENABLE_HARDENED_RUNTIME: false
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: Hatoko/Hatoko.entitlements
+    postBuildScripts:
+      - script: |
+          cd "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Resources"
+          for lproj in *.lproj; do
+            STRINGS="$lproj/InfoPlist.strings"
+            [ -f "$STRINGS" ] || continue
+            plutil -convert xml1 "$STRINGS"
+            if ! grep -q "CFBundleName" "$STRINGS"; then
+              sed -i '' 's|</dict>|<key>CFBundleName</key><string>Hatoko</string></dict>|' "$STRINGS"
+            fi
+            plutil -convert binary1 "$STRINGS"
+          done
+        name: Inject CFBundleName into InfoPlist.strings
   HatokoTests:
     type: bundle.unit-test
     platform: macOS

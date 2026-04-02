@@ -2,7 +2,6 @@ import Cocoa
 
 struct PasteContext: Sendable, Equatable {
     static let displayIcon = "\u{1f4ce}"
-    static let maxAccessibilityPreviewLength = 200
 
     let text: String
 

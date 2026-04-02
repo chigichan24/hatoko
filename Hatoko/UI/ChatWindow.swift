@@ -22,6 +22,8 @@ private class KeyablePanel: NSPanel {
         super.keyDown(with: event)
     }
 
+    // nonactivatingPanel does not participate in the main menu's key equivalent
+    // dispatch, so standard edit commands (Cmd+V/C/X/A) must be forwarded manually.
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if super.performKeyEquivalent(with: event) {
             return true

@@ -4,6 +4,38 @@ import Testing
 @testable import Hatoko
 
 @Suite
+struct LLMBackendTests {
+
+    @Test
+    func disabledBackendThrowsOnCreateService() {
+        #expect(throws: LLMBackendError.self) {
+            try LLMBackend.disabled.createService()
+        }
+    }
+
+    @Test
+    func disabledRawValueRoundTrip() {
+        let backend = LLMBackend(rawValue: "disabled")
+        #expect(backend == .disabled)
+    }
+
+    @Test
+    func disabledIsNotEnabled() {
+        #expect(!LLMBackend.disabled.isEnabled)
+    }
+
+    @Test
+    func claudeAPIIsEnabled() {
+        #expect(LLMBackend.claudeAPI.isEnabled)
+    }
+
+    @Test
+    func claudeCLIIsEnabled() {
+        #expect(LLMBackend.claudeCLI.isEnabled)
+    }
+}
+
+@Suite
 struct LLMMessageTests {
 
     @Test

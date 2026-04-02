@@ -1,6 +1,7 @@
 import Foundation
 
 enum LLMBackend: String, CaseIterable, Sendable {
+    case disabled = "disabled"
     case claudeAPI = "api"
     case claudeCLI = "cli"
 
@@ -9,6 +10,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     var displayName: String {
         switch self {
+        case .disabled: "無効 (Disabled)"
         case .claudeAPI: "Claude API"
         case .claudeCLI: "Claude CLI (claude -p)"
         }
@@ -16,8 +18,16 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     var description: String {
         switch self {
+        case .disabled: "LLM機能を使用しません"
         case .claudeAPI: "クラウドAPI経由。API Keyが必要"
         case .claudeCLI: "ローカルのClaude CLIを使用。API Key不要"
+        }
+    }
+
+    var isEnabled: Bool {
+        switch self {
+        case .disabled: false
+        case .claudeAPI, .claudeCLI: true
         }
     }
 
@@ -27,7 +37,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
         get {
             guard let raw = UserDefaults.standard.string(forKey: userDefaultsKey),
                   let backend = LLMBackend(rawValue: raw) else {
-                return .claudeCLI
+                return .disabled
             }
             return backend
         }
@@ -38,6 +48,8 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     func createService() throws -> any LLMService {
         switch self {
+        case .disabled:
+            throw LLMBackendError.disabled
         case .claudeAPI:
             guard let apiKey = KeychainHelper.load(key: Self.apiKeyKeychainKey)
                 ?? ProcessInfo.processInfo.environment["ANTHROPIC_API_KEY"],
@@ -68,4 +80,5 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
 enum LLMBackendError: Error {
     case apiKeyNotConfigured
+    case disabled
 }

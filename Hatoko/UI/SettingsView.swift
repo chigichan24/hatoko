@@ -29,6 +29,13 @@ struct SettingsView: View {
                 }
             }
 
+            if selectedBackend == .disabled {
+                Section("LLM 無効") {
+                    Text("LLM機能は無効です。Ctrl+Spaceは動作しません。")
+                        .foregroundStyle(.secondary)
+                }
+            }
+
             if selectedBackend == .claudeAPI {
                 Section("Claude API") {
                     SecureField("API Key", text: $apiKey)

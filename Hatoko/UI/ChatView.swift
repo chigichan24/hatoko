@@ -158,7 +158,7 @@ struct ChatView: View {
 
     private func contextBanner(_ context: PasteContext) -> some View {
         HStack(alignment: .top, spacing: 6) {
-            Text("\u{1f4ce}")
+            Text(PasteContext.displayIcon)
             Text(context.text)
                 .lineLimit(3)
                 .font(.caption)

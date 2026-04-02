@@ -1,6 +1,8 @@
 import Cocoa
 
 struct PasteContext: Sendable, Equatable {
+    static let displayIcon = "\u{1f4ce}"
+
     let text: String
 
     private init(text: String) {

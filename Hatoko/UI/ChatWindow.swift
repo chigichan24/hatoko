@@ -21,6 +21,24 @@ private class KeyablePanel: NSPanel {
         }
         super.keyDown(with: event)
     }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        if super.performKeyEquivalent(with: event) {
+            return true
+        }
+        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        guard modifiers == [.command] else { return false }
+
+        let action: Selector? = switch event.charactersIgnoringModifiers {
+        case "v": #selector(NSText.paste(_:))
+        case "c": #selector(NSText.copy(_:))
+        case "x": #selector(NSText.cut(_:))
+        case "a": #selector(NSText.selectAll(_:))
+        default: nil
+        }
+        guard let action else { return false }
+        return NSApp.sendAction(action, to: nil, from: self)
+    }
 }
 
 /// Manages the ephemeral chat window for LLM refinement.

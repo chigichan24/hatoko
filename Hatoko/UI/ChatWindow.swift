@@ -22,6 +22,8 @@ private class KeyablePanel: NSPanel {
         super.keyDown(with: event)
     }
 
+    // nonactivatingPanel does not participate in the main menu's key equivalent
+    // dispatch, so standard edit commands (Cmd+V/C/X/A) must be forwarded manually.
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if super.performKeyEquivalent(with: event) {
             return true
@@ -65,9 +67,11 @@ final class ChatWindowController {
     private var isLoading = false
     private var inputText = ""
     private var lastCursorRect: NSRect = .zero
+    private var pasteContext: PasteContext?
     struct Configuration: Sendable {
         let initialPrompt: String
         let initialResponse: String
+        let pasteContext: PasteContext?
         let cursorRect: NSRect
         let onUse: @Sendable (String) -> Void
         let onSend: @Sendable ([ChatMessage]) -> Void
@@ -86,6 +90,7 @@ final class ChatWindowController {
             ]
             self.isLoading = false
             self.inputText = ""
+            self.pasteContext = configuration.pasteContext
             self.onUseText = configuration.onUse
             self.onSendMessage = configuration.onSend
             self.onCancel = configuration.onCancel
@@ -113,6 +118,7 @@ final class ChatWindowController {
             self.activePanel?.panel.orderOut(nil)
             self.activePanel = nil
             self.messages = []
+            self.pasteContext = nil
             self.onUseText = nil
             self.onSendMessage = nil
             self.onCancel = nil
@@ -131,6 +137,7 @@ final class ChatWindowController {
         ChatView(
             messages: messages,
             isLoading: isLoading,
+            pasteContext: pasteContext,
             inputText: Binding(
                 get: { [weak self] in self?.inputText ?? "" },
                 set: { [weak self] in self?.inputText = $0 }

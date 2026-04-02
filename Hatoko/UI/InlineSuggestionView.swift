@@ -24,7 +24,7 @@ struct InlineSuggestionView: View {
                 .font(.headline)
                 .foregroundStyle(.secondary)
             if hasContext {
-                Text("📎")
+                Text(PasteContext.displayIcon)
                     .accessibilityLabel("コンテキスト付き")
             }
             Spacer()

@@ -29,6 +29,7 @@ struct ChatView: View {
 
     let messages: [ChatMessage]
     let isLoading: Bool
+    let pasteContext: PasteContext?
     let inputText: Binding<String>
     let onSend: () -> Void
     let onUse: (String) -> Void
@@ -67,6 +68,9 @@ struct ChatView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(spacing: 8) {
+                    if let pasteContext {
+                        contextBanner(pasteContext)
+                    }
                     ForEach(messages) { message in
                         messageBubble(message)
                             .id(message.id)
@@ -150,6 +154,22 @@ struct ChatView: View {
         .accessibilityHint(
             "このテキストを入力欄に挿入し、クリップボードにもコピーします"
         )
+    }
+
+    private func contextBanner(_ context: PasteContext) -> some View {
+        HStack(alignment: .top, spacing: 6) {
+            Text(PasteContext.displayIcon)
+            Text(context.text)
+                .lineLimit(3)
+                .font(.caption)
+        }
+        .foregroundStyle(.secondary)
+        .padding(8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.secondary.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("コンテキスト: \(String(context.text.prefix(200)))")
     }
 
     private var inputArea: some View {

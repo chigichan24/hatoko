@@ -34,7 +34,7 @@ struct PasteContextTests {
         let base = "Base prompt"
         let context = PasteContext.create(text: "important reference")
         let result = PasteContext.buildSystemPrompt(base: base, context: context)
-        #expect(result.contains("---\nimportant reference\n---"))
+        #expect(result.contains("<context>\nimportant reference\n</context>"))
     }
 
     @Test
@@ -63,6 +63,29 @@ struct PasteContextTests {
     func createPreservesInternalNewlines() {
         let context = PasteContext.create(text: "\nline1\nline2\n")
         #expect(context?.text == "line1\nline2")
+    }
+
+    @Test
+    func buildSystemPromptWithDelimiterInContext() {
+        let base = "Base prompt"
+        let contextText = "before\n---\ninjected\n---\nafter"
+        let context = PasteContext.create(text: contextText)
+        let result = PasteContext.buildSystemPrompt(base: base, context: context)
+        #expect(result.hasPrefix(base))
+        // XML tags clearly delimit context even when content contains ---
+        #expect(result.contains("<context>\n\(contextText)\n</context>"))
+    }
+
+    @Test
+    func buildSystemPromptPreservesClosingTagInContext() {
+        // Context text containing </context> is passed through verbatim.
+        // LLM prompts are not programmatically parsed, so sanitization
+        // would alter user content without meaningful safety benefit.
+        let base = "Base"
+        let contextText = "code: </context> end"
+        let context = PasteContext.create(text: contextText)
+        let result = PasteContext.buildSystemPrompt(base: base, context: context)
+        #expect(result.contains(contextText))
     }
 
     @Test

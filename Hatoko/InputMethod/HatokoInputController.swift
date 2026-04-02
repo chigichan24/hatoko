@@ -262,6 +262,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         chatWindowController.show(configuration: .init(
             initialPrompt: prompt,
             initialResponse: suggestion,
+            pasteContext: pasteContext,
             cursorRect: lastCursorRect,
             onUse: { [weak self] text in
                 self?.acceptChatText(text, client: capturedClient)
@@ -329,6 +330,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         }
 
         let llmMessages = Self.buildLLMMessages(from: chatHistory)
+        let systemPrompt = PasteContext.buildSystemPrompt(base: Self.chatSystemPrompt, context: pasteContext)
 
         Task {
             guard await Self.chatRateLimiter.tryAcquire() else {
@@ -341,7 +343,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             do {
                 let result = try await service.generate(
                     messages: llmMessages,
-                    systemPrompt: Self.chatSystemPrompt
+                    systemPrompt: systemPrompt
                 )
                 await MainActor.run {
                     self.llmSuggestion = result

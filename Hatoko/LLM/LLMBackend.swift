@@ -59,7 +59,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
             return ClaudeService(apiKey: apiKey)
         case .claudeCLI:
             let path = UserDefaults.standard.string(forKey: Self.cliPathDefaultsKey) ?? resolvedCLIPath()
-            return CLIService(executablePath: path)
+            return ClaudeCLIService(executablePath: path)
         }
     }
 

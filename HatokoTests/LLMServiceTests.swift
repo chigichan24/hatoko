@@ -136,11 +136,11 @@ struct ClaudeServiceTests {
 }
 
 @Suite
-struct CLIServiceTests {
+struct ClaudeCLIServiceTests {
 
     @Test
     func buildPromptFormatsUserContent() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
         let prompt = service.buildPrompt(messages: messages)
 
@@ -149,7 +149,7 @@ struct CLIServiceTests {
 
     @Test
     func buildPromptLabelsAssistantMessages() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
         let prompt = service.buildPrompt(messages: messages)
 
@@ -158,7 +158,7 @@ struct CLIServiceTests {
 
     @Test
     func buildPromptWithEmptyMessages() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let prompt = service.buildPrompt(messages: [])
 
         #expect(prompt == "")
@@ -166,7 +166,7 @@ struct CLIServiceTests {
 
     @Test
     func buildPromptMultiTurnConversation() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let messages = [
             LLMMessage(role: .user, content: "Hello"),
             LLMMessage(role: .assistant, content: "Hi there"),
@@ -181,7 +181,7 @@ struct CLIServiceTests {
 
     @Test
     func buildArgumentsIncludesSystemPrompt() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
 
         #expect(args.contains("-p"))
@@ -192,7 +192,7 @@ struct CLIServiceTests {
 
     @Test
     func buildArgumentsOmitsSystemPromptWhenNil() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
 
         #expect(args.contains("-p"))

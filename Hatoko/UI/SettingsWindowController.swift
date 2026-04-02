@@ -24,6 +24,7 @@ final class SettingsWindowController {
         newWindow.styleMask = [.titled, .closable, .miniaturizable]
         newWindow.titlebarSeparatorStyle = .none
         newWindow.toolbarStyle = .unified
+        newWindow.level = .floating
         newWindow.center()
         newWindow.makeKeyAndOrderFront(nil)
 

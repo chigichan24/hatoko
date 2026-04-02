@@ -11,3 +11,9 @@ struct LLMMessage: Sendable, Equatable {
 protocol LLMService: Sendable {
     func generate(messages: [LLMMessage], systemPrompt: String?) async throws -> String
 }
+
+enum LLMServiceError: Error, Sendable {
+    case invalidResponse
+    case apiError(statusCode: Int, message: String)
+    case emptyContent
+}

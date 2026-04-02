@@ -1,11 +1,5 @@
 import Foundation
 
-enum ClaudeServiceError: Error, Sendable {
-    case invalidResponse
-    case apiError(statusCode: Int, message: String)
-    case emptyContent
-}
-
 final class ClaudeService: LLMService, Sendable {
 
     private let apiKey: String
@@ -23,12 +17,12 @@ final class ClaudeService: LLMService, Sendable {
         let (data, response) = try await session.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
-            throw ClaudeServiceError.invalidResponse
+            throw LLMServiceError.invalidResponse
         }
 
         if !(200..<300).contains(httpResponse.statusCode) {
             let body = String(data: data, encoding: .utf8) ?? ""
-            throw ClaudeServiceError.apiError(statusCode: httpResponse.statusCode, message: body)
+            throw LLMServiceError.apiError(statusCode: httpResponse.statusCode, message: body)
         }
 
         return try parseResponse(data: data)
@@ -70,7 +64,7 @@ final class ClaudeService: LLMService, Sendable {
               let firstBlock = content.first,
               let text = firstBlock["text"] as? String
         else {
-            throw ClaudeServiceError.emptyContent
+            throw LLMServiceError.emptyContent
         }
         return text
     }

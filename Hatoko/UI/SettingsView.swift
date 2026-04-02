@@ -11,13 +11,6 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section {
-                Text("Hatoko 設定")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .accessibilityAddTraits(.isHeader)
-            }
-
             Section("LLM バックエンド") {
                 Picker("バックエンド", selection: $selectedBackend) {
                     ForEach(LLMBackend.allCases, id: \.self) { backend in
@@ -39,7 +32,6 @@ struct SettingsView: View {
             if selectedBackend == .claudeAPI {
                 Section("Claude API") {
                     SecureField("API Key", text: $apiKey)
-                        .textFieldStyle(.roundedBorder)
                         .accessibilityLabel("Claude API キー")
                     Button("保存") {
                         saveAPIKey()
@@ -56,7 +48,6 @@ struct SettingsView: View {
             if selectedBackend == .claudeCLI {
                 Section("Claude CLI") {
                     TextField("パス", text: $cliPath, prompt: Text("自動検出"))
-                        .textFieldStyle(.roundedBorder)
                         .accessibilityLabel("Claude CLI パス")
                     Button("保存") {
                         saveCLIPath()
@@ -76,7 +67,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 420, height: 380)
+        .frame(minWidth: 420, idealWidth: 420, minHeight: 200, idealHeight: 320)
         .onAppear {
             apiKey = KeychainHelper.load(key: Self.apiKeyKeychainKey) ?? ""
             selectedBackend = .current

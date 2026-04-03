@@ -270,9 +270,9 @@ struct GeminiCLIServiceTests {
     }
 
     @Test
-    func buildArgumentsWithSystemPrompt() {
+    func buildArgumentsWithSystemPromptEmbedded() {
         let service = GeminiCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
-        #expect(args == ["-p", "Hello", "--system-prompt", "Be helpful."])
+        #expect(args == ["-p", "[System Instructions]\nBe helpful.\n\n[User Request]\nHello"])
     }
 }

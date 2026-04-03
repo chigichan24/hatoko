@@ -1,8 +1,8 @@
 import Foundation
 
 /// Experimental: Uses the Gemini CLI from google-gemini/gemini-cli.
-/// Install via `npm install -g @anthropic-ai/gemini-cli`, then run as:
-/// `gemini -p "prompt"`
+/// See https://github.com/google-gemini/gemini-cli for installation.
+/// Usage: `gemini -p "prompt"`
 final class GeminiCLIService: LLMService, Sendable {
 
     private let executablePath: String

@@ -136,8 +136,8 @@ enum LLMBackend: String, CaseIterable, Sendable {
             return Self.findExecutable(name: "gemini", extraPaths: [
                 NSString("~/.local/bin/gemini").expandingTildeInPath,
             ])
-        default:
-            return ""
+        case .disabled, .claudeAPI, .openaiAPI, .geminiAPI:
+            preconditionFailure("resolvedCLIPath called on non-CLI backend: \(self)")
         }
     }
 

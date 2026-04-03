@@ -13,6 +13,7 @@ protocol LLMService: Sendable {
 }
 
 enum LLMServiceError: Error, Sendable {
+    case invalidRequest(reason: String)
     case invalidResponse
     case apiError(statusCode: Int, message: String)
     case emptyContent

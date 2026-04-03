@@ -1,8 +1,12 @@
 import Foundation
 
-struct CLIRunner: Sendable {
+enum CLIRunner {
 
-    private init() {}
+    struct ProcessResult: Sendable {
+        let output: Data
+        let error: Data
+        let terminationStatus: Int32
+    }
 
     static func buildPrompt(messages: [LLMMessage]) -> String {
         var parts: [String] = []
@@ -43,19 +47,19 @@ struct CLIRunner: Sendable {
 
         // Read pipe data and wait for exit on a detached task to avoid
         // deadlock when output exceeds the pipe buffer.
-        let (outputData, errorData, terminationStatus) = await Task.detached {
+        let result = await Task.detached {
             let outData = outputPipe.fileHandleForReading.readDataToEndOfFile()
             let errData = errorPipe.fileHandleForReading.readDataToEndOfFile()
             process.waitUntilExit()
-            return (outData, errData, process.terminationStatus)
+            return ProcessResult(output: outData, error: errData, terminationStatus: process.terminationStatus)
         }.value
 
-        let output = String(data: outputData, encoding: .utf8)?
+        let output = String(data: result.output, encoding: .utf8)?
             .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
 
-        if terminationStatus != 0 {
-            let errorMessage = String(data: errorData, encoding: .utf8) ?? "Unknown error"
-            throw CLIRunnerError.processExited(status: terminationStatus, stderr: errorMessage)
+        if result.terminationStatus != 0 {
+            let errorMessage = String(data: result.error, encoding: .utf8) ?? "Unknown error"
+            throw CLIRunnerError.processExited(status: result.terminationStatus, stderr: errorMessage)
         }
         if output.isEmpty {
             throw CLIRunnerError.emptyOutput

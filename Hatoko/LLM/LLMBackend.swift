@@ -21,9 +21,9 @@ enum LLMBackend: String, CaseIterable, Sendable {
         case .claudeAPI: "Claude API"
         case .claudeCLI: "Claude CLI (claude -p)"
         case .openaiAPI: "OpenAI API"
-        case .openaiCLI: "OpenAI CLI (実験的)"
+        case .openaiCLI: "OpenAI CLI (Experimental)"
         case .geminiAPI: "Gemini API"
-        case .geminiCLI: "Gemini CLI (実験的)"
+        case .geminiCLI: "Gemini CLI (Experimental)"
         }
     }
 
@@ -33,9 +33,9 @@ enum LLMBackend: String, CaseIterable, Sendable {
         case .claudeAPI: "Anthropic API経由。API Keyが必要"
         case .claudeCLI: "ローカルのClaude CLIを使用。API Key不要"
         case .openaiAPI: "OpenAI API経由。API Keyが必要"
-        case .openaiCLI: "openai CLIを使用（実験的）。Pythonパッケージが必要"
+        case .openaiCLI: "openai CLIを使用（Experimental）。Pythonパッケージが必要"
         case .geminiAPI: "Google Gemini API経由。API Keyが必要"
-        case .geminiCLI: "gemini CLIを使用（実験的）。gemini-cliが必要"
+        case .geminiCLI: "gemini CLIを使用（Experimental）。gemini-cliが必要"
         }
     }
 

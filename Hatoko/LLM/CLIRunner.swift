@@ -1,6 +1,8 @@
 import Foundation
 
-enum CLIRunner {
+struct CLIRunner: Sendable {
+
+    private init() {}
 
     static func buildPrompt(messages: [LLMMessage]) -> String {
         var parts: [String] = []

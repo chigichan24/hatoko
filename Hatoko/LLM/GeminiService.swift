@@ -14,17 +14,7 @@ final class GeminiService: LLMService, Sendable {
 
     func generate(messages: [LLMMessage], systemPrompt: String?) async throws -> String {
         let request = try buildRequest(messages: messages, systemPrompt: systemPrompt)
-        let (data, response) = try await session.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw LLMServiceError.invalidResponse
-        }
-
-        if !(200..<300).contains(httpResponse.statusCode) {
-            let body = String(data: data, encoding: .utf8) ?? ""
-            throw LLMServiceError.apiError(statusCode: httpResponse.statusCode, message: body)
-        }
-
+        let data = try await APIServiceHelper.execute(request: request, session: session)
         return try parseResponse(data: data)
     }
 

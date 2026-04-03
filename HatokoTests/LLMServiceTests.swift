@@ -90,6 +90,41 @@ struct LLMBackendTests {
 }
 
 @Suite
+struct CLIRunnerTests {
+
+    @Test
+    func buildPromptFormatsUserContent() {
+        let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
+        #expect(CLIRunner.buildPrompt(messages: messages) == "What is 2+2?")
+    }
+
+    @Test
+    func buildPromptLabelsAssistantMessages() {
+        let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
+        let prompt = CLIRunner.buildPrompt(messages: messages)
+        #expect(prompt.contains("[ASSISTANT]\nThe answer is 4."))
+    }
+
+    @Test
+    func buildPromptWithEmptyMessages() {
+        #expect(CLIRunner.buildPrompt(messages: []) == "")
+    }
+
+    @Test
+    func buildPromptMultiTurnConversation() {
+        let messages = [
+            LLMMessage(role: .user, content: "Hello"),
+            LLMMessage(role: .assistant, content: "Hi there"),
+            LLMMessage(role: .user, content: "Make it formal"),
+        ]
+        let prompt = CLIRunner.buildPrompt(messages: messages)
+        #expect(prompt.contains("Hello"))
+        #expect(prompt.contains("[ASSISTANT]\nHi there"))
+        #expect(prompt.contains("Make it formal"))
+    }
+}
+
+@Suite
 struct LLMMessageTests {
 
     @Test
@@ -191,47 +226,6 @@ struct ClaudeServiceTests {
 
 @Suite
 struct ClaudeCLIServiceTests {
-
-    @Test
-    func buildPromptFormatsUserContent() {
-        let service = ClaudeCLIService()
-        let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
-        let prompt = service.buildPrompt(messages: messages)
-
-        #expect(prompt == "What is 2+2?")
-    }
-
-    @Test
-    func buildPromptLabelsAssistantMessages() {
-        let service = ClaudeCLIService()
-        let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
-        let prompt = service.buildPrompt(messages: messages)
-
-        #expect(prompt.contains("[ASSISTANT]\nThe answer is 4."))
-    }
-
-    @Test
-    func buildPromptWithEmptyMessages() {
-        let service = ClaudeCLIService()
-        let prompt = service.buildPrompt(messages: [])
-
-        #expect(prompt == "")
-    }
-
-    @Test
-    func buildPromptMultiTurnConversation() {
-        let service = ClaudeCLIService()
-        let messages = [
-            LLMMessage(role: .user, content: "Hello"),
-            LLMMessage(role: .assistant, content: "Hi there"),
-            LLMMessage(role: .user, content: "Make it formal"),
-        ]
-        let prompt = service.buildPrompt(messages: messages)
-
-        #expect(prompt.contains("Hello"))
-        #expect(prompt.contains("[ASSISTANT]\nHi there"))
-        #expect(prompt.contains("Make it formal"))
-    }
 
     @Test
     func buildArgumentsIncludesSystemPrompt() {

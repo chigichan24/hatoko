@@ -2,6 +2,19 @@ import Foundation
 
 enum CLIRunner {
 
+    static func buildPrompt(messages: [LLMMessage]) -> String {
+        var parts: [String] = []
+        for message in messages {
+            switch message.role {
+            case .user:
+                parts.append(message.content)
+            case .assistant:
+                parts.append("[ASSISTANT]\n\(message.content)")
+            }
+        }
+        return parts.joined(separator: "\n\n")
+    }
+
     static func run(
         executablePath: String,
         arguments: [String],

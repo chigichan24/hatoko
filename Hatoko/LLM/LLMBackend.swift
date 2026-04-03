@@ -84,30 +84,18 @@ enum LLMBackend: String, CaseIterable, Sendable {
         switch self {
         case .disabled:
             throw LLMBackendError.disabled
-        case .claudeAPI, .openaiAPI, .geminiAPI:
-            return try createAPIService()
-        case .claudeCLI, .openaiCLI, .geminiCLI:
-            return createCLIService()
-        }
-    }
-
-    private func createAPIService() throws -> any LLMService {
-        let apiKey = try resolveAPIKey()
-        switch self {
-        case .claudeAPI: return ClaudeService(apiKey: apiKey)
-        case .openaiAPI: return OpenAIService(apiKey: apiKey)
-        case .geminiAPI: return GeminiService(apiKey: apiKey)
-        default: fatalError("unreachable: non-API case in createAPIService")
-        }
-    }
-
-    private func createCLIService() -> any LLMService {
-        let path = resolvedCLIPathWithUserDefault()
-        switch self {
-        case .claudeCLI: return ClaudeCLIService(executablePath: path)
-        case .openaiCLI: return OpenAICLIService(executablePath: path)
-        case .geminiCLI: return GeminiCLIService(executablePath: path)
-        default: fatalError("unreachable: non-CLI case in createCLIService")
+        case .claudeAPI:
+            return ClaudeService(apiKey: try resolveAPIKey())
+        case .openaiAPI:
+            return OpenAIService(apiKey: try resolveAPIKey())
+        case .geminiAPI:
+            return GeminiService(apiKey: try resolveAPIKey())
+        case .claudeCLI:
+            return ClaudeCLIService(executablePath: resolvedCLIPathWithUserDefault())
+        case .openaiCLI:
+            return OpenAICLIService(executablePath: resolvedCLIPathWithUserDefault())
+        case .geminiCLI:
+            return GeminiCLIService(executablePath: resolvedCLIPathWithUserDefault())
         }
     }
 

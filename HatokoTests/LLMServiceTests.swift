@@ -3,7 +3,7 @@ import Testing
 
 @testable import Hatoko
 
-@Suite
+@Suite(.serialized)
 struct LLMBackendTests {
 
     @Test
@@ -32,6 +32,60 @@ struct LLMBackendTests {
     @Test
     func claudeCLIIsEnabled() {
         #expect(LLMBackend.claudeCLI.isEnabled)
+    }
+
+    @Test
+    func openaiAPIIsEnabled() {
+        #expect(LLMBackend.openaiAPI.isEnabled)
+    }
+
+    @Test
+    func openaiCLIIsEnabled() {
+        #expect(LLMBackend.openaiCLI.isEnabled)
+    }
+
+    @Test
+    func geminiAPIIsEnabled() {
+        #expect(LLMBackend.geminiAPI.isEnabled)
+    }
+
+    @Test
+    func geminiCLIIsEnabled() {
+        #expect(LLMBackend.geminiCLI.isEnabled)
+    }
+
+    @Test
+    func rawValueRoundTripForAllCases() {
+        for backend in LLMBackend.allCases {
+            #expect(LLMBackend(rawValue: backend.rawValue) == backend)
+        }
+    }
+
+    @Test
+    func migrateOldAPIValue() {
+        let key = "llm_backend"
+        UserDefaults.standard.set("api", forKey: key)
+        LLMBackend.migrateIfNeeded()
+        #expect(UserDefaults.standard.string(forKey: key) == "claude_api")
+        UserDefaults.standard.removeObject(forKey: key)
+    }
+
+    @Test
+    func migrateOldCLIValue() {
+        let key = "llm_backend"
+        UserDefaults.standard.set("cli", forKey: key)
+        LLMBackend.migrateIfNeeded()
+        #expect(UserDefaults.standard.string(forKey: key) == "claude_cli")
+        UserDefaults.standard.removeObject(forKey: key)
+    }
+
+    @Test
+    func migrateDoesNotChangeNewValues() {
+        let key = "llm_backend"
+        UserDefaults.standard.set("openai_api", forKey: key)
+        LLMBackend.migrateIfNeeded()
+        #expect(UserDefaults.standard.string(forKey: key) == "openai_api")
+        UserDefaults.standard.removeObject(forKey: key)
     }
 }
 

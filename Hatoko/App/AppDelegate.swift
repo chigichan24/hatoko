@@ -7,6 +7,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var server: IMKServer?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        LLMBackend.migrateIfNeeded()
         guard let connectionName = Bundle.main.infoDictionary?["InputMethodConnectionName"] as? String else {
             fatalError("InputMethodConnectionName is not configured in Info.plist")
         }

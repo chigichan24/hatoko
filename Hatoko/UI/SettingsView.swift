@@ -2,8 +2,6 @@ import SwiftUI
 
 struct SettingsView: View {
 
-    private static let apiKeyKeychainKey = LLMBackend.apiKeyKeychainKey
-
     @State private var apiKey: String = ""
     @State private var selectedBackend: LLMBackend = .current
     @State private var cliPath: String = ""
@@ -26,38 +24,16 @@ struct SettingsView: View {
                 .pickerStyle(.radioGroup)
                 .onChange(of: selectedBackend) {
                     LLMBackend.current = selectedBackend
+                    loadSettingsForBackend(selectedBackend)
                 }
             }
 
-            if selectedBackend == .claudeAPI {
-                Section("Claude API") {
-                    SecureField("API Key", text: $apiKey)
-                        .accessibilityLabel("Claude API キー")
-                    Button("保存") {
-                        saveAPIKey()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    if isSaved {
-                        Text("保存しました")
-                            .font(.caption)
-                            .foregroundStyle(.green)
-                    }
-                }
-            }
-
-            if selectedBackend == .claudeCLI {
-                Section("Claude CLI") {
-                    TextField("パス", text: $cliPath, prompt: Text("自動検出"))
-                        .accessibilityLabel("Claude CLI パス")
-                    Button("保存") {
-                        saveCLIPath()
-                    }
-                    .buttonStyle(.borderedProminent)
-                    Text("claude -p でプロンプトを送信します")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
+            SettingsBackendSection(
+                backend: selectedBackend,
+                apiKey: $apiKey,
+                cliPath: $cliPath,
+                isSaved: $isSaved
+            )
 
             Section("キーバインド") {
                 Text("Ctrl + Space: LLMアシストモード")
@@ -67,37 +43,25 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(minWidth: 420, idealWidth: 420, minHeight: 200, idealHeight: 320)
+        .frame(minWidth: 420, idealWidth: 420, minHeight: 200, idealHeight: 400)
         .onAppear {
-            apiKey = KeychainHelper.load(key: Self.apiKeyKeychainKey) ?? ""
             selectedBackend = .current
-            cliPath = UserDefaults.standard.string(forKey: LLMBackend.cliPathDefaultsKey) ?? ""
+            loadSettingsForBackend(selectedBackend)
         }
     }
 
-    private func saveAPIKey() {
-        do {
-            try KeychainHelper.save(key: Self.apiKeyKeychainKey, value: apiKey)
-            showSaved()
-        } catch {
-            NSLog("[Hatoko] Failed to save API key: \(error)")
+    private func loadSettingsForBackend(_ backend: LLMBackend) {
+        switch backend.configKind {
+        case .disabled:
+            apiKey = ""
+            cliPath = ""
+        case .api(let keychainKey, _):
+            apiKey = KeychainHelper.load(key: keychainKey) ?? ""
+            cliPath = ""
+        case .cli(let defaultsKey):
+            apiKey = ""
+            cliPath = UserDefaults.standard.string(forKey: defaultsKey) ?? ""
         }
-    }
-
-    private func saveCLIPath() {
-        let trimmed = cliPath.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            UserDefaults.standard.removeObject(forKey: LLMBackend.cliPathDefaultsKey)
-        } else {
-            UserDefaults.standard.set(trimmed, forKey: LLMBackend.cliPathDefaultsKey)
-        }
-        showSaved()
-    }
-
-    private func showSaved() {
-        isSaved = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            isSaved = false
-        }
+        isSaved = false
     }
 }

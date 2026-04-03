@@ -1,12 +1,12 @@
 import Foundation
 
-final class ClaudeService: LLMService, Sendable {
+final class OpenAIService: LLMService, Sendable {
 
     private let apiKey: String
     private let model: String
     private let session: URLSession
 
-    init(apiKey: String, model: String = "claude-sonnet-4-20250514", session: URLSession = .shared) {
+    init(apiKey: String, model: String = "gpt-4o", session: URLSession = .shared) {
         self.apiKey = apiKey
         self.model = model
         self.session = session
@@ -21,7 +21,7 @@ final class ClaudeService: LLMService, Sendable {
     // MARK: - Internal helpers exposed for testing
 
     private static let apiURL: URL = {
-        guard let url = URL(string: "https://api.anthropic.com/v1/messages") else {
+        guard let url = URL(string: "https://api.openai.com/v1/chat/completions") else {
             fatalError("Invalid API URL literal")
         }
         return url
@@ -30,19 +30,24 @@ final class ClaudeService: LLMService, Sendable {
     func buildRequest(messages: [LLMMessage], systemPrompt: String?) throws -> URLRequest {
         var request = URLRequest(url: Self.apiURL)
         request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
-        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
 
-        var body: [String: Any] = [
-            "model": model,
-            "max_tokens": 1024,
-            "messages": messages.map { ["role": $0.role.rawValue, "content": $0.content] },
-        ]
+        var apiMessages: [[String: String]] = []
 
         if let systemPrompt {
-            body["system"] = systemPrompt
+            apiMessages.append(["role": "system", "content": systemPrompt])
         }
+
+        for message in messages {
+            apiMessages.append(["role": message.role.rawValue, "content": message.content])
+        }
+
+        let body: [String: Any] = [
+            "model": model,
+            "max_tokens": 1024,
+            "messages": apiMessages,
+        ]
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
         return request
@@ -50,12 +55,13 @@ final class ClaudeService: LLMService, Sendable {
 
     private func parseResponse(data: Data) throws -> String {
         guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let content = json["content"] as? [[String: Any]],
-              let firstBlock = content.first,
-              let text = firstBlock["text"] as? String
+              let choices = json["choices"] as? [[String: Any]],
+              let firstChoice = choices.first,
+              let message = firstChoice["message"] as? [String: Any],
+              let content = message["content"] as? String
         else {
             throw LLMServiceError.emptyContent
         }
-        return text
+        return content
     }
 }

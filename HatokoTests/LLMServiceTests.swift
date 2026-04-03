@@ -3,6 +3,125 @@ import Testing
 
 @testable import Hatoko
 
+@Suite(.serialized)
+struct LLMBackendTests {
+
+    @Test
+    func disabledBackendThrowsOnCreateService() {
+        #expect(throws: LLMBackendError.self) {
+            try LLMBackend.disabled.createService()
+        }
+    }
+
+    @Test
+    func disabledRawValueRoundTrip() {
+        let backend = LLMBackend(rawValue: "disabled")
+        #expect(backend == .disabled)
+    }
+
+    @Test
+    func disabledIsNotEnabled() {
+        #expect(!LLMBackend.disabled.isEnabled)
+    }
+
+    @Test
+    func claudeAPIIsEnabled() {
+        #expect(LLMBackend.claudeAPI.isEnabled)
+    }
+
+    @Test
+    func claudeCLIIsEnabled() {
+        #expect(LLMBackend.claudeCLI.isEnabled)
+    }
+
+    @Test
+    func openaiAPIIsEnabled() {
+        #expect(LLMBackend.openaiAPI.isEnabled)
+    }
+
+    @Test
+    func openaiCLIIsEnabled() {
+        #expect(LLMBackend.openaiCLI.isEnabled)
+    }
+
+    @Test
+    func geminiAPIIsEnabled() {
+        #expect(LLMBackend.geminiAPI.isEnabled)
+    }
+
+    @Test
+    func geminiCLIIsEnabled() {
+        #expect(LLMBackend.geminiCLI.isEnabled)
+    }
+
+    @Test
+    func rawValueRoundTripForAllCases() {
+        for backend in LLMBackend.allCases {
+            #expect(LLMBackend(rawValue: backend.rawValue) == backend)
+        }
+    }
+
+    @Test
+    func migrateOldAPIValue() {
+        let key = "llm_backend"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
+        UserDefaults.standard.set("api", forKey: key)
+        LLMBackend.migrateIfNeeded()
+        #expect(UserDefaults.standard.string(forKey: key) == "claude_api")
+    }
+
+    @Test
+    func migrateOldCLIValue() {
+        let key = "llm_backend"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
+        UserDefaults.standard.set("cli", forKey: key)
+        LLMBackend.migrateIfNeeded()
+        #expect(UserDefaults.standard.string(forKey: key) == "claude_cli")
+    }
+
+    @Test
+    func migrateDoesNotChangeNewValues() {
+        let key = "llm_backend"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
+        UserDefaults.standard.set("openai_api", forKey: key)
+        LLMBackend.migrateIfNeeded()
+        #expect(UserDefaults.standard.string(forKey: key) == "openai_api")
+    }
+}
+
+@Suite
+struct CLIRunnerTests {
+
+    @Test
+    func buildPromptFormatsUserContent() {
+        let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
+        #expect(CLIRunner.buildPrompt(messages: messages) == "What is 2+2?")
+    }
+
+    @Test
+    func buildPromptLabelsAssistantMessages() {
+        let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
+        let prompt = CLIRunner.buildPrompt(messages: messages)
+        #expect(prompt.contains("[ASSISTANT]\nThe answer is 4."))
+    }
+
+    @Test
+    func buildPromptWithEmptyMessages() {
+        #expect(CLIRunner.buildPrompt(messages: []) == "")
+    }
+
+    @Test
+    func buildPromptMultiTurnConversation() {
+        let messages = [
+            LLMMessage(role: .user, content: "Hello"),
+            LLMMessage(role: .assistant, content: "Hi there"),
+            LLMMessage(role: .user, content: "Make it formal"),
+        ]
+        let prompt = CLIRunner.buildPrompt(messages: messages)
+        #expect(prompt == "Hello\n\n[ASSISTANT]\nHi there\n\nMake it formal")
+    }
+}
+
 @Suite
 struct LLMMessageTests {
 
@@ -104,67 +223,56 @@ struct ClaudeServiceTests {
 }
 
 @Suite
-struct CLIServiceTests {
-
-    @Test
-    func buildPromptFormatsUserContent() {
-        let service = CLIService()
-        let messages = [LLMMessage(role: .user, content: "What is 2+2?")]
-        let prompt = service.buildPrompt(messages: messages)
-
-        #expect(prompt == "What is 2+2?")
-    }
-
-    @Test
-    func buildPromptLabelsAssistantMessages() {
-        let service = CLIService()
-        let messages = [LLMMessage(role: .assistant, content: "The answer is 4.")]
-        let prompt = service.buildPrompt(messages: messages)
-
-        #expect(prompt.contains("[ASSISTANT]\nThe answer is 4."))
-    }
-
-    @Test
-    func buildPromptWithEmptyMessages() {
-        let service = CLIService()
-        let prompt = service.buildPrompt(messages: [])
-
-        #expect(prompt == "")
-    }
-
-    @Test
-    func buildPromptMultiTurnConversation() {
-        let service = CLIService()
-        let messages = [
-            LLMMessage(role: .user, content: "Hello"),
-            LLMMessage(role: .assistant, content: "Hi there"),
-            LLMMessage(role: .user, content: "Make it formal"),
-        ]
-        let prompt = service.buildPrompt(messages: messages)
-
-        #expect(prompt.contains("Hello"))
-        #expect(prompt.contains("[ASSISTANT]\nHi there"))
-        #expect(prompt.contains("Make it formal"))
-    }
+struct ClaudeCLIServiceTests {
 
     @Test
     func buildArgumentsIncludesSystemPrompt() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
-
-        #expect(args.contains("-p"))
-        #expect(args.contains("Hello"))
-        #expect(args.contains("--system-prompt"))
-        #expect(args.contains("Be helpful."))
+        #expect(args == ["-p", "Hello", "--system-prompt", "Be helpful."])
     }
 
     @Test
     func buildArgumentsOmitsSystemPromptWhenNil() {
-        let service = CLIService()
+        let service = ClaudeCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
+        #expect(args == ["-p", "Hello"])
+    }
+}
 
-        #expect(args.contains("-p"))
-        #expect(args.contains("Hello"))
-        #expect(!args.contains("--system-prompt"))
+@Suite
+struct OpenAICLIServiceTests {
+
+    @Test
+    func buildArgumentsBasicPrompt() {
+        let service = OpenAICLIService()
+        let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
+        #expect(args == ["api", "chat.completions.create", "-m", "gpt-4o", "-g", "user", "Hello"])
+    }
+
+    @Test
+    func buildArgumentsWithSystemPrompt() {
+        let service = OpenAICLIService()
+        let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
+        #expect(args == ["api", "chat.completions.create", "-m", "gpt-4o",
+                         "-g", "system", "Be helpful.", "-g", "user", "Hello"])
+    }
+}
+
+@Suite
+struct GeminiCLIServiceTests {
+
+    @Test
+    func buildArgumentsBasicPrompt() {
+        let service = GeminiCLIService()
+        let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
+        #expect(args == ["-p", "Hello"])
+    }
+
+    @Test
+    func buildArgumentsWithSystemPrompt() {
+        let service = GeminiCLIService()
+        let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
+        #expect(args == ["-p", "Hello", "--system-prompt", "Be helpful."])
     }
 }

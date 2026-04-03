@@ -137,6 +137,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
                 NSString("~/.local/bin/gemini").expandingTildeInPath,
             ])
         case .disabled, .claudeAPI, .openaiAPI, .geminiAPI:
+            // Unreachable: only called from createService() via CLI cases.
             preconditionFailure("resolvedCLIPath called on non-CLI backend: \(self)")
         }
     }

@@ -90,5 +90,4 @@ struct GeminiServiceTests {
 
         #expect(parts.count == 1)
         #expect(parts[0]["text"] as? String == "Test message")
-    }
-}
+    }}

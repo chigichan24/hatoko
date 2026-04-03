@@ -64,28 +64,28 @@ struct LLMBackendTests {
     @Test
     func migrateOldAPIValue() {
         let key = "llm_backend"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
         UserDefaults.standard.set("api", forKey: key)
         LLMBackend.migrateIfNeeded()
         #expect(UserDefaults.standard.string(forKey: key) == "claude_api")
-        UserDefaults.standard.removeObject(forKey: key)
     }
 
     @Test
     func migrateOldCLIValue() {
         let key = "llm_backend"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
         UserDefaults.standard.set("cli", forKey: key)
         LLMBackend.migrateIfNeeded()
         #expect(UserDefaults.standard.string(forKey: key) == "claude_cli")
-        UserDefaults.standard.removeObject(forKey: key)
     }
 
     @Test
     func migrateDoesNotChangeNewValues() {
         let key = "llm_backend"
+        defer { UserDefaults.standard.removeObject(forKey: key) }
         UserDefaults.standard.set("openai_api", forKey: key)
         LLMBackend.migrateIfNeeded()
         #expect(UserDefaults.standard.string(forKey: key) == "openai_api")
-        UserDefaults.standard.removeObject(forKey: key)
     }
 }
 
@@ -118,9 +118,7 @@ struct CLIRunnerTests {
             LLMMessage(role: .user, content: "Make it formal"),
         ]
         let prompt = CLIRunner.buildPrompt(messages: messages)
-        #expect(prompt.contains("Hello"))
-        #expect(prompt.contains("[ASSISTANT]\nHi there"))
-        #expect(prompt.contains("Make it formal"))
+        #expect(prompt == "Hello\n\n[ASSISTANT]\nHi there\n\nMake it formal")
     }
 }
 

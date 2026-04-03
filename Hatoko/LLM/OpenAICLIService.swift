@@ -6,9 +6,11 @@ import Foundation
 final class OpenAICLIService: LLMService, Sendable {
 
     private let executablePath: String
+    private let model: String
 
-    init(executablePath: String = "openai") {
+    init(executablePath: String = "openai", model: String = "gpt-4o") {
         self.executablePath = executablePath
+        self.model = model
     }
 
     func generate(messages: [LLMMessage], systemPrompt: String?) async throws -> String {
@@ -20,7 +22,7 @@ final class OpenAICLIService: LLMService, Sendable {
     // MARK: - Internal helpers exposed for testing
 
     func buildArguments(prompt: String, systemPrompt: String?) -> [String] {
-        var args = ["api", "chat.completions.create", "-m", "gpt-4o"]
+        var args = ["api", "chat.completions.create", "-m", model]
         if let systemPrompt {
             args.append(contentsOf: ["-g", "system", systemPrompt])
         }

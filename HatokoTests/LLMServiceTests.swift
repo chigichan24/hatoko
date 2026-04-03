@@ -231,21 +231,14 @@ struct ClaudeCLIServiceTests {
     func buildArgumentsIncludesSystemPrompt() {
         let service = ClaudeCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
-
-        #expect(args.contains("-p"))
-        #expect(args.contains("Hello"))
-        #expect(args.contains("--system-prompt"))
-        #expect(args.contains("Be helpful."))
+        #expect(args == ["-p", "Hello", "--system-prompt", "Be helpful."])
     }
 
     @Test
     func buildArgumentsOmitsSystemPromptWhenNil() {
         let service = ClaudeCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
-
-        #expect(args.contains("-p"))
-        #expect(args.contains("Hello"))
-        #expect(!args.contains("--system-prompt"))
+        #expect(args == ["-p", "Hello"])
     }
 }
 
@@ -256,23 +249,15 @@ struct OpenAICLIServiceTests {
     func buildArgumentsBasicPrompt() {
         let service = OpenAICLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
-
-        #expect(args.contains("api"))
-        #expect(args.contains("chat.completions.create"))
-        #expect(args.contains("-m"))
-        #expect(args.contains("gpt-4o"))
-        #expect(args.contains("Hello"))
+        #expect(args == ["api", "chat.completions.create", "-m", "gpt-4o", "-g", "user", "Hello"])
     }
 
     @Test
     func buildArgumentsWithSystemPrompt() {
         let service = OpenAICLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
-
-        #expect(args.contains("-g"))
-        #expect(args.contains("system"))
-        #expect(args.contains("Be helpful."))
-        #expect(args.contains("Hello"))
+        #expect(args == ["api", "chat.completions.create", "-m", "gpt-4o",
+                         "-g", "system", "Be helpful.", "-g", "user", "Hello"])
     }
 }
 
@@ -283,20 +268,13 @@ struct GeminiCLIServiceTests {
     func buildArgumentsBasicPrompt() {
         let service = GeminiCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
-
-        #expect(args.contains("-p"))
-        #expect(args.contains("Hello"))
-        #expect(!args.contains("--system-prompt"))
+        #expect(args == ["-p", "Hello"])
     }
 
     @Test
     func buildArgumentsWithSystemPrompt() {
         let service = GeminiCLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
-
-        #expect(args.contains("-p"))
-        #expect(args.contains("Hello"))
-        #expect(args.contains("--system-prompt"))
-        #expect(args.contains("Be helpful."))
+        #expect(args == ["-p", "Hello", "--system-prompt", "Be helpful."])
     }
 }

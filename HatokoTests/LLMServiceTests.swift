@@ -148,6 +148,15 @@ struct CLIRunnerTests {
     }
 
     @Test
+    func resolveShebangReturnsNilForUnknownInterpreter() throws {
+        let script = NSTemporaryDirectory() + "test_shebang_unknown.sh"
+        defer { try? FileManager.default.removeItem(atPath: script) }
+        try "#!/usr/bin/env nonexistent_interpreter_xyz\necho hi\n"
+            .write(toFile: script, atomically: true, encoding: .utf8)
+        #expect(CLIRunner.resolveShebang(atPath: script) == nil)
+    }
+
+    @Test
     func buildPromptWithEmptyMessages() {
         #expect(CLIRunner.buildPrompt(messages: []) == "")
     }

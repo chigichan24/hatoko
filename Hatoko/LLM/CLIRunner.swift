@@ -48,10 +48,11 @@ enum CLIRunner {
         let interpreterArgs = Array(parts.dropFirst())
 
         let searchPaths = ["/opt/homebrew/bin/", "/usr/local/bin/", "/usr/bin/"]
-        let resolvedPath = searchPaths
-            .map { $0 + interpreterName }
-            .first(where: { FileManager.default.isExecutableFile(atPath: $0) })
-            ?? interpreterName
+        guard let resolvedPath = searchPaths
+            .map({ $0 + interpreterName })
+            .first(where: { FileManager.default.isExecutableFile(atPath: $0) }) else {
+            return nil
+        }
 
         return ResolvedShebang(interpreterPath: resolvedPath, interpreterArgs: interpreterArgs)
     }

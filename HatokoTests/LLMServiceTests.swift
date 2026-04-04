@@ -106,6 +106,57 @@ struct CLIRunnerTests {
     }
 
     @Test
+    func resolveShebangWithEnvNode() throws {
+        let script = NSTemporaryDirectory() + "test_shebang_node.sh"
+        defer { try? FileManager.default.removeItem(atPath: script) }
+        try "#!/usr/bin/env node\nconsole.log('hi');\n".write(toFile: script, atomically: true, encoding: .utf8)
+        let result = CLIRunner.resolveShebang(atPath: script)
+        #expect(result != nil)
+        #expect(result?.interpreterArgs == [])
+    }
+
+    @Test
+    func resolveShebangWithEnvSAndFlags() throws {
+        let script = NSTemporaryDirectory() + "test_shebang_flags.sh"
+        defer { try? FileManager.default.removeItem(atPath: script) }
+        try "#!/usr/bin/env -S node --no-warnings=DEP0040\nconsole.log('hi');\n"
+            .write(toFile: script, atomically: true, encoding: .utf8)
+        let result = CLIRunner.resolveShebang(atPath: script)
+        #expect(result != nil)
+        #expect(result?.interpreterArgs == ["--no-warnings=DEP0040"])
+    }
+
+    @Test
+    func resolveShebangReturnsNilForBinary() throws {
+        let file = NSTemporaryDirectory() + "test_shebang_binary"
+        defer { try? FileManager.default.removeItem(atPath: file) }
+        try Data([0x00, 0x01, 0x02, 0x03]).write(to: URL(fileURLWithPath: file))
+        #expect(CLIRunner.resolveShebang(atPath: file) == nil)
+    }
+
+    @Test
+    func resolveShebangReturnsNilForNonexistentFile() {
+        #expect(CLIRunner.resolveShebang(atPath: "/nonexistent/path") == nil)
+    }
+
+    @Test
+    func resolveShebangReturnsNilForDirectShebang() throws {
+        let script = NSTemporaryDirectory() + "test_shebang_direct.sh"
+        defer { try? FileManager.default.removeItem(atPath: script) }
+        try "#!/bin/bash\necho hi\n".write(toFile: script, atomically: true, encoding: .utf8)
+        #expect(CLIRunner.resolveShebang(atPath: script) == nil)
+    }
+
+    @Test
+    func resolveShebangReturnsNilForUnknownInterpreter() throws {
+        let script = NSTemporaryDirectory() + "test_shebang_unknown.sh"
+        defer { try? FileManager.default.removeItem(atPath: script) }
+        try "#!/usr/bin/env nonexistent_interpreter_xyz\necho hi\n"
+            .write(toFile: script, atomically: true, encoding: .utf8)
+        #expect(CLIRunner.resolveShebang(atPath: script) == nil)
+    }
+
+    @Test
     func buildPromptWithEmptyMessages() {
         #expect(CLIRunner.buildPrompt(messages: []) == "")
     }

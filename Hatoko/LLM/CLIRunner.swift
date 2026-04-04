@@ -88,6 +88,10 @@ enum CLIRunner {
         }
         process.environment = environment
 
+        // Close stdin immediately so CLI tools that check for piped
+        // input (e.g. gemini -p) don't block waiting for EOF.
+        process.standardInput = FileHandle.nullDevice
+
         let outputPipe = Pipe()
         let errorPipe = Pipe()
         process.standardOutput = outputPipe

@@ -31,6 +31,20 @@ Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな
 - **Liquid Glass UI** — macOS 26 ネイティブのガラスモーフィズムによるサジェスト・チャットパネル
 - **設定画面** — API キー・CLI パスの設定を GUI で管理
 
+## デモ
+
+### 日本語入力
+<!-- TODO: Replace with actual gif -->
+![Japanese Input](docs/demo_japanese_input.gif)
+
+### インラインサジェスト
+<!-- TODO: Replace with actual gif -->
+![Inline Suggestion](docs/demo_inline_suggestion.gif)
+
+### チャットウィンドウ
+<!-- TODO: Replace with actual gif -->
+![Chat Window](docs/demo_chat_window.gif)
+
 ## はじめに
 
 ビルド手順・プロジェクト構成は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。

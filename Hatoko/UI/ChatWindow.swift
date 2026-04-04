@@ -9,6 +9,7 @@ private class KeyablePanel: NSPanel {
     override var canBecomeKey: Bool { true }
 
     var onEscape: (() -> Void)?
+    var onResignKey: (() -> Void)?
 
     override func keyDown(with event: NSEvent) {
         if event.keyCode == KeyCode.escape {
@@ -22,14 +23,27 @@ private class KeyablePanel: NSPanel {
         super.keyDown(with: event)
     }
 
+    override func resignKey() {
+        super.resignKey()
+        onResignKey?()
+    }
+
     // nonactivatingPanel does not participate in the main menu's key equivalent
-    // dispatch, so standard edit commands (Cmd+V/C/X/A) must be forwarded manually.
+    // dispatch, so standard edit commands (Cmd+V/C/X/A/W) must be forwarded manually.
     override func performKeyEquivalent(with event: NSEvent) -> Bool {
         if super.performKeyEquivalent(with: event) {
             return true
         }
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         guard modifiers == [.command] else { return false }
+
+        switch event.charactersIgnoringModifiers {
+        case "w":
+            onEscape?()
+            return true
+        default:
+            break
+        }
 
         let action: Selector? = switch event.charactersIgnoringModifiers {
         case "v": #selector(NSText.paste(_:))
@@ -184,7 +198,7 @@ final class ChatWindowController {
 
         let panel = KeyablePanel(
             contentRect: NSRect(origin: origin, size: size),
-            styleMask: [.nonactivatingPanel],
+            styleMask: [.nonactivatingPanel, .titled, .closable],
             backing: .buffered,
             defer: false
         )
@@ -192,8 +206,13 @@ final class ChatWindowController {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = false
+        panel.titlebarAppearsTransparent = true
+        panel.titleVisibility = .hidden
+        panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
+        panel.standardWindowButton(.zoomButton)?.isHidden = true
         panel.contentViewController = controller
         panel.onEscape = { [weak self] in self?.handleCancel() }
+        panel.onResignKey = { [weak self] in self?.handleCancel() }
         activePanel = ActivePanel(panel: panel, hostingController: controller)
         panel.makeKeyAndOrderFront(nil)
 

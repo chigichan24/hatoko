@@ -27,7 +27,7 @@
 "chat.closeAccessibility" = "按 Escape 鍵關閉視窗";
 "chat.userRole" = "你";
 "chat.thinkingAccessibility" = "Hatoko 正在思考";
-"chat.useButton" = "使用此文字 \u2318C";
+"chat.useButton" = "使用此文字 ⌘C";
 "chat.useButtonAccessibility" = "將此文字插入輸入欄並複製到剪貼簿";
 "chat.contextAccessibility" = "上下文：%@";
 "chat.inputPlaceholder" = "額外指示...";

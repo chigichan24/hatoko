@@ -27,7 +27,7 @@
 "chat.closeAccessibility" = "Escape 키로 창 닫기";
 "chat.userRole" = "나";
 "chat.thinkingAccessibility" = "Hatoko가 생각 중입니다";
-"chat.useButton" = "사용하기 \u2318C";
+"chat.useButton" = "사용하기 ⌘C";
 "chat.useButtonAccessibility" = "이 텍스트를 입력란에 삽입하고 클립보드에 복사합니다";
 "chat.contextAccessibility" = "컨텍스트: %@";
 "chat.inputPlaceholder" = "추가 지시...";

@@ -27,7 +27,7 @@
 "chat.closeAccessibility" = "Cerrar ventana con la tecla Escape";
 "chat.userRole" = "Tú";
 "chat.thinkingAccessibility" = "Hatoko está pensando";
-"chat.useButton" = "Usar esto \u2318C";
+"chat.useButton" = "Usar esto ⌘C";
 "chat.useButtonAccessibility" = "Insertar este texto en el campo de entrada y copiar al portapapeles";
 "chat.contextAccessibility" = "Contexto: %@";
 "chat.inputPlaceholder" = "Instrucciones adicionales...";

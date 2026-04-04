@@ -77,7 +77,6 @@ final class InlineSuggestionWindow {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = false
-        panel.hidesOnDeactivate = true
         panel.contentViewController = controller
         panel.orderFront(nil)
 

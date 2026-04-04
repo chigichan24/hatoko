@@ -206,8 +206,6 @@ final class ChatWindowController {
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = false
-        panel.titlebarAppearsTransparent = true
-        panel.titleVisibility = .hidden
         panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
         panel.standardWindowButton(.zoomButton)?.isHidden = true
         panel.contentViewController = controller

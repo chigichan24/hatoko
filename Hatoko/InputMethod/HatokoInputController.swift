@@ -206,15 +206,12 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     func cancelLLMMode(client: (any IMKTextInput)? = nil) {
-        if inputMode == .llmPrompt || inlineSuggestionWindow.isVisible || chatWindowController.isVisible {
-            inlineSuggestionWindow.hide()
-            chatWindowController.hide()
-            resetComposition()
-            resetLLMState()
-            if let client {
-                clearMarkedText(client: client)
-            }
-        }
+        guard inputMode == .llmPrompt || inlineSuggestionWindow.isVisible || chatWindowController.isVisible else { return }
+        inlineSuggestionWindow.hide()
+        chatWindowController.hide()
+        resetComposition()
+        resetLLMState()
+        if let client { clearMarkedText(client: client) }
     }
 
     private func resetLLMState() {
@@ -294,15 +291,15 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     }
 
     static func buildLLMMessages(from chatHistory: [ChatMessage]) -> [LLMMessage] {
-        let truncated = chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
+        chatHistory.suffix(PromptGuard.maxChatHistoryMessages)
             .drop(while: { $0.role == .assistant })
-        return truncated.map { chatMessage in
-            let role: LLMMessage.Role = switch chatMessage.role {
-            case .user: .user
-            case .assistant: .assistant
+            .map { chatMessage in
+                let role: LLMMessage.Role = switch chatMessage.role {
+                case .user: .user
+                case .assistant: .assistant
+                }
+                return LLMMessage(role: role, content: chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines))
             }
-            return LLMMessage(role: role, content: chatMessage.text.trimmingCharacters(in: .whitespacesAndNewlines))
-        }
     }
 
     private func sendChatMessage(chatHistory: [ChatMessage]) {

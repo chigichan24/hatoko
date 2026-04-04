@@ -10,66 +10,50 @@
 
 [日本語](README.ja.md)
 
-Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanji conversion along with LLM-assisted text input powered by Claude.
+Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanji conversion along with LLM-assisted text input.
 
 ## Features
 
 - **Japanese Input** — Kana-kanji conversion from romaji input
-- **LLM-Assisted Input** — Switch to Claude-powered text generation with Ctrl+Space
+- **LLM-Assisted Input** — Switch to LLM-powered text generation with Ctrl+Space
   - Inline suggestion: Popup near cursor with thinking animation and generated candidates
   - Chat window: Iteratively refine text through conversation
-- **Two LLM Backends** — Choose between Claude API (claude-sonnet-4-20250514) or Claude CLI
+- **Multiple LLM Backends** — Claude, OpenAI, and Gemini supported
+
+  | Backend | API | CLI |
+  |---------|-----|-----|
+  | Claude  | ❓  | ✅  |
+  | OpenAI  | ❓  | ⚠️  |
+  | Gemini  | ❓  | ✅  |
+
+  > ✅ Verified &nbsp; ⚠️ Experimental &nbsp; ❓ Untested
+
 - **Liquid Glass UI** — Native macOS 26 glass morphism for suggestion and chat panels
 - **Settings UI** — Manage API key and CLI path via GUI
 
-## Requirements
+## Demo
 
-- macOS 26.0+
-- Xcode 26.0+
-- Swift 6
+### Japanese Input
+![Japanese Input](docs/hiragana.gif)
 
-## Setup
+### Inline Suggestion
+![Inline Suggestion](docs/inlinesuggestion.gif)
 
-### Prerequisites
+### Chat Window
+![Chat Window](docs/chatwindow.gif)
 
-- [Mint](https://github.com/yonaskolb/Mint)
+## Getting Started
 
-```bash
-brew install mint
-```
-
-### Build & Install
-
-```bash
-# Install dependency tools via Mint
-mint bootstrap
-
-# Build & install (requires admin privileges)
-./install.sh
-```
-
-After installation, select Hatoko from the input sources in the menu bar. If it doesn't appear, try logging out and back in.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and project structure.
 
 ## Usage
 
 | Mode | Shortcut | Description |
 |------|----------|-------------|
 | Japanese Input | Default | Romaji input → kana-kanji conversion (Space to convert, Enter to commit) |
-| LLM Assist | Ctrl+Space | Type a prompt → Enter to send to Claude → Enter to accept / Tab to open chat |
+| LLM Assist | Ctrl+Space | Type a prompt → Enter to send to LLM → Enter to accept / Tab to open chat |
 
 Open the settings via Ctrl+Click on the input source menu.
-
-## Project Structure
-
-```
-Hatoko/
-├── App/                    # Application entry point
-├── InputMethod/            # IME controller & input mode management
-├── LLM/                    # Claude API / CLI backends
-├── Conversion/             # Kana-kanji conversion (AzooKeyKanaKanjiConverter)
-├── UI/                     # SwiftUI settings, chat & suggestion UI
-└── Utility/                # Keychain helper, etc.
-```
 
 ## Acknowledgements
 

@@ -76,6 +76,18 @@ enum CLIRunner {
         // CLI process is spawned from the IME process context.
         process.currentDirectoryURL = URL(fileURLWithPath: currentDirectoryPath)
 
+        // The IME process has a minimal PATH. CLI tools (especially
+        // Node.js/Python scripts) may spawn child processes that rely
+        // on PATH to find system utilities, causing hangs otherwise.
+        var environment = ProcessInfo.processInfo.environment
+        let requiredPaths = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
+        if let existing = environment["PATH"], !existing.isEmpty {
+            environment["PATH"] = requiredPaths + ":" + existing
+        } else {
+            environment["PATH"] = requiredPaths
+        }
+        process.environment = environment
+
         let outputPipe = Pipe()
         let errorPipe = Pipe()
         process.standardOutput = outputPipe

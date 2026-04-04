@@ -19,22 +19,22 @@ struct SettingsBackendSection: View {
     }
 
     private var disabledSection: some View {
-        Section("LLM 無効") {
-            Text("LLM機能は無効です。Ctrl+Spaceは動作しません。")
+        Section(L10n.Settings.Backend.Disabled.title) {
+            Text(L10n.Settings.Backend.Disabled.description)
                 .foregroundStyle(.secondary)
         }
     }
 
     private func apiSection(keychainKey: String) -> some View {
         Section(backend.displayName) {
-            SecureField("API Key", text: $apiKey)
-                .accessibilityLabel("\(backend.displayName) API キー")
-            Button("保存") {
+            SecureField(L10n.Settings.Backend.apiKey, text: $apiKey)
+                .accessibilityLabel(L10n.Settings.Backend.apiKeyAccessibility(backend.displayName))
+            Button(L10n.Settings.Backend.save) {
                 saveAPIKey(keychainKey: keychainKey)
             }
             .buttonStyle(.borderedProminent)
             if isSaved {
-                Text("保存しました")
+                Text(L10n.Settings.Backend.saved)
                     .font(.caption)
                     .foregroundStyle(.green)
             }
@@ -43,9 +43,9 @@ struct SettingsBackendSection: View {
 
     private func cliSection(defaultsKey: String) -> some View {
         Section(backend.displayName) {
-            TextField("パス", text: $cliPath, prompt: Text("自動検出"))
-                .accessibilityLabel("\(backend.displayName) パス")
-            Button("保存") {
+            TextField(L10n.Settings.Backend.pathLabel, text: $cliPath, prompt: Text(L10n.Settings.Backend.pathPlaceholder))
+                .accessibilityLabel(L10n.Settings.Backend.pathAccessibility(backend.displayName))
+            Button(L10n.Settings.Backend.save) {
                 saveCLIPath(defaultsKey: defaultsKey)
             }
             .buttonStyle(.borderedProminent)

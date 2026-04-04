@@ -314,7 +314,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         case .valid:
             break
         case .tooLong:
-            chatWindowController.addAssistantMessage("メッセージが長すぎます。短くしてください。")
+            chatWindowController.addAssistantMessage(L10n.Error.tooLong)
             return
         case .empty:
             return
@@ -325,7 +325,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             service = try LLMBackend.current.createService()
         } catch {
             NSLog("[Hatoko] LLM backend configuration error: \(error)")
-            chatWindowController.addAssistantMessage("設定エラー: バックエンドの構成を確認してください。")
+            chatWindowController.addAssistantMessage(L10n.Error.config)
             return
         }
 
@@ -336,7 +336,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             guard await Self.chatRateLimiter.tryAcquire() else {
                 NSLog("[Hatoko] LLM chat request rate limited")
                 await MainActor.run {
-                    self.chatWindowController.addAssistantMessage("リクエストが多すぎます。少し待ってからお試しください。")
+                    self.chatWindowController.addAssistantMessage(L10n.Error.rateLimit)
                 }
                 return
             }
@@ -352,7 +352,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             } catch {
                 NSLog("[Hatoko] LLM chat generation failed: \(error)")
                 await MainActor.run {
-                    self.chatWindowController.addAssistantMessage("エラーが発生しました。もう一度お試しください。")
+                    self.chatWindowController.addAssistantMessage(L10n.Error.generic)
                 }
             }
         }

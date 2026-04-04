@@ -23,16 +23,16 @@ final class ThinkingAnimationState {
     private var phraseIterator: ShuffledPhraseIterator
 
     private static let phrases = [
-        "構成を考えています",
-        "言い回しを調整中",
-        "もう少しで書けそう",
-        "いい表現を探しています",
-        "下書きを推敲中",
-        "文脈を整理しています",
-        "ちょっと待ってくださいね",
-        "もうすぐまとまります",
-        "表現を練っています",
-        "最後の仕上げ中",
+        L10n.Thinking.phrase0,
+        L10n.Thinking.phrase1,
+        L10n.Thinking.phrase2,
+        L10n.Thinking.phrase3,
+        L10n.Thinking.phrase4,
+        L10n.Thinking.phrase5,
+        L10n.Thinking.phrase6,
+        L10n.Thinking.phrase7,
+        L10n.Thinking.phrase8,
+        L10n.Thinking.phrase9,
     ]
 
     init() {

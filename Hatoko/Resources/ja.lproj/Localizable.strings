@@ -33,6 +33,21 @@
 "chat.inputPlaceholder" = "追加の指示...";
 "chat.inputAccessibility" = "追加の指示を入力";
 
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "構成を考えています";
+"thinking.phrase1" = "言い回しを調整中";
+"thinking.phrase2" = "もう少しで書けそう";
+"thinking.phrase3" = "いい表現を探しています";
+"thinking.phrase4" = "下書きを推敲中";
+"thinking.phrase5" = "文脈を整理しています";
+"thinking.phrase6" = "ちょっと待ってくださいね";
+"thinking.phrase7" = "もうすぐまとまります";
+"thinking.phrase8" = "表現を練っています";
+"thinking.phrase9" = "最後の仕上げ中";
+"thinking.suggestionAccessibility" = "提案: %@";
+"thinking.generatingAccessibility" = "提案を生成中";
+
 // MARK: - Inline Suggestion
 
 "inline.contextAccessibility" = "コンテキスト付き";

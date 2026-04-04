@@ -152,6 +152,34 @@ internal enum L10n {
       internal static let llmBackend = L10n.tr("Localizable", "settings.sectionHeader.llmBackend", fallback: "LLM バックエンド")
     }
   }
+  internal enum Thinking {
+    /// 提案を生成中
+    internal static let generatingAccessibility = L10n.tr("Localizable", "thinking.generatingAccessibility", fallback: "提案を生成中")
+    /// 構成を考えています
+    internal static let phrase0 = L10n.tr("Localizable", "thinking.phrase0", fallback: "構成を考えています")
+    /// 言い回しを調整中
+    internal static let phrase1 = L10n.tr("Localizable", "thinking.phrase1", fallback: "言い回しを調整中")
+    /// もう少しで書けそう
+    internal static let phrase2 = L10n.tr("Localizable", "thinking.phrase2", fallback: "もう少しで書けそう")
+    /// いい表現を探しています
+    internal static let phrase3 = L10n.tr("Localizable", "thinking.phrase3", fallback: "いい表現を探しています")
+    /// 下書きを推敲中
+    internal static let phrase4 = L10n.tr("Localizable", "thinking.phrase4", fallback: "下書きを推敲中")
+    /// 文脈を整理しています
+    internal static let phrase5 = L10n.tr("Localizable", "thinking.phrase5", fallback: "文脈を整理しています")
+    /// ちょっと待ってくださいね
+    internal static let phrase6 = L10n.tr("Localizable", "thinking.phrase6", fallback: "ちょっと待ってくださいね")
+    /// もうすぐまとまります
+    internal static let phrase7 = L10n.tr("Localizable", "thinking.phrase7", fallback: "もうすぐまとまります")
+    /// 表現を練っています
+    internal static let phrase8 = L10n.tr("Localizable", "thinking.phrase8", fallback: "表現を練っています")
+    /// 最後の仕上げ中
+    internal static let phrase9 = L10n.tr("Localizable", "thinking.phrase9", fallback: "最後の仕上げ中")
+    /// 提案: %@
+    internal static func suggestionAccessibility(_ p1: Any) -> String {
+      return L10n.tr("Localizable", "thinking.suggestionAccessibility", String(describing: p1), fallback: "提案: %@")
+    }
+  }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:enable nesting type_body_length type_name vertical_whitespace_opening_braces

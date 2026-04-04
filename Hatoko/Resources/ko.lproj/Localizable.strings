@@ -33,6 +33,21 @@
 "chat.inputPlaceholder" = "추가 지시...";
 "chat.inputAccessibility" = "추가 지시 입력";
 
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "구성을 생각하는 중";
+"thinking.phrase1" = "표현을 조정하는 중";
+"thinking.phrase2" = "거의 다 써가요";
+"thinking.phrase3" = "좋은 표현을 찾는 중";
+"thinking.phrase4" = "초안을 다듬는 중";
+"thinking.phrase5" = "문맥을 정리하는 중";
+"thinking.phrase6" = "잠시만 기다려 주세요";
+"thinking.phrase7" = "거의 완성됐어요";
+"thinking.phrase8" = "표현을 가다듬는 중";
+"thinking.phrase9" = "마지막 마무리 중";
+"thinking.suggestionAccessibility" = "제안: %@";
+"thinking.generatingAccessibility" = "제안 생성 중";
+
 // MARK: - Inline Suggestion
 
 "inline.contextAccessibility" = "컨텍스트 포함";

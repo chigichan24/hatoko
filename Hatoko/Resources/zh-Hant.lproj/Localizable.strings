@@ -33,6 +33,21 @@
 "chat.inputPlaceholder" = "額外指示...";
 "chat.inputAccessibility" = "輸入額外指示";
 
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "正在構思結構";
+"thinking.phrase1" = "正在調整措辭";
+"thinking.phrase2" = "快要寫好了";
+"thinking.phrase3" = "正在尋找合適的表達";
+"thinking.phrase4" = "正在潤飾草稿";
+"thinking.phrase5" = "正在整理上下文";
+"thinking.phrase6" = "請稍等一下";
+"thinking.phrase7" = "即將完成";
+"thinking.phrase8" = "正在斟酌用詞";
+"thinking.phrase9" = "最後潤飾中";
+"thinking.suggestionAccessibility" = "建議：%@";
+"thinking.generatingAccessibility" = "正在生成建議";
+
 // MARK: - Inline Suggestion
 
 "inline.contextAccessibility" = "含上下文";

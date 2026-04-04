@@ -33,6 +33,21 @@
 "chat.inputPlaceholder" = "Instructions supplémentaires...";
 "chat.inputAccessibility" = "Saisir des instructions supplémentaires";
 
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "Réflexion sur la structure";
+"thinking.phrase1" = "Ajustement de la formulation";
+"thinking.phrase2" = "Presque prêt à écrire";
+"thinking.phrase3" = "Recherche de la bonne expression";
+"thinking.phrase4" = "Amélioration du brouillon";
+"thinking.phrase5" = "Organisation du contexte";
+"thinking.phrase6" = "Un petit instant";
+"thinking.phrase7" = "Presque terminé";
+"thinking.phrase8" = "Peaufinage de l'expression";
+"thinking.phrase9" = "Dernières retouches";
+"thinking.suggestionAccessibility" = "Suggestion : %@";
+"thinking.generatingAccessibility" = "Génération de la suggestion";
+
 // MARK: - Inline Suggestion
 
 "inline.contextAccessibility" = "Avec contexte";

@@ -26,7 +26,7 @@ struct ThinkingAnimationView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .accessibilityLabel(suggestion.map { "提案: \($0)" } ?? "提案を生成中")
+        .accessibilityLabel(suggestion.map { L10n.Thinking.suggestionAccessibility($0) } ?? L10n.Thinking.generatingAccessibility)
         .task(id: state.isComplete) {
             guard !state.isComplete else { return }
             await runAnimation()

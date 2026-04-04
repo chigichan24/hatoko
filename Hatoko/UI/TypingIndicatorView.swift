@@ -23,6 +23,6 @@ struct TypingIndicatorView: View {
         .onAppear {
             isAnimating = true
         }
-        .accessibilityLabel("Hatokoが考えています")
+        .accessibilityLabel(L10n.Chat.thinkingAccessibility)
     }
 }

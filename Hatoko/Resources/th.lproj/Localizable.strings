@@ -33,6 +33,21 @@
 "chat.inputPlaceholder" = "คำแนะนำเพิ่มเติม...";
 "chat.inputAccessibility" = "ป้อนคำแนะนำเพิ่มเติม";
 
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "กำลังคิดโครงสร้าง";
+"thinking.phrase1" = "กำลังปรับการใช้คำ";
+"thinking.phrase2" = "เกือบพร้อมเขียนแล้ว";
+"thinking.phrase3" = "กำลังหาคำที่เหมาะสม";
+"thinking.phrase4" = "กำลังปรับปรุงร่าง";
+"thinking.phrase5" = "กำลังจัดระเบียบบริบท";
+"thinking.phrase6" = "รอสักครู่นะคะ";
+"thinking.phrase7" = "ใกล้เสร็จแล้ว";
+"thinking.phrase8" = "กำลังขัดเกลาถ้อยคำ";
+"thinking.phrase9" = "ขั้นตอนสุดท้าย";
+"thinking.suggestionAccessibility" = "คำแนะนำ: %@";
+"thinking.generatingAccessibility" = "กำลังสร้างคำแนะนำ";
+
 // MARK: - Inline Suggestion
 
 "inline.contextAccessibility" = "มีบริบท";

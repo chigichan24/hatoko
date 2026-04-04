@@ -1,0 +1,67 @@
+// MARK: - Settings
+
+"settings.sectionHeader.llmBackend" = "LLM バックエンド";
+"settings.picker.backend" = "バックエンド";
+"settings.sectionHeader.keybinding" = "キーバインド";
+"settings.keybinding.llmAssist" = "Ctrl + Space: LLMアシストモード";
+"settings.keybinding.toggleLanguage" = "Ctrl + Space (LLM入力中): 日本語/英語切替";
+
+// MARK: - Settings Backend
+
+"settings.backend.disabled.title" = "LLM 無効";
+"settings.backend.disabled.description" = "LLM機能は無効です。Ctrl+Spaceは動作しません。";
+"settings.backend.apiKey" = "API Key";
+"settings.backend.apiKeyAccessibility" = "%@ API キー";
+"settings.backend.save" = "保存";
+"settings.backend.saved" = "保存しました";
+"settings.backend.pathLabel" = "パス";
+"settings.backend.pathPlaceholder" = "自動検出";
+"settings.backend.pathAccessibility" = "%@ パス";
+
+// MARK: - Chat
+
+"chat.header" = "Hatoko アシスト";
+"chat.closeHint" = "Esc で閉じる";
+"chat.closeAccessibility" = "Escapeキーでウィンドウを閉じる";
+"chat.userRole" = "あなた";
+"chat.thinkingAccessibility" = "Hatokoが考えています";
+"chat.useButton" = "これを使う ⌘C";
+"chat.useButtonAccessibility" = "このテキストを入力欄に挿入し、クリップボードにもコピーします";
+"chat.contextAccessibility" = "コンテキスト: %@";
+"chat.inputPlaceholder" = "追加の指示...";
+"chat.inputAccessibility" = "追加の指示を入力";
+
+// MARK: - Inline Suggestion
+
+"inline.contextAccessibility" = "コンテキスト付き";
+"inline.action.confirm" = "確定";
+"inline.action.chat" = "チャットで調整";
+"inline.action.cancel" = "キャンセル";
+"inline.keyAction" = "%@キーで%@";
+
+// MARK: - Backend Names
+
+"backend.disabled.name" = "無効 (Disabled)";
+"backend.claudeAPI.name" = "Claude API";
+"backend.claudeCLI.name" = "Claude CLI (claude -p)";
+"backend.openaiAPI.name" = "OpenAI API";
+"backend.openaiCLI.name" = "OpenAI CLI (Experimental)";
+"backend.geminiAPI.name" = "Gemini API";
+"backend.geminiCLI.name" = "Gemini CLI (Experimental)";
+
+// MARK: - Backend Descriptions
+
+"backend.disabled.description" = "LLM機能を使用しません";
+"backend.claudeAPI.description" = "Anthropic API経由。API Keyが必要";
+"backend.claudeCLI.description" = "ローカルのClaude CLIを使用。API Key不要";
+"backend.openaiAPI.description" = "OpenAI API経由。API Keyが必要";
+"backend.openaiCLI.description" = "openai CLIを使用（Experimental）。Pythonパッケージが必要";
+"backend.geminiAPI.description" = "Google Gemini API経由。API Keyが必要";
+"backend.geminiCLI.description" = "gemini CLIを使用（Experimental）。gemini-cliが必要";
+
+// MARK: - Errors
+
+"error.tooLong" = "メッセージが長すぎます。短くしてください。";
+"error.config" = "設定エラー: バックエンドの構成を確認してください。";
+"error.rateLimit" = "リクエストが多すぎます。少し待ってからお試しください。";
+"error.generic" = "エラーが発生しました。もう一度お試しください。";

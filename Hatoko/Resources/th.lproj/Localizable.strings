@@ -5,6 +5,8 @@
 "settings.sectionHeader.keybinding" = "ปุ่มลัด";
 "settings.keybinding.llmAssist" = "Ctrl + Space: โหมดช่วยเหลือ LLM";
 "settings.keybinding.toggleLanguage" = "Ctrl + Space (ขณะป้อน LLM): สลับภาษาญี่ปุ่น/อังกฤษ";
+"settings.windowTitle" = "Hatoko การตั้งค่า";
+"settings.menuItem" = "Hatoko การตั้งค่า...";
 
 // MARK: - Settings Backend
 

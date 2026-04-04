@@ -105,6 +105,10 @@ internal enum L10n {
     }
   }
   internal enum Settings {
+    /// Hatoko 設定...
+    internal static let menuItem = L10n.tr("Localizable", "settings.menuItem", fallback: "Hatoko 設定...")
+    /// Hatoko 設定
+    internal static let windowTitle = L10n.tr("Localizable", "settings.windowTitle", fallback: "Hatoko 設定")
     internal enum Backend {
       /// API Key
       internal static let apiKey = L10n.tr("Localizable", "settings.backend.apiKey", fallback: "API Key")

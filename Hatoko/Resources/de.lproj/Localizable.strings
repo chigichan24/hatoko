@@ -5,6 +5,8 @@
 "settings.sectionHeader.keybinding" = "Tastenkürzel";
 "settings.keybinding.llmAssist" = "Ctrl + Leertaste: LLM-Assistenzmodus";
 "settings.keybinding.toggleLanguage" = "Ctrl + Leertaste (bei LLM-Eingabe): Japanisch/Englisch umschalten";
+"settings.windowTitle" = "Hatoko Einstellungen";
+"settings.menuItem" = "Hatoko Einstellungen ...";
 
 // MARK: - Settings Backend
 

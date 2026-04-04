@@ -20,7 +20,7 @@ final class SettingsWindowController {
         let hostingController = NSHostingController(rootView: settingsView)
 
         let newWindow = NSWindow(contentViewController: hostingController)
-        newWindow.title = "Hatoko 設定"
+        newWindow.title = L10n.Settings.windowTitle
         newWindow.styleMask = [.titled, .closable, .miniaturizable]
         newWindow.titlebarSeparatorStyle = .none
         newWindow.toolbarStyle = .unified

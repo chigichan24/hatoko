@@ -173,7 +173,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     override func menu() -> NSMenu! {
         let menu = NSMenu(title: "Hatoko")
-        let settingsItem = NSMenuItem(title: "Hatoko 設定...", action: #selector(openSettings), keyEquivalent: "")
+        let settingsItem = NSMenuItem(title: L10n.Settings.menuItem, action: #selector(openSettings), keyEquivalent: "")
         settingsItem.target = self
         menu.addItem(settingsItem)
         return menu

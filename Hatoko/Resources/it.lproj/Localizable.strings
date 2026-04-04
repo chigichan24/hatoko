@@ -5,6 +5,8 @@
 "settings.sectionHeader.keybinding" = "Scorciatoie da tastiera";
 "settings.keybinding.llmAssist" = "Ctrl + Spazio: Modalità assistenza LLM";
 "settings.keybinding.toggleLanguage" = "Ctrl + Spazio (durante input LLM): Alterna giapponese/inglese";
+"settings.windowTitle" = "Hatoko Impostazioni";
+"settings.menuItem" = "Hatoko Impostazioni...";
 
 // MARK: - Settings Backend
 

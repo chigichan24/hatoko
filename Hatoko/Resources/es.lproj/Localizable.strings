@@ -5,6 +5,8 @@
 "settings.sectionHeader.keybinding" = "Atajos de teclado";
 "settings.keybinding.llmAssist" = "Ctrl + Espacio: Modo de asistencia LLM";
 "settings.keybinding.toggleLanguage" = "Ctrl + Espacio (durante entrada LLM): Alternar japonés/inglés";
+"settings.windowTitle" = "Hatoko Ajustes";
+"settings.menuItem" = "Hatoko Ajustes...";
 
 // MARK: - Settings Backend
 

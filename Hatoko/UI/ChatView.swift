@@ -11,7 +11,7 @@ struct ChatMessage: Identifiable, Sendable {
 
         var displayName: String {
             switch self {
-            case .user: "あなた"
+            case .user: L10n.Chat.userRole
             case .assistant: "Hatoko"
             }
         }
@@ -50,14 +50,14 @@ struct ChatView: View {
     private var header: some View {
         HStack(spacing: 6) {
             hatokoAvatar(size: 20)
-            Text("Hatoko アシスト")
+            Text(L10n.Chat.header)
                 .font(.headline)
                 .foregroundStyle(.primary)
             Spacer()
-            Text("Esc で閉じる")
+            Text(L10n.Chat.closeHint)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .accessibilityLabel("Escapeキーでウィンドウを閉じる")
+                .accessibilityLabel(L10n.Chat.closeAccessibility)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -134,7 +134,7 @@ struct ChatView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             Spacer(minLength: 40)
         }
-        .accessibilityLabel("Hatokoが考えています")
+        .accessibilityLabel(L10n.Chat.thinkingAccessibility)
     }
 
     private func hatokoAvatar(size: CGFloat) -> some View {
@@ -146,13 +146,13 @@ struct ChatView: View {
     }
 
     private func useButton(_ text: String) -> some View {
-        Button("これを使う ⌘C") {
+        Button(L10n.Chat.useButton) {
             onUse(text)
         }
         .buttonStyle(.bordered)
         .controlSize(.small)
         .accessibilityHint(
-            "このテキストを入力欄に挿入し、クリップボードにもコピーします"
+            L10n.Chat.useButtonAccessibility
         )
     }
 
@@ -169,15 +169,15 @@ struct ChatView: View {
         .background(Color.secondary.opacity(0.08))
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("コンテキスト: \(String(context.text.prefix(200)))")
+        .accessibilityLabel(L10n.Chat.contextAccessibility(String(context.text.prefix(200))))
     }
 
     private var inputArea: some View {
         HStack(spacing: 8) {
-            TextField("追加の指示...", text: inputText)
+            TextField(L10n.Chat.inputPlaceholder, text: inputText)
                 .textFieldStyle(.roundedBorder)
                 .font(.body)
-                .accessibilityLabel("追加の指示を入力")
+                .accessibilityLabel(L10n.Chat.inputAccessibility)
                 .onSubmit {
                     onSend()
                 }

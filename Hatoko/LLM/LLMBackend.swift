@@ -17,25 +17,25 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     var displayName: String {
         switch self {
-        case .disabled: "無効 (Disabled)"
-        case .claudeAPI: "Claude API"
-        case .claudeCLI: "Claude CLI (claude -p)"
-        case .openaiAPI: "OpenAI API"
-        case .openaiCLI: "OpenAI CLI (Experimental)"
-        case .geminiAPI: "Gemini API"
-        case .geminiCLI: "Gemini CLI (Experimental)"
+        case .disabled: L10n.Backend.Disabled.name
+        case .claudeAPI: L10n.Backend.ClaudeAPI.name
+        case .claudeCLI: L10n.Backend.ClaudeCLI.name
+        case .openaiAPI: L10n.Backend.OpenaiAPI.name
+        case .openaiCLI: L10n.Backend.OpenaiCLI.name
+        case .geminiAPI: L10n.Backend.GeminiAPI.name
+        case .geminiCLI: L10n.Backend.GeminiCLI.name
         }
     }
 
     var description: String {
         switch self {
-        case .disabled: "LLM機能を使用しません"
-        case .claudeAPI: "Anthropic API経由。API Keyが必要"
-        case .claudeCLI: "ローカルのClaude CLIを使用。API Key不要"
-        case .openaiAPI: "OpenAI API経由。API Keyが必要"
-        case .openaiCLI: "openai CLIを使用（Experimental）。Pythonパッケージが必要"
-        case .geminiAPI: "Google Gemini API経由。API Keyが必要"
-        case .geminiCLI: "gemini CLIを使用（Experimental）。gemini-cliが必要"
+        case .disabled: L10n.Backend.Disabled.description
+        case .claudeAPI: L10n.Backend.ClaudeAPI.description
+        case .claudeCLI: L10n.Backend.ClaudeCLI.description
+        case .openaiAPI: L10n.Backend.OpenaiAPI.description
+        case .openaiCLI: L10n.Backend.OpenaiCLI.description
+        case .geminiAPI: L10n.Backend.GeminiAPI.description
+        case .geminiCLI: L10n.Backend.GeminiCLI.description
         }
     }
 

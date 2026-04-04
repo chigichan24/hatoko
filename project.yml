@@ -34,6 +34,14 @@ targets:
         ENABLE_HARDENED_RUNTIME: false
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         CODE_SIGN_ENTITLEMENTS: Hatoko/Hatoko.entitlements
+    preBuildScripts:
+      - script: |
+          if command -v mint >/dev/null 2>&1; then
+            mint run swiftgen config run --config "${SRCROOT}/swiftgen.yml"
+          fi
+        name: SwiftGen
+        outputFiles:
+          - $(SRCROOT)/Hatoko/Generated/Strings+Generated.swift
     postBuildScripts:
       - script: |
           cd "${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/Contents/Resources"

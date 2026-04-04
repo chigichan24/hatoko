@@ -1,0 +1,84 @@
+// MARK: - Settings
+
+"settings.sectionHeader.llmBackend" = "LLM 後端";
+"settings.picker.backend" = "後端";
+"settings.sectionHeader.keybinding" = "快捷鍵";
+"settings.keybinding.llmAssist" = "Ctrl + Space：LLM 輔助模式";
+"settings.keybinding.toggleLanguage" = "Ctrl + Space（LLM 輸入中）：切換日文/英文";
+"settings.windowTitle" = "Hatoko 設定";
+"settings.menuItem" = "Hatoko 設定...";
+
+// MARK: - Settings Backend
+
+"settings.backend.disabled.title" = "LLM 已停用";
+"settings.backend.disabled.description" = "LLM 功能已停用。Ctrl+Space 將無法使用。";
+"settings.backend.apiKey" = "API 金鑰";
+"settings.backend.apiKeyAccessibility" = "%@ API 金鑰";
+"settings.backend.save" = "儲存";
+"settings.backend.saved" = "已儲存";
+"settings.backend.pathLabel" = "路徑";
+"settings.backend.pathPlaceholder" = "自動偵測";
+"settings.backend.pathAccessibility" = "%@ 路徑";
+
+// MARK: - Chat
+
+"chat.header" = "Hatoko 助手";
+"chat.closeHint" = "Esc 關閉";
+"chat.closeAccessibility" = "按 Escape 鍵關閉視窗";
+"chat.userRole" = "你";
+"chat.thinkingAccessibility" = "Hatoko 正在思考";
+"chat.useButton" = "使用此文字 ⌘C";
+"chat.useButtonAccessibility" = "將此文字插入輸入欄並複製到剪貼簿";
+"chat.contextAccessibility" = "上下文：%@";
+"chat.inputPlaceholder" = "額外指示...";
+"chat.inputAccessibility" = "輸入額外指示";
+
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "正在構思結構";
+"thinking.phrase1" = "正在調整措辭";
+"thinking.phrase2" = "快要寫好了";
+"thinking.phrase3" = "正在尋找合適的表達";
+"thinking.phrase4" = "正在潤飾草稿";
+"thinking.phrase5" = "正在整理上下文";
+"thinking.phrase6" = "請稍等一下";
+"thinking.phrase7" = "即將完成";
+"thinking.phrase8" = "正在斟酌用詞";
+"thinking.phrase9" = "最後潤飾中";
+"thinking.suggestionAccessibility" = "建議：%@";
+"thinking.generatingAccessibility" = "正在生成建議";
+
+// MARK: - Inline Suggestion
+
+"inline.contextAccessibility" = "含上下文";
+"inline.action.confirm" = "確認";
+"inline.action.chat" = "在聊天中調整";
+"inline.action.cancel" = "取消";
+"inline.keyAction" = "按 %@ 鍵%@";
+
+// MARK: - Backend Names
+
+"backend.disabled.name" = "已停用";
+"backend.claudeAPI.name" = "Claude API";
+"backend.claudeCLI.name" = "Claude CLI (claude -p)";
+"backend.openaiAPI.name" = "OpenAI API";
+"backend.openaiCLI.name" = "OpenAI CLI（實驗性）";
+"backend.geminiAPI.name" = "Gemini API";
+"backend.geminiCLI.name" = "Gemini CLI（實驗性）";
+
+// MARK: - Backend Descriptions
+
+"backend.disabled.description" = "不使用 LLM 功能";
+"backend.claudeAPI.description" = "透過 Anthropic API。需要 API 金鑰";
+"backend.claudeCLI.description" = "使用本機 Claude CLI。無需 API 金鑰";
+"backend.openaiAPI.description" = "透過 OpenAI API。需要 API 金鑰";
+"backend.openaiCLI.description" = "使用 openai CLI（實驗性）。需要 Python 套件";
+"backend.geminiAPI.description" = "透過 Google Gemini API。需要 API 金鑰";
+"backend.geminiCLI.description" = "使用 gemini CLI（實驗性）。需要 gemini-cli";
+
+// MARK: - Errors
+
+"error.tooLong" = "訊息過長，請縮短內容。";
+"error.config" = "設定錯誤：請確認後端配置。";
+"error.rateLimit" = "請求過多，請稍後再試。";
+"error.generic" = "發生錯誤，請重試。";

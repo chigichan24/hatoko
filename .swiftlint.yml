@@ -6,6 +6,7 @@ excluded:
   - DerivedData
   - .build
   - "*.xcodeproj"
+  - Hatoko/Generated
 
 disabled_rules:
   - trailing_comma

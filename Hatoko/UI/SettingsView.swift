@@ -9,8 +9,8 @@ struct SettingsView: View {
 
     var body: some View {
         Form {
-            Section("LLM バックエンド") {
-                Picker("バックエンド", selection: $selectedBackend) {
+            Section(L10n.Settings.SectionHeader.llmBackend) {
+                Picker(L10n.Settings.Picker.backend, selection: $selectedBackend) {
                     ForEach(LLMBackend.allCases, id: \.self) { backend in
                         VStack(alignment: .leading) {
                             Text(backend.displayName)
@@ -35,10 +35,10 @@ struct SettingsView: View {
                 isSaved: $isSaved
             )
 
-            Section("キーバインド") {
-                Text("Ctrl + Space: LLMアシストモード")
+            Section(L10n.Settings.SectionHeader.keybinding) {
+                Text(L10n.Settings.Keybinding.llmAssist)
                     .foregroundStyle(.secondary)
-                Text("Ctrl + Space (LLM入力中): 日本語/英語切替")
+                Text(L10n.Settings.Keybinding.toggleLanguage)
                     .foregroundStyle(.secondary)
             }
         }

@@ -25,7 +25,7 @@ struct InlineSuggestionView: View {
                 .foregroundStyle(.secondary)
             if hasContext {
                 Text(PasteContext.displayIcon)
-                    .accessibilityLabel("コンテキスト付き")
+                    .accessibilityLabel(L10n.Inline.contextAccessibility)
             }
             Spacer()
         }
@@ -35,9 +35,9 @@ struct InlineSuggestionView: View {
 
     private var footer: some View {
         HStack(spacing: 16) {
-            keyHint("Enter", action: "確定", primary: true)
-            keyHint("Tab", action: "チャットで調整")
-            keyHint("Esc", action: "キャンセル")
+            keyHint("Enter", action: L10n.Inline.Action.confirm, primary: true)
+            keyHint("Tab", action: L10n.Inline.Action.chat)
+            keyHint("Esc", action: L10n.Inline.Action.cancel)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
@@ -56,6 +56,6 @@ struct InlineSuggestionView: View {
         }
         .foregroundStyle(primary ? .primary : .secondary)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(key)キーで\(action)")
+        .accessibilityLabel(L10n.Inline.keyAction(key, action))
     }
 }

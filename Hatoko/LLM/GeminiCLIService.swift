@@ -20,10 +20,10 @@ final class GeminiCLIService: LLMService, Sendable {
     // MARK: - Internal helpers exposed for testing
 
     func buildArguments(prompt: String, systemPrompt: String?) -> [String] {
-        var args = ["-p", prompt]
+        var fullPrompt = prompt
         if let systemPrompt {
-            args.append(contentsOf: ["--system-prompt", systemPrompt])
+            fullPrompt = "[System Instructions]\n\(systemPrompt)\n\n[User Request]\n\(prompt)"
         }
-        return args
+        return ["-p", fullPrompt]
     }
 }

@@ -1,0 +1,84 @@
+// MARK: - Settings
+
+"settings.sectionHeader.llmBackend" = "Backend LLM";
+"settings.picker.backend" = "Backend";
+"settings.sectionHeader.keybinding" = "Atalhos de teclado";
+"settings.keybinding.llmAssist" = "Ctrl + Espaço: Modo de assistência LLM";
+"settings.keybinding.toggleLanguage" = "Ctrl + Espaço (durante entrada LLM): Alternar japonês/inglês";
+"settings.windowTitle" = "Hatoko Configurações";
+"settings.menuItem" = "Hatoko Configurações...";
+
+// MARK: - Settings Backend
+
+"settings.backend.disabled.title" = "LLM desativado";
+"settings.backend.disabled.description" = "Os recursos de LLM estão desativados. Ctrl+Espaço não funcionará.";
+"settings.backend.apiKey" = "Chave API";
+"settings.backend.apiKeyAccessibility" = "Chave API %@";
+"settings.backend.save" = "Salvar";
+"settings.backend.saved" = "Salvo";
+"settings.backend.pathLabel" = "Caminho";
+"settings.backend.pathPlaceholder" = "Detecção automática";
+"settings.backend.pathAccessibility" = "Caminho %@";
+
+// MARK: - Chat
+
+"chat.header" = "Hatoko Assistente";
+"chat.closeHint" = "Esc para fechar";
+"chat.closeAccessibility" = "Fechar janela com a tecla Escape";
+"chat.userRole" = "Você";
+"chat.thinkingAccessibility" = "Hatoko está pensando";
+"chat.useButton" = "Usar isto ⌘C";
+"chat.useButtonAccessibility" = "Inserir este texto no campo de entrada e copiar para a área de transferência";
+"chat.contextAccessibility" = "Contexto: %@";
+"chat.inputPlaceholder" = "Instruções adicionais...";
+"chat.inputAccessibility" = "Inserir instruções adicionais";
+
+// MARK: - Thinking Phrases
+
+"thinking.phrase0" = "Pensando na estrutura";
+"thinking.phrase1" = "Ajustando a redação";
+"thinking.phrase2" = "Quase pronto para escrever";
+"thinking.phrase3" = "Procurando a expressão certa";
+"thinking.phrase4" = "Refinando o rascunho";
+"thinking.phrase5" = "Organizando o contexto";
+"thinking.phrase6" = "Só um momento";
+"thinking.phrase7" = "Quase lá";
+"thinking.phrase8" = "Polindo a expressão";
+"thinking.phrase9" = "Últimos retoques";
+"thinking.suggestionAccessibility" = "Sugestão: %@";
+"thinking.generatingAccessibility" = "Gerando sugestão";
+
+// MARK: - Inline Suggestion
+
+"inline.contextAccessibility" = "Com contexto";
+"inline.action.confirm" = "Confirmar";
+"inline.action.chat" = "Ajustar no chat";
+"inline.action.cancel" = "Cancelar";
+"inline.keyAction" = "Tecla %@ para %@";
+
+// MARK: - Backend Names
+
+"backend.disabled.name" = "Desativado";
+"backend.claudeAPI.name" = "Claude API";
+"backend.claudeCLI.name" = "Claude CLI (claude -p)";
+"backend.openaiAPI.name" = "OpenAI API";
+"backend.openaiCLI.name" = "OpenAI CLI (Experimental)";
+"backend.geminiAPI.name" = "Gemini API";
+"backend.geminiCLI.name" = "Gemini CLI (Experimental)";
+
+// MARK: - Backend Descriptions
+
+"backend.disabled.description" = "Recursos de LLM não são utilizados";
+"backend.claudeAPI.description" = "Via API da Anthropic. Chave API necessária";
+"backend.claudeCLI.description" = "Usa a CLI local do Claude. Sem necessidade de chave API";
+"backend.openaiAPI.description" = "Via API da OpenAI. Chave API necessária";
+"backend.openaiCLI.description" = "Usa a CLI openai (Experimental). Pacote Python necessário";
+"backend.geminiAPI.description" = "Via API do Google Gemini. Chave API necessária";
+"backend.geminiCLI.description" = "Usa a CLI gemini (Experimental). gemini-cli necessário";
+
+// MARK: - Errors
+
+"error.tooLong" = "A mensagem é muito longa. Por favor, encurte-a.";
+"error.config" = "Erro de configuração: Verifique as configurações do backend.";
+"error.rateLimit" = "Muitas solicitações. Aguarde um momento e tente novamente.";
+"error.generic" = "Ocorreu um erro. Tente novamente.";

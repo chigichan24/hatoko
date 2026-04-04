@@ -44,7 +44,7 @@ struct ChatView: View {
             inputArea
         }
         .frame(width: 380)
-        .glassEffect(.regular, in: .rect(cornerRadius: 10))
+        .glassEffect(.regular, in: .rect(topLeadingRadius: 0, bottomLeadingRadius: 10, bottomTrailingRadius: 10, topTrailingRadius: 0))
     }
 
     private var header: some View {

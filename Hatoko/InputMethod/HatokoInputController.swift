@@ -363,7 +363,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     private func handleJapaneseInput(event: NSEvent, client: any IMKTextInput) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
 
-        if !modifiers.subtracting(.shift).isEmpty {
+        if !modifiers.subtracting([.shift, .function, .numericPad]).isEmpty {
             return false
         }
 

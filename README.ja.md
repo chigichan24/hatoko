@@ -10,15 +10,15 @@
 
 [English](README.md)
 
-Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな漢字変換に加え、Claude を活用した LLM アシスト入力をサポートします。
+Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな漢字変換に加え、LLM アシスト入力をサポートします。
 
 ## 特徴
 
 - **日本語入力** — ローマ字入力からのかな漢字変換
-- **LLM アシスト入力** — Ctrl+Space で Claude による文章生成モードに切り替え
+- **LLM アシスト入力** — Ctrl+Space で LLM による文章生成モードに切り替え
   - インラインサジェスト: 思考アニメーション付きのポップアップでカーソル付近に候補を表示
   - チャットウィンドウ: 対話的に文章を推敲
-- **2つの LLM バックエンド** — Claude API (claude-sonnet-4-20250514) または Claude CLI を選択可能
+- **複数の LLM バックエンド** — Claude・OpenAI・Gemini に対応
 - **Liquid Glass UI** — macOS 26 ネイティブのガラスモーフィズムによるサジェスト・チャットパネル
 - **設定画面** — API キー・CLI パスの設定を GUI で管理
 
@@ -55,7 +55,7 @@ mint bootstrap
 | モード | 切り替え | 説明 |
 |--------|----------|------|
 | 日本語入力 | デフォルト | ローマ字入力 → かな漢字変換 (Space で変換、Enter で確定) |
-| LLM アシスト | Ctrl+Space | プロンプトを入力 → Enter で Claude に送信 → Enter で確定 / Tab でチャットへ |
+| LLM アシスト | Ctrl+Space | プロンプトを入力 → Enter で LLM に送信 → Enter で確定 / Tab でチャットへ |
 
 設定画面は入力ソースメニューの Ctrl+クリックから開けます。
 
@@ -65,7 +65,7 @@ mint bootstrap
 Hatoko/
 ├── App/                    # アプリケーションエントリポイント
 ├── InputMethod/            # IME コントローラ・入力モード管理
-├── LLM/                    # Claude API / CLI バックエンド
+├── LLM/                    # LLM バックエンド (Claude, OpenAI, Gemini)
 ├── Conversion/             # かな漢字変換 (AzooKeyKanaKanjiConverter)
 ├── UI/                     # SwiftUI による設定・チャット・サジェスト UI
 └── Utility/                # Keychain ヘルパーなど

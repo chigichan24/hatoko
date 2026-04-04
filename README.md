@@ -10,15 +10,15 @@
 
 [日本語](README.ja.md)
 
-Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanji conversion along with LLM-assisted text input powered by Claude.
+Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanji conversion along with LLM-assisted text input.
 
 ## Features
 
 - **Japanese Input** — Kana-kanji conversion from romaji input
-- **LLM-Assisted Input** — Switch to Claude-powered text generation with Ctrl+Space
+- **LLM-Assisted Input** — Switch to LLM-powered text generation with Ctrl+Space
   - Inline suggestion: Popup near cursor with thinking animation and generated candidates
   - Chat window: Iteratively refine text through conversation
-- **Two LLM Backends** — Choose between Claude API (claude-sonnet-4-20250514) or Claude CLI
+- **Multiple LLM Backends** — Claude, OpenAI, and Gemini supported
 - **Liquid Glass UI** — Native macOS 26 glass morphism for suggestion and chat panels
 - **Settings UI** — Manage API key and CLI path via GUI
 
@@ -55,7 +55,7 @@ After installation, select Hatoko from the input sources in the menu bar. If it 
 | Mode | Shortcut | Description |
 |------|----------|-------------|
 | Japanese Input | Default | Romaji input → kana-kanji conversion (Space to convert, Enter to commit) |
-| LLM Assist | Ctrl+Space | Type a prompt → Enter to send to Claude → Enter to accept / Tab to open chat |
+| LLM Assist | Ctrl+Space | Type a prompt → Enter to send to LLM → Enter to accept / Tab to open chat |
 
 Open the settings via Ctrl+Click on the input source menu.
 
@@ -65,7 +65,7 @@ Open the settings via Ctrl+Click on the input source menu.
 Hatoko/
 ├── App/                    # Application entry point
 ├── InputMethod/            # IME controller & input mode management
-├── LLM/                    # Claude API / CLI backends
+├── LLM/                    # LLM backends (Claude, OpenAI, Gemini)
 ├── Conversion/             # Kana-kanji conversion (AzooKeyKanaKanjiConverter)
 ├── UI/                     # SwiftUI settings, chat & suggestion UI
 └── Utility/                # Keychain helper, etc.

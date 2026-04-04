@@ -1,0 +1,67 @@
+// MARK: - Settings
+
+"settings.sectionHeader.llmBackend" = "LLM 백엔드";
+"settings.picker.backend" = "백엔드";
+"settings.sectionHeader.keybinding" = "키 바인딩";
+"settings.keybinding.llmAssist" = "Ctrl + Space: LLM 어시스트 모드";
+"settings.keybinding.toggleLanguage" = "Ctrl + Space (LLM 입력 중): 일본어/영어 전환";
+
+// MARK: - Settings Backend
+
+"settings.backend.disabled.title" = "LLM 비활성화";
+"settings.backend.disabled.description" = "LLM 기능이 비활성화되어 있습니다. Ctrl+Space가 작동하지 않습니다.";
+"settings.backend.apiKey" = "API 키";
+"settings.backend.apiKeyAccessibility" = "%@ API 키";
+"settings.backend.save" = "저장";
+"settings.backend.saved" = "저장됨";
+"settings.backend.pathLabel" = "경로";
+"settings.backend.pathPlaceholder" = "자동 감지";
+"settings.backend.pathAccessibility" = "%@ 경로";
+
+// MARK: - Chat
+
+"chat.header" = "Hatoko 어시스트";
+"chat.closeHint" = "Esc로 닫기";
+"chat.closeAccessibility" = "Escape 키로 창 닫기";
+"chat.userRole" = "나";
+"chat.thinkingAccessibility" = "Hatoko가 생각 중입니다";
+"chat.useButton" = "사용하기 \u2318C";
+"chat.useButtonAccessibility" = "이 텍스트를 입력란에 삽입하고 클립보드에 복사합니다";
+"chat.contextAccessibility" = "컨텍스트: %@";
+"chat.inputPlaceholder" = "추가 지시...";
+"chat.inputAccessibility" = "추가 지시 입력";
+
+// MARK: - Inline Suggestion
+
+"inline.contextAccessibility" = "컨텍스트 포함";
+"inline.action.confirm" = "확정";
+"inline.action.chat" = "채팅으로 조정";
+"inline.action.cancel" = "취소";
+"inline.keyAction" = "%@ 키로 %@";
+
+// MARK: - Backend Names
+
+"backend.disabled.name" = "비활성화";
+"backend.claudeAPI.name" = "Claude API";
+"backend.claudeCLI.name" = "Claude CLI (claude -p)";
+"backend.openaiAPI.name" = "OpenAI API";
+"backend.openaiCLI.name" = "OpenAI CLI (실험적)";
+"backend.geminiAPI.name" = "Gemini API";
+"backend.geminiCLI.name" = "Gemini CLI (실험적)";
+
+// MARK: - Backend Descriptions
+
+"backend.disabled.description" = "LLM 기능을 사용하지 않습니다";
+"backend.claudeAPI.description" = "Anthropic API 경유. API 키 필요";
+"backend.claudeCLI.description" = "로컬 Claude CLI 사용. API 키 불필요";
+"backend.openaiAPI.description" = "OpenAI API 경유. API 키 필요";
+"backend.openaiCLI.description" = "openai CLI 사용 (실험적). Python 패키지 필요";
+"backend.geminiAPI.description" = "Google Gemini API 경유. API 키 필요";
+"backend.geminiCLI.description" = "gemini CLI 사용 (실험적). gemini-cli 필요";
+
+// MARK: - Errors
+
+"error.tooLong" = "메시지가 너무 깁니다. 줄여 주세요.";
+"error.config" = "설정 오류: 백엔드 구성을 확인해 주세요.";
+"error.rateLimit" = "요청이 너무 많습니다. 잠시 후 다시 시도해 주세요.";
+"error.generic" = "오류가 발생했습니다. 다시 시도해 주세요.";

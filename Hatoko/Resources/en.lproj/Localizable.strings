@@ -1,0 +1,67 @@
+// MARK: - Settings
+
+"settings.sectionHeader.llmBackend" = "LLM Backend";
+"settings.picker.backend" = "Backend";
+"settings.sectionHeader.keybinding" = "Key Bindings";
+"settings.keybinding.llmAssist" = "Ctrl + Space: LLM Assist Mode";
+"settings.keybinding.toggleLanguage" = "Ctrl + Space (during LLM input): Toggle Japanese/English";
+
+// MARK: - Settings Backend
+
+"settings.backend.disabled.title" = "LLM Disabled";
+"settings.backend.disabled.description" = "LLM features are disabled. Ctrl+Space will not work.";
+"settings.backend.apiKey" = "API Key";
+"settings.backend.apiKeyAccessibility" = "%@ API Key";
+"settings.backend.save" = "Save";
+"settings.backend.saved" = "Saved";
+"settings.backend.pathLabel" = "Path";
+"settings.backend.pathPlaceholder" = "Auto-detect";
+"settings.backend.pathAccessibility" = "%@ Path";
+
+// MARK: - Chat
+
+"chat.header" = "Hatoko Assist";
+"chat.closeHint" = "Esc to close";
+"chat.closeAccessibility" = "Close window with Escape key";
+"chat.userRole" = "You";
+"chat.thinkingAccessibility" = "Hatoko is thinking";
+"chat.useButton" = "Use this \u2318C";
+"chat.useButtonAccessibility" = "Insert this text into the input field and copy to clipboard";
+"chat.contextAccessibility" = "Context: %@";
+"chat.inputPlaceholder" = "Additional instructions...";
+"chat.inputAccessibility" = "Enter additional instructions";
+
+// MARK: - Inline Suggestion
+
+"inline.contextAccessibility" = "With context";
+"inline.action.confirm" = "Confirm";
+"inline.action.chat" = "Refine in chat";
+"inline.action.cancel" = "Cancel";
+"inline.keyAction" = "%@ key to %@";
+
+// MARK: - Backend Names
+
+"backend.disabled.name" = "Disabled";
+"backend.claudeAPI.name" = "Claude API";
+"backend.claudeCLI.name" = "Claude CLI (claude -p)";
+"backend.openaiAPI.name" = "OpenAI API";
+"backend.openaiCLI.name" = "OpenAI CLI (Experimental)";
+"backend.geminiAPI.name" = "Gemini API";
+"backend.geminiCLI.name" = "Gemini CLI (Experimental)";
+
+// MARK: - Backend Descriptions
+
+"backend.disabled.description" = "LLM features are not used";
+"backend.claudeAPI.description" = "Via Anthropic API. API Key required";
+"backend.claudeCLI.description" = "Uses local Claude CLI. No API Key needed";
+"backend.openaiAPI.description" = "Via OpenAI API. API Key required";
+"backend.openaiCLI.description" = "Uses openai CLI (Experimental). Python package required";
+"backend.geminiAPI.description" = "Via Google Gemini API. API Key required";
+"backend.geminiCLI.description" = "Uses gemini CLI (Experimental). gemini-cli required";
+
+// MARK: - Errors
+
+"error.tooLong" = "Message is too long. Please shorten it.";
+"error.config" = "Configuration error: Please check your backend settings.";
+"error.rateLimit" = "Too many requests. Please wait a moment and try again.";
+"error.generic" = "An error occurred. Please try again.";

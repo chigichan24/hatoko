@@ -22,33 +22,9 @@ Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな
 - **Liquid Glass UI** — macOS 26 ネイティブのガラスモーフィズムによるサジェスト・チャットパネル
 - **設定画面** — API キー・CLI パスの設定を GUI で管理
 
-## 動作環境
+## はじめに
 
-- macOS 26.0+
-- Xcode 26.0+
-- Swift 6
-
-## セットアップ
-
-### 必要なツール
-
-- [Mint](https://github.com/yonaskolb/Mint)
-
-```bash
-brew install mint
-```
-
-### ビルド & インストール
-
-```bash
-# Mint で依存ツールをインストール
-mint bootstrap
-
-# ビルド & インストール (管理者権限が必要)
-./install.sh
-```
-
-インストール後、メニューバーの入力ソースから Hatoko を選択してください。表示されない場合は一度ログアウト・ログインしてください。
+ビルド手順・プロジェクト構成は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
 
 ## 使い方
 
@@ -58,18 +34,6 @@ mint bootstrap
 | LLM アシスト | Ctrl+Space | プロンプトを入力 → Enter で LLM に送信 → Enter で確定 / Tab でチャットへ |
 
 設定画面は入力ソースメニューの Ctrl+クリックから開けます。
-
-## プロジェクト構成
-
-```
-Hatoko/
-├── App/                    # アプリケーションエントリポイント
-├── InputMethod/            # IME コントローラ・入力モード管理
-├── LLM/                    # LLM バックエンド (Claude, OpenAI, Gemini)
-├── Conversion/             # かな漢字変換 (AzooKeyKanaKanjiConverter)
-├── UI/                     # SwiftUI による設定・チャット・サジェスト UI
-└── Utility/                # Keychain ヘルパーなど
-```
 
 ## 謝辞
 

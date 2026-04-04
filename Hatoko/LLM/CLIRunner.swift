@@ -21,14 +21,55 @@ enum CLIRunner {
         return parts.joined(separator: "\n\n")
     }
 
+    struct ResolvedShebang: Equatable {
+        let interpreterPath: String
+        let interpreterArgs: [String]
+    }
+
+    static func resolveShebang(atPath path: String) -> ResolvedShebang? {
+        guard let handle = FileHandle(forReadingAtPath: path) else { return nil }
+        defer { handle.closeFile() }
+        let data = handle.readData(ofLength: 256)
+        guard let header = String(data: data, encoding: .utf8),
+              let firstLine = header.components(separatedBy: .newlines).first,
+              firstLine.hasPrefix("#!") else {
+            return nil
+        }
+
+        let shebang = String(firstLine.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+        guard shebang.hasPrefix("/usr/bin/env") else { return nil }
+
+        var parts = shebang.components(separatedBy: .whitespaces).filter { !$0.isEmpty }
+        parts.removeFirst() // remove "/usr/bin/env"
+        if parts.first == "-S" {
+            parts.removeFirst()
+        }
+        guard let interpreterName = parts.first else { return nil }
+        let interpreterArgs = Array(parts.dropFirst())
+
+        let searchPaths = ["/opt/homebrew/bin/", "/usr/local/bin/", "/usr/bin/"]
+        let resolvedPath = searchPaths
+            .map { $0 + interpreterName }
+            .first(where: { FileManager.default.isExecutableFile(atPath: $0) })
+            ?? interpreterName
+
+        return ResolvedShebang(interpreterPath: resolvedPath, interpreterArgs: interpreterArgs)
+    }
+
     static func run(
         executablePath: String,
         arguments: [String],
         currentDirectoryPath: String = "/tmp"
     ) async throws -> String {
         let process = Process()
-        process.executableURL = URL(fileURLWithPath: executablePath)
-        process.arguments = arguments
+
+        if let shebang = resolveShebang(atPath: executablePath) {
+            process.executableURL = URL(fileURLWithPath: shebang.interpreterPath)
+            process.arguments = shebang.interpreterArgs + [executablePath] + arguments
+        } else {
+            process.executableURL = URL(fileURLWithPath: executablePath)
+            process.arguments = arguments
+        }
         // Use configurable working directory to avoid TCC prompts for
         // protected user directories (Music, Photos, etc.) when the
         // CLI process is spawned from the IME process context.

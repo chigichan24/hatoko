@@ -1,0 +1,9 @@
+strings:
+  inputs:
+    - Hatoko/Resources/ja.lproj/Localizable.strings
+  outputs:
+    - templateName: structured-swift5
+      output: Hatoko/Generated/Strings+Generated.swift
+      params:
+        enumName: L10n
+        publicAccess: false

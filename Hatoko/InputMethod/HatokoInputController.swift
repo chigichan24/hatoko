@@ -323,7 +323,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         Task {
             let service: any LLMService
             do {
-                service = try LLMBackend.current.createService()
+                service = try await LLMBackend.current.createService()
             } catch {
                 NSLog("[Hatoko] LLM backend configuration error: \(error)")
                 await MainActor.run {
@@ -541,7 +541,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         Task {
             let service: any LLMService
             do {
-                service = try LLMBackend.current.createService()
+                service = try await LLMBackend.current.createService()
             } catch {
                 NSLog("[Hatoko] LLM backend configuration error: \(error)")
                 await MainActor.run {

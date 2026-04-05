@@ -62,7 +62,7 @@
 "backend.claudeAPI.name" = "Claude API";
 "backend.claudeCLI.name" = "Claude CLI (claude -p)";
 "backend.openaiAPI.name" = "OpenAI API";
-"backend.openaiCLI.name" = "OpenAI CLI (Expérimental)";
+"backend.openaiCLI.name" = "Codex CLI (Expérimental)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (Expérimental)";
 
@@ -72,7 +72,7 @@
 "backend.claudeAPI.description" = "Via l'API Anthropic. Clé API requise";
 "backend.claudeCLI.description" = "Utilise la CLI Claude locale. Pas de clé API nécessaire";
 "backend.openaiAPI.description" = "Via l'API OpenAI. Clé API requise";
-"backend.openaiCLI.description" = "Utilise la CLI openai (Expérimental). Package Python requis";
+"backend.openaiCLI.description" = "Utilise Codex CLI (Expérimental). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Via l'API Google Gemini. Clé API requise";
 "backend.geminiCLI.description" = "Utilise la CLI gemini (Expérimental). gemini-cli requis";
 

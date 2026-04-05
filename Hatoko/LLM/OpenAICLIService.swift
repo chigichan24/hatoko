@@ -1,16 +1,14 @@
 import Foundation
 
-/// Experimental: Uses the `openai` Python package CLI.
-/// Install via `pip install openai`, then run as:
-/// `openai api chat.completions.create -m gpt-4o -g user "prompt"`
+/// Uses the Codex CLI from OpenAI.
+/// See https://github.com/openai/codex for installation.
+/// Usage: `codex exec "prompt"`
 final class OpenAICLIService: LLMService, Sendable {
 
     private let executablePath: String
-    private let model: String
 
-    init(executablePath: String = "openai", model: String = "gpt-4o") {
+    init(executablePath: String = "codex") {
         self.executablePath = executablePath
-        self.model = model
     }
 
     func generate(messages: [LLMMessage], systemPrompt: String?) async throws -> String {
@@ -22,11 +20,10 @@ final class OpenAICLIService: LLMService, Sendable {
     // MARK: - Internal helpers exposed for testing
 
     func buildArguments(prompt: String, systemPrompt: String?) -> [String] {
-        var args = ["api", "chat.completions.create", "-m", model]
+        var fullPrompt = prompt
         if let systemPrompt {
-            args.append(contentsOf: ["-g", "system", systemPrompt])
+            fullPrompt = "[System Instructions]\n\(systemPrompt)\n\n[User Request]\n\(prompt)"
         }
-        args.append(contentsOf: ["-g", "user", prompt])
-        return args
+        return ["exec", fullPrompt]
     }
 }

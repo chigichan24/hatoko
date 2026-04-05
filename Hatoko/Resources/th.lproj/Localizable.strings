@@ -62,7 +62,7 @@
 "backend.claudeAPI.name" = "Claude API";
 "backend.claudeCLI.name" = "Claude CLI (claude -p)";
 "backend.openaiAPI.name" = "OpenAI API";
-"backend.openaiCLI.name" = "OpenAI CLI (ทดลอง)";
+"backend.openaiCLI.name" = "Codex CLI (ทดลอง)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (ทดลอง)";
 
@@ -72,7 +72,7 @@
 "backend.claudeAPI.description" = "ผ่าน Anthropic API ต้องใช้คีย์ API";
 "backend.claudeCLI.description" = "ใช้ Claude CLI ภายในเครื่อง ไม่ต้องใช้คีย์ API";
 "backend.openaiAPI.description" = "ผ่าน OpenAI API ต้องใช้คีย์ API";
-"backend.openaiCLI.description" = "ใช้ openai CLI (ทดลอง) ต้องใช้แพ็กเกจ Python";
+"backend.openaiCLI.description" = "ใช้ Codex CLI (ทดลอง) npm install -g @openai/codex";
 "backend.geminiAPI.description" = "ผ่าน Google Gemini API ต้องใช้คีย์ API";
 "backend.geminiCLI.description" = "ใช้ gemini CLI (ทดลอง) ต้องใช้ gemini-cli";
 

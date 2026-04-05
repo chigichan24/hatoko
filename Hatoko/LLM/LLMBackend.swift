@@ -131,7 +131,9 @@ enum LLMBackend: String, CaseIterable, Sendable {
                 NSString("~/.claude/local/claude").expandingTildeInPath,
             ])
         case .openaiCLI:
-            return Self.findExecutable(name: "openai", extraPaths: [])
+            return Self.findExecutable(name: "codex", extraPaths: [
+                NSString("~/.local/bin/codex").expandingTildeInPath,
+            ])
         case .geminiCLI:
             return Self.findExecutable(name: "gemini", extraPaths: [
                 NSString("~/.local/bin/gemini").expandingTildeInPath,

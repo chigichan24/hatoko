@@ -56,11 +56,14 @@ struct SettingsBackendSection: View {
     }
 
     private func saveAPIKey(keychainKey: String) {
-        do {
-            try KeychainHelper.save(key: keychainKey, value: apiKey)
-            showSaved()
-        } catch {
-            NSLog("[Hatoko] Failed to save API key: \(error)")
+        let value = apiKey
+        Task.detached {
+            do {
+                try KeychainHelper.save(key: keychainKey, value: value)
+                await MainActor.run { showSaved() }
+            } catch {
+                NSLog("[Hatoko] Failed to save API key: \(error)")
+            }
         }
     }
 

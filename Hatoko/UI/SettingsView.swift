@@ -51,17 +51,20 @@ struct SettingsView: View {
     }
 
     private func loadSettingsForBackend(_ backend: LLMBackend) {
+        isSaved = false
         switch backend.configKind {
         case .disabled:
             apiKey = ""
             cliPath = ""
         case .api(let keychainKey, _):
-            apiKey = KeychainHelper.load(key: keychainKey) ?? ""
             cliPath = ""
+            Task.detached {
+                let loaded = KeychainHelper.load(key: keychainKey) ?? ""
+                await MainActor.run { apiKey = loaded }
+            }
         case .cli(let defaultsKey):
             apiKey = ""
             cliPath = UserDefaults.standard.string(forKey: defaultsKey) ?? ""
         }
-        isSaved = false
     }
 }

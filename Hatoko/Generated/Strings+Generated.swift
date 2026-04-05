@@ -48,10 +48,10 @@ internal enum L10n {
       internal static let name = L10n.tr("Localizable", "backend.openaiAPI.name", fallback: "OpenAI API")
     }
     internal enum OpenaiCLI {
-      /// openai CLIを使用（Experimental）。Pythonパッケージが必要
-      internal static let description = L10n.tr("Localizable", "backend.openaiCLI.description", fallback: "openai CLIを使用（Experimental）。Pythonパッケージが必要")
-      /// OpenAI CLI (Experimental)
-      internal static let name = L10n.tr("Localizable", "backend.openaiCLI.name", fallback: "OpenAI CLI (Experimental)")
+      /// Codex CLIを使用（Experimental）。npm install -g @openai/codex
+      internal static let description = L10n.tr("Localizable", "backend.openaiCLI.description", fallback: "Codex CLIを使用（Experimental）。npm install -g @openai/codex")
+      /// Codex CLI (Experimental)
+      internal static let name = L10n.tr("Localizable", "backend.openaiCLI.name", fallback: "Codex CLI (Experimental)")
     }
   }
   internal enum Chat {

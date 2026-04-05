@@ -298,15 +298,14 @@ struct OpenAICLIServiceTests {
     func buildArgumentsBasicPrompt() {
         let service = OpenAICLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: nil)
-        #expect(args == ["api", "chat.completions.create", "-m", "gpt-4o", "-g", "user", "Hello"])
+        #expect(args == ["exec", "Hello"])
     }
 
     @Test
     func buildArgumentsWithSystemPrompt() {
         let service = OpenAICLIService()
         let args = service.buildArguments(prompt: "Hello", systemPrompt: "Be helpful.")
-        #expect(args == ["api", "chat.completions.create", "-m", "gpt-4o",
-                         "-g", "system", "Be helpful.", "-g", "user", "Hello"])
+        #expect(args == ["exec", "[System Instructions]\nBe helpful.\n\n[User Request]\nHello"])
     }
 }
 

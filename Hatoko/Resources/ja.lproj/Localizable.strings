@@ -62,7 +62,7 @@
 "backend.claudeAPI.name" = "Claude API";
 "backend.claudeCLI.name" = "Claude CLI (claude -p)";
 "backend.openaiAPI.name" = "OpenAI API";
-"backend.openaiCLI.name" = "OpenAI CLI (Experimental)";
+"backend.openaiCLI.name" = "Codex CLI (Experimental)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (Experimental)";
 
@@ -72,7 +72,7 @@
 "backend.claudeAPI.description" = "Anthropic API経由。API Keyが必要";
 "backend.claudeCLI.description" = "ローカルのClaude CLIを使用。API Key不要";
 "backend.openaiAPI.description" = "OpenAI API経由。API Keyが必要";
-"backend.openaiCLI.description" = "openai CLIを使用（Experimental）。Pythonパッケージが必要";
+"backend.openaiCLI.description" = "Codex CLIを使用（Experimental）。npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Google Gemini API経由。API Keyが必要";
 "backend.geminiCLI.description" = "gemini CLIを使用（Experimental）。gemini-cliが必要";
 

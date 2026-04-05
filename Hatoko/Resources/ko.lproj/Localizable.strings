@@ -62,7 +62,7 @@
 "backend.claudeAPI.name" = "Claude API";
 "backend.claudeCLI.name" = "Claude CLI (claude -p)";
 "backend.openaiAPI.name" = "OpenAI API";
-"backend.openaiCLI.name" = "OpenAI CLI (실험적)";
+"backend.openaiCLI.name" = "Codex CLI (실험적)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (실험적)";
 
@@ -72,7 +72,7 @@
 "backend.claudeAPI.description" = "Anthropic API 경유. API 키 필요";
 "backend.claudeCLI.description" = "로컬 Claude CLI 사용. API 키 불필요";
 "backend.openaiAPI.description" = "OpenAI API 경유. API 키 필요";
-"backend.openaiCLI.description" = "openai CLI 사용 (실험적). Python 패키지 필요";
+"backend.openaiCLI.description" = "Codex CLI 사용 (실험적). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Google Gemini API 경유. API 키 필요";
 "backend.geminiCLI.description" = "gemini CLI 사용 (실험적). gemini-cli 필요";
 

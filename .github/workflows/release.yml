@@ -45,11 +45,24 @@ jobs:
           APP_PATH="build/Hatoko.xcarchive/Products/Applications/Hatoko.app"
           ditto -c -k --keepParent "$APP_PATH" Hatoko.app.zip
 
+      - name: Compute checksum
+        run: shasum -a 256 Hatoko.app.zip > Hatoko.app.zip.sha256
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "${{ github.ref_name }}" \
             Hatoko.app.zip \
+            Hatoko.app.zip.sha256 \
             --title "${{ github.ref_name }}" \
             --generate-notes
+
+      - name: Append checksum to release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA256=$(awk '{print $1}' Hatoko.app.zip.sha256)
+          EXISTING=$(gh release view "${{ github.ref_name }}" --json body -q .body)
+          printf '%s\n\n---\n**SHA-256:** `%s`\n' "$EXISTING" "$SHA256" | \
+            gh release edit "${{ github.ref_name }}" --notes-file -

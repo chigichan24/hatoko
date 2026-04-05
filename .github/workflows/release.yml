@@ -48,21 +48,29 @@ jobs:
       - name: Compute checksum
         run: shasum -a 256 Hatoko.app.zip > Hatoko.app.zip.sha256
 
-      - name: Create GitHub Release
+      - name: Create or update GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "${{ github.ref_name }}" \
-            Hatoko.app.zip \
-            Hatoko.app.zip.sha256 \
-            --title "${{ github.ref_name }}" \
-            --generate-notes
+          TAG="${{ github.ref_name }}"
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" Hatoko.app.zip Hatoko.app.zip.sha256 --clobber
+          else
+            gh release create "$TAG" \
+              Hatoko.app.zip \
+              Hatoko.app.zip.sha256 \
+              --title "$TAG" \
+              --generate-notes
+          fi
 
       - name: Append checksum to release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          TAG="${{ github.ref_name }}"
           SHA256=$(awk '{print $1}' Hatoko.app.zip.sha256)
-          EXISTING=$(gh release view "${{ github.ref_name }}" --json body -q .body)
-          printf '%s\n\n---\n**SHA-256:** `%s`\n' "$EXISTING" "$SHA256" | \
-            gh release edit "${{ github.ref_name }}" --notes-file -
+          EXISTING=$(gh release view "$TAG" --json body -q .body)
+          if ! echo "$EXISTING" | grep -q "$SHA256"; then
+            printf '%s\n\n---\n**SHA-256:** `%s`\n' "$EXISTING" "$SHA256" | \
+              gh release edit "$TAG" --notes-file -
+          fi

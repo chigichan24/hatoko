@@ -8,11 +8,11 @@ struct GeminiServiceTests {
 
     @Test
     func requestConstruction() throws {
-        let service = GeminiService(apiKey: "test-key", model: "gemini-2.0-flash")
+        let service = GeminiService(apiKey: "test-key", model: "gemini-2.5-flash-lite")
         let messages = [LLMMessage(role: .user, content: "Hello")]
         let request = try service.buildRequest(messages: messages, systemPrompt: nil)
 
-        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+        let urlString = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent"
         #expect(request.url?.absoluteString == urlString)
         #expect(request.httpMethod == "POST")
         #expect(request.value(forHTTPHeaderField: "x-goog-api-key") == "test-key")

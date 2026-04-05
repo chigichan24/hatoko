@@ -23,7 +23,7 @@ Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanj
   | Backend | API | CLI |
   |---------|-----|-----|
   | Claude  | ❓  | ✅  |
-  | OpenAI  | ❓  | ⚠️  |
+  | OpenAI  | ⚠️  | ❓  |
   | Gemini  | ✅  | ✅  |
 
   > ✅ Verified &nbsp; ⚠️ Experimental &nbsp; ❓ Untested

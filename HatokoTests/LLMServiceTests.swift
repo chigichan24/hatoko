@@ -7,9 +7,9 @@ import Testing
 struct LLMBackendTests {
 
     @Test
-    func disabledBackendThrowsOnCreateService() {
-        #expect(throws: LLMBackendError.self) {
-            try LLMBackend.disabled.createService()
+    func disabledBackendThrowsOnCreateService() async {
+        await #expect(throws: LLMBackendError.self) {
+            try await LLMBackend.disabled.createService()
         }
     }
 

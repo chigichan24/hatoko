@@ -80,7 +80,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     // MARK: - Service Factory
 
-    func createService() throws -> any LLMService {
+    func createService() async throws -> any LLMService {
         switch self {
         case .disabled:
             throw LLMBackendError.disabled

@@ -317,19 +317,20 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             return
         }
 
-        let service: any LLMService
-        do {
-            service = try LLMBackend.current.createService()
-        } catch {
-            NSLog("[Hatoko] LLM backend configuration error: \(error)")
-            chatWindowController.addAssistantMessage(L10n.Error.config)
-            return
-        }
-
         let llmMessages = Self.buildLLMMessages(from: chatHistory)
         let systemPrompt = PasteContext.buildSystemPrompt(base: Self.chatSystemPrompt, context: pasteContext)
 
         Task {
+            let service: any LLMService
+            do {
+                service = try LLMBackend.current.createService()
+            } catch {
+                NSLog("[Hatoko] LLM backend configuration error: \(error)")
+                await MainActor.run {
+                    self.chatWindowController.addAssistantMessage(L10n.Error.config)
+                }
+                return
+            }
             guard await Self.chatRateLimiter.tryAcquire() else {
                 NSLog("[Hatoko] LLM chat request rate limited")
                 await MainActor.run {
@@ -536,19 +537,20 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // MARK: - LLM Generation
 
     func requestLLMGeneration(prompt: String, cursorRect: NSRect, pasteContext: PasteContext? = nil) {
-        let service: any LLMService
-        do {
-            service = try LLMBackend.current.createService()
-        } catch {
-            NSLog("[Hatoko] LLM backend configuration error: \(error)")
-            NSSound.beep()
-            inlineSuggestionWindow.hide()
-            resetLLMState()
-            return
-        }
-
         let systemPrompt = PasteContext.buildSystemPrompt(base: Self.inlineSystemPrompt, context: pasteContext)
         Task {
+            let service: any LLMService
+            do {
+                service = try LLMBackend.current.createService()
+            } catch {
+                NSLog("[Hatoko] LLM backend configuration error: \(error)")
+                await MainActor.run {
+                    NSSound.beep()
+                    self.inlineSuggestionWindow.hide()
+                    self.resetLLMState()
+                }
+                return
+            }
             guard await Self.inlineRateLimiter.tryAcquire() else {
                 NSLog("[Hatoko] LLM request rate limited")
                 await MainActor.run {

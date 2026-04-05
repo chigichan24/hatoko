@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode 26.3
+        run: sudo xcode-select -s /Applications/Xcode_26.3.app
+
+      - name: Cache Mint packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.mint
+          key: mint-${{ hashFiles('Mintfile') }}
+
+      - name: Install Mint & tools
+        run: |
+          brew install mint
+          mint bootstrap
+
+      - name: Generate Xcode project
+        run: mint run xcodegen generate
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project Hatoko.xcodeproj \
+            -scheme Hatoko \
+            -configuration Release \
+            -archivePath build/Hatoko.xcarchive \
+            -skipMacroValidation \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Prepare artifact
+        run: |
+          APP_PATH="build/Hatoko.xcarchive/Products/Applications/Hatoko.app"
+          ditto -c -k --keepParent "$APP_PATH" Hatoko.app.zip
+
+      - name: Compute checksum
+        run: shasum -a 256 Hatoko.app.zip > Hatoko.app.zip.sha256
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            Hatoko.app.zip \
+            Hatoko.app.zip.sha256 \
+            --title "${{ github.ref_name }}" \
+            --generate-notes
+
+      - name: Append checksum to release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SHA256=$(awk '{print $1}' Hatoko.app.zip.sha256)
+          EXISTING=$(gh release view "${{ github.ref_name }}" --json body -q .body)
+          printf '%s\n\n---\n**SHA-256:** `%s`\n' "$EXISTING" "$SHA256" | \
+            gh release edit "${{ github.ref_name }}" --notes-file -

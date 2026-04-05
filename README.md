@@ -42,6 +42,9 @@ Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanj
 ### Chat Window
 ![Chat Window](docs/chatwindow.gif)
 
+### Paste Context
+![Paste Context](docs/pastecontext.gif)
+
 ## Getting Started
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and project structure.

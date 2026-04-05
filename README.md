@@ -42,6 +42,9 @@ Hatoko is an Input Method Engine (IME) for macOS. It provides Japanese kana-kanj
 ### Chat Window
 ![Chat Window](docs/chatwindow.gif)
 
+### Paste Context
+![Paste Context](docs/pastecontext.gif)
+
 ## Getting Started
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and project structure.
@@ -52,6 +55,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and project struct
 |------|----------|-------------|
 | Japanese Input | Default | Romaji input → kana-kanji conversion (Space to convert, Enter to commit) |
 | LLM Assist | Ctrl+Space | Type a prompt → Enter to send to LLM → Enter to accept / Tab to open chat |
+| Paste Context | Ctrl+V (in LLM mode) | Attach clipboard text as context for LLM generation. Press again to detach |
 
 Open the settings via Ctrl+Click on the input source menu.
 

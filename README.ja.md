@@ -42,6 +42,9 @@ Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな
 ### チャットウィンドウ
 ![Chat Window](docs/chatwindow.gif)
 
+### ペーストコンテキスト
+![Paste Context](docs/pastecontext.gif)
+
 ## はじめに
 
 ビルド手順・プロジェクト構成は [CONTRIBUTING.md](CONTRIBUTING.md) を参照してください。
@@ -52,6 +55,7 @@ Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな
 |--------|----------|------|
 | 日本語入力 | デフォルト | ローマ字入力 → かな漢字変換 (Space で変換、Enter で確定) |
 | LLM アシスト | Ctrl+Space | プロンプトを入力 → Enter で LLM に送信 → Enter で確定 / Tab でチャットへ |
+| ペーストコンテキスト | Ctrl+V (LLM モード中) | クリップボードのテキストを LLM 生成のコンテキストとして添付。再度押すと解除 |
 
 設定画面は入力ソースメニューの Ctrl+クリックから開けます。
 

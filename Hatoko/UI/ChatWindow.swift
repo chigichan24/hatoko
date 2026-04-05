@@ -175,8 +175,6 @@ final class ChatWindowController {
                 height: min(fitting.height, 500)
             )
             active.panel.setContentSize(size)
-            let origin = WindowPositioning.origin(for: size, cursorRect: cursorRect)
-            active.panel.setFrameOrigin(origin)
             return
         }
 

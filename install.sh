@@ -7,42 +7,67 @@ BUNDLE_ID="com.chigichan24.inputmethod.Hatoko"
 
 echo "=== Hatoko IME Installer ==="
 
+# Parse arguments
+APP_SOURCE=""
+IS_CLEAN=false
+
+for arg in "$@"; do
+  case "$arg" in
+    --clean)
+      IS_CLEAN=true
+      ;;
+    *)
+      APP_SOURCE="$arg"
+      ;;
+  esac
+done
+
 # Detect update vs fresh install
 IS_UPDATE=false
 if [ -d "${INSTALL_DIR}/${APP_NAME}" ]; then
   IS_UPDATE=true
 fi
 
-# --clean flag forces fresh install path (full TIS re-registration)
-if [ "${1:-}" = "--clean" ]; then
+if [ "$IS_CLEAN" = true ]; then
   IS_UPDATE=false
   echo "(Clean install mode)"
 fi
 
-# 1. Generate Xcode project
-echo "[1/5] Generating Xcode project..."
-mint run xcodegen generate
+if [ -n "$APP_SOURCE" ]; then
+  # Pre-built .app provided
+  echo "[1/5] Using pre-built app: $APP_SOURCE"
+  echo "[2/5] Skipping build..."
+  APP_PATH="$APP_SOURCE"
 
-# 2. Build
-echo "[2/5] Building..."
-xcodebuild -project Hatoko.xcodeproj \
-  -scheme Hatoko \
-  -configuration Debug \
-  build \
-  | grep -E "^(Build |Compile|Link|Sign|error:)" || true
+  if [ ! -d "$APP_PATH" ]; then
+    echo "ERROR: App not found at $APP_PATH"
+    exit 1
+  fi
+else
+  # Build from source
+  echo "[1/5] Generating Xcode project..."
+  mint run xcodegen generate
 
-BUILD_DIR=$(xcodebuild -project Hatoko.xcodeproj \
-  -scheme Hatoko \
-  -configuration Debug \
-  -showBuildSettings 2>/dev/null \
-  | grep " BUILD_DIR " \
-  | awk '{print $3}')
+  echo "[2/5] Building..."
+  xcodebuild -project Hatoko.xcodeproj \
+    -scheme Hatoko \
+    -configuration Debug \
+    build \
+    | grep -E "^(Build |Compile|Link|Sign|error:)" || true
 
-APP_PATH="${BUILD_DIR}/Debug/${APP_NAME}"
+  BUILD_DIR=$(xcodebuild -project Hatoko.xcodeproj \
+    -scheme Hatoko \
+    -configuration Debug \
+    -showBuildSettings 2>/dev/null \
+    | grep " BUILD_DIR " \
+    | awk '{print $3}')
 
-if [ ! -d "$APP_PATH" ]; then
-  echo "ERROR: Build product not found at $APP_PATH"
-  exit 1
+  APP_PATH="${BUILD_DIR}/Debug/${APP_NAME}"
+
+  if [ ! -d "$APP_PATH" ]; then
+    echo "ERROR: Build product not found at $APP_PATH"
+    exit 1
+  fi
 fi
 
 # 3. Kill existing process

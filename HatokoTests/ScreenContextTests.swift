@@ -161,6 +161,18 @@ struct ScreenContextTests {
     }
 
     @Test
+    func truncatesLongAppName() {
+        let longName = String(repeating: "a", count: 600)
+        let context = ScreenContext(
+            appName: longName,
+            windowTitle: nil,
+            focusedText: nil,
+            selectedText: nil
+        )
+        #expect(context.appName?.count == 500)
+    }
+
+    @Test
     func truncatesLongWindowTitle() {
         let longTitle = String(repeating: "w", count: 600)
         let context = ScreenContext(

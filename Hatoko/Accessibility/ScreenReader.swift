@@ -40,7 +40,7 @@ actor ScreenReader {
         fragments.sort { ($0.y, $0.x) < ($1.y, $1.x) }
 
         // Deduplicate adjacent overlapping text
-        let deduped = deduplicateFragments(fragments)
+        let deduped = deduplicateAdjacentFragments(fragments)
 
         let visibleText = deduped.isEmpty ? nil : deduped.joined(separator: "\n")
 
@@ -97,7 +97,9 @@ actor ScreenReader {
         return nil
     }
 
-    private func deduplicateFragments(_ fragments: [TextFragment]) -> [String] {
+    /// Removes adjacent fragments where one text contains the other.
+    /// Only compares consecutive elements after position-based sorting.
+    private func deduplicateAdjacentFragments(_ fragments: [TextFragment]) -> [String] {
         var result: [String] = []
         for fragment in fragments {
             if let last = result.last {

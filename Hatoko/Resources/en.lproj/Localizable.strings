@@ -1,64 +1,64 @@
 // MARK: - Settings
 
-"settings.sectionHeader.llmBackend" = "LLM バックエンド";
-"settings.picker.backend" = "バックエンド";
-"settings.sectionHeader.keybinding" = "キーバインド";
-"settings.keybinding.llmAssist" = "Ctrl + Space: LLMアシストモード";
-"settings.keybinding.toggleLanguage" = "Ctrl + Space (LLM入力中): 日本語/英語切替";
-"settings.windowTitle" = "Hatoko 設定";
-"settings.menuItem" = "Hatoko 設定...";
+"settings.sectionHeader.llmBackend" = "LLM Backend";
+"settings.picker.backend" = "Backend";
+"settings.sectionHeader.keybinding" = "Key Bindings";
+"settings.keybinding.llmAssist" = "Ctrl + Space: LLM Assist Mode";
+"settings.keybinding.toggleLanguage" = "Ctrl + Space (during LLM input): Toggle Japanese/English";
+"settings.windowTitle" = "Hatoko Settings";
+"settings.menuItem" = "Hatoko Settings...";
 
 // MARK: - Settings Backend
 
-"settings.backend.disabled.title" = "LLM 無効";
-"settings.backend.disabled.description" = "LLM機能は無効です。Ctrl+Spaceは動作しません。";
+"settings.backend.disabled.title" = "LLM Disabled";
+"settings.backend.disabled.description" = "LLM features are disabled. Ctrl+Space will not work.";
 "settings.backend.apiKey" = "API Key";
-"settings.backend.apiKeyAccessibility" = "%@ API キー";
-"settings.backend.save" = "保存";
-"settings.backend.saved" = "保存しました";
-"settings.backend.pathLabel" = "パス";
-"settings.backend.pathPlaceholder" = "自動検出";
-"settings.backend.pathAccessibility" = "%@ パス";
+"settings.backend.apiKeyAccessibility" = "%@ API Key";
+"settings.backend.save" = "Save";
+"settings.backend.saved" = "Saved";
+"settings.backend.pathLabel" = "Path";
+"settings.backend.pathPlaceholder" = "Auto-detect";
+"settings.backend.pathAccessibility" = "%@ Path";
 
 // MARK: - Chat
 
-"chat.header" = "Hatoko アシスト";
-"chat.closeHint" = "Esc で閉じる";
-"chat.closeAccessibility" = "Escapeキーでウィンドウを閉じる";
-"chat.userRole" = "あなた";
-"chat.thinkingAccessibility" = "Hatokoが考えています";
-"chat.useButton" = "これを使う ⌘C";
-"chat.useButtonAccessibility" = "このテキストを入力欄に挿入し、クリップボードにもコピーします";
-"chat.contextAccessibility" = "コンテキスト: %@";
-"chat.inputPlaceholder" = "追加の指示...";
-"chat.inputAccessibility" = "追加の指示を入力";
+"chat.header" = "Hatoko Assist";
+"chat.closeHint" = "Esc to close";
+"chat.closeAccessibility" = "Close window with Escape key";
+"chat.userRole" = "You";
+"chat.thinkingAccessibility" = "Hatoko is thinking";
+"chat.useButton" = "Use this ⌘C";
+"chat.useButtonAccessibility" = "Insert this text into the input field and copy to clipboard";
+"chat.contextAccessibility" = "Context: %@";
+"chat.inputPlaceholder" = "Additional instructions...";
+"chat.inputAccessibility" = "Enter additional instructions";
 
 // MARK: - Thinking Phrases
 
-"thinking.phrase0" = "構成を考えています";
-"thinking.phrase1" = "言い回しを調整中";
-"thinking.phrase2" = "もう少しで書けそう";
-"thinking.phrase3" = "いい表現を探しています";
-"thinking.phrase4" = "下書きを推敲中";
-"thinking.phrase5" = "文脈を整理しています";
-"thinking.phrase6" = "ちょっと待ってくださいね";
-"thinking.phrase7" = "もうすぐまとまります";
-"thinking.phrase8" = "表現を練っています";
-"thinking.phrase9" = "最後の仕上げ中";
-"thinking.suggestionAccessibility" = "提案: %@";
-"thinking.generatingAccessibility" = "提案を生成中";
+"thinking.phrase0" = "Thinking about structure";
+"thinking.phrase1" = "Adjusting phrasing";
+"thinking.phrase2" = "Almost ready to write";
+"thinking.phrase3" = "Looking for the right words";
+"thinking.phrase4" = "Refining the draft";
+"thinking.phrase5" = "Organizing context";
+"thinking.phrase6" = "Just a moment";
+"thinking.phrase7" = "Almost there";
+"thinking.phrase8" = "Polishing the wording";
+"thinking.phrase9" = "Final touches";
+"thinking.suggestionAccessibility" = "Suggestion: %@";
+"thinking.generatingAccessibility" = "Generating suggestion";
 
 // MARK: - Inline Suggestion
 
-"inline.contextAccessibility" = "コンテキスト付き";
-"inline.action.confirm" = "確定";
-"inline.action.chat" = "チャットで調整";
-"inline.action.cancel" = "キャンセル";
-"inline.keyAction" = "%@キーで%@";
+"inline.contextAccessibility" = "With context";
+"inline.action.confirm" = "Confirm";
+"inline.action.chat" = "Refine in chat";
+"inline.action.cancel" = "Cancel";
+"inline.keyAction" = "%@ key to %@";
 
 // MARK: - Backend Names
 
-"backend.disabled.name" = "無効 (Disabled)";
+"backend.disabled.name" = "Disabled";
 "backend.claudeAPI.name" = "Claude API";
 "backend.claudeCLI.name" = "Claude CLI (claude -p)";
 "backend.openaiAPI.name" = "OpenAI API";
@@ -69,18 +69,18 @@
 
 // MARK: - Backend Descriptions
 
-"backend.disabled.description" = "LLM機能を使用しません";
-"backend.claudeAPI.description" = "Anthropic API経由。API Keyが必要";
-"backend.claudeCLI.description" = "ローカルのClaude CLIを使用。API Key不要";
-"backend.openaiAPI.description" = "OpenAI API経由。API Keyが必要";
-"backend.openaiCLI.description" = "Codex CLIを使用（Experimental）。npm install -g @openai/codex";
-"backend.geminiAPI.description" = "Google Gemini API経由。API Keyが必要";
-"backend.geminiCLI.description" = "gemini CLIを使用（Experimental）。gemini-cliが必要";
-"backend.foundationModels.description" = "Apple Intelligenceのオンデバイスモデルを使用。macOS 15+";
+"backend.disabled.description" = "LLM features are not used";
+"backend.claudeAPI.description" = "Via Anthropic API. API Key required";
+"backend.claudeCLI.description" = "Uses local Claude CLI. No API Key needed";
+"backend.openaiAPI.description" = "Via OpenAI API. API Key required";
+"backend.openaiCLI.description" = "Uses Codex CLI (Experimental). npm install -g @openai/codex";
+"backend.geminiAPI.description" = "Via Google Gemini API. API Key required";
+"backend.geminiCLI.description" = "Uses gemini CLI (Experimental). gemini-cli required";
+"backend.foundationModels.description" = "Use Apple Intelligence on-device models. macOS 15+";
 
 // MARK: - Errors
 
-"error.tooLong" = "メッセージが長すぎます。短くしてください。";
-"error.config" = "設定エラー: バックエンドの構成を確認してください。";
-"error.rateLimit" = "リクエストが多すぎます。少し待ってからお試しください。";
-"error.generic" = "エラーが発生しました。もう一度お試しください。";
+"error.tooLong" = "Message is too long. Please shorten it.";
+"error.config" = "Configuration error: Please check your backend settings.";
+"error.rateLimit" = "Too many requests. Please wait a moment and try again.";
+"error.generic" = "An error occurred. Please try again.";

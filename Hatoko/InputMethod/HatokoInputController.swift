@@ -15,22 +15,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     static let noReplacementRange = NSRange(location: NSNotFound, length: NSNotFound)
     static let hankakuToZenkakuMap: [Character: Character] = ["-": "ー", "[": "「", "]": "」", ".": "。", ",": "、", "~": "〜", "!": "！", "?": "？"]
-    private static let inlineSystemPrompt = """
-        You are an IME text-generation assistant. \
-        The user gives a brief instruction; you reply with the requested text only. \
-        Keep it short: usually one sentence, a few sentences at most. \
-        Never ask questions or add explanations — just produce the text. \
-        Output plain text only (no markdown).
-        """
-
-    private static let chatSystemPrompt = """
-        You are an IME text-generation assistant engaged in a multi-turn conversation. \
-        The user may ask you to generate, revise, or improve text based on the conversation so far. \
-        Use the full conversation history to understand context and intent. \
-        Reply with only the requested text — no explanations, no commentary. \
-        Output plain text only (no markdown).
-        """
-
     var inputMode: InputMode = .japanese
     var composingText = ComposingText()
     var japaneseInputState: JapaneseInputState = .composing
@@ -302,28 +286,36 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             }
     }
 
+    private func validateChatMessage(_ text: String) -> Bool {
+        switch PromptGuard.validate(text, maxLength: PromptGuard.maxChatMessageLength) {
+        case .valid: return true
+        case .tooLong:
+            chatWindowController.addAssistantMessage(L10n.Error.tooLong)
+            return false
+        case .empty: return false
+        }
+    }
+
     private func sendChatMessage(chatHistory: [ChatMessage]) {
         guard let lastMessage = chatHistory.last, lastMessage.role == .user else {
             assertionFailure("[Hatoko] sendChatMessage called without trailing user message")
             return
         }
-        switch PromptGuard.validate(lastMessage.text, maxLength: PromptGuard.maxChatMessageLength) {
-        case .valid:
-            break
-        case .tooLong:
-            chatWindowController.addAssistantMessage(L10n.Error.tooLong)
-            return
-        case .empty:
-            return
-        }
+        guard validateChatMessage(lastMessage.text) else { return }
 
         let llmMessages = Self.buildLLMMessages(from: chatHistory)
-        let systemPrompt = PasteContext.buildSystemPrompt(base: Self.chatSystemPrompt, context: pasteContext)
+        let backend = LLMBackend.current
+        let language = backend.instructionLanguage
+        let systemPrompt = PasteContext.buildSystemPrompt(
+            base: SystemPromptProvider.chat.text(for: language),
+            context: pasteContext,
+            language: language
+        )
 
         Task {
             let service: any LLMService
             do {
-                service = try await LLMBackend.current.createService()
+                service = try await backend.createService()
             } catch {
                 NSLog("[Hatoko] LLM backend configuration error: \(error)")
                 await MainActor.run {
@@ -537,11 +529,17 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // MARK: - LLM Generation
 
     func requestLLMGeneration(prompt: String, cursorRect: NSRect, pasteContext: PasteContext? = nil) {
-        let systemPrompt = PasteContext.buildSystemPrompt(base: Self.inlineSystemPrompt, context: pasteContext)
+        let backend = LLMBackend.current
+        let language = backend.instructionLanguage
+        let systemPrompt = PasteContext.buildSystemPrompt(
+            base: SystemPromptProvider.inline.text(for: language),
+            context: pasteContext,
+            language: language
+        )
         Task {
             let service: any LLMService
             do {
-                service = try await LLMBackend.current.createService()
+                service = try await backend.createService()
             } catch {
                 NSLog("[Hatoko] LLM backend configuration error: \(error)")
                 await MainActor.run {

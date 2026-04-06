@@ -87,6 +87,16 @@ struct LLMBackendTests {
         LLMBackend.migrateIfNeeded()
         #expect(UserDefaults.standard.string(forKey: key) == "openai_api")
     }
+
+    @Test
+    func foundationModelsUsesJapaneseInstructions() {
+        #expect(LLMBackend.foundationModels.instructionLanguage == .japanese)
+    }
+
+    @Test(arguments: LLMBackend.allCases.filter { $0 != .foundationModels })
+    func nonFoundationModelsUseEnglishInstructions(backend: LLMBackend) {
+        #expect(backend.instructionLanguage == .english)
+    }
 }
 
 @Suite

@@ -52,6 +52,13 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     var isEnabled: Bool { self != .disabled }
 
+    var instructionLanguage: InstructionLanguage {
+        switch self {
+        case .foundationModels: .japanese
+        default: .english
+        }
+    }
+
     var configKind: BackendConfigKind {
         switch self {
         case .foundationModels: .onDevice

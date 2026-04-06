@@ -27,31 +27,57 @@ struct PasteContext: Sendable, Equatable {
     static func buildSystemPrompt(
         base: String,
         context: PasteContext?,
+        screenContext: ScreenContext? = nil,
         language: InstructionLanguage = .english
     ) -> String {
-        guard let context else { return base }
-        switch language {
-        case .english:
-            return """
-                \(base)
+        var prompt = base
 
-                The user has provided the following reference text as context:
-                <context>
-                \(context.text)
-                </context>
-                Use this context to understand what the user is referring to. \
-                Generate text that is relevant to this context.
-                """
-        case .japanese:
-            return """
-                \(base)
+        if let context {
+            switch language {
+            case .english:
+                prompt += """
 
-                ユーザーが以下の参照テキストをコンテキストとして提供しています:
-                <context>
-                \(context.text)
-                </context>
-                このコンテキストを参考にして、関連するテキストを生成してください。
-                """
+                    \nThe user has provided the following reference text as context:
+                    <context>
+                    \(context.text)
+                    </context>
+                    Use this context to understand what the user is referring to. \
+                    Generate text that is relevant to this context.
+                    """
+            case .japanese:
+                prompt += """
+
+                    \nユーザーが以下の参照テキストをコンテキストとして提供しています:
+                    <context>
+                    \(context.text)
+                    </context>
+                    このコンテキストを参考にして、関連するテキストを生成してください。
+                    """
+            }
         }
+
+        if let screenContext {
+            let formatted = screenContext.formatted()
+            if !formatted.isEmpty {
+                switch language {
+                case .english:
+                    prompt += """
+
+                        \nThe following is what the user is currently looking at on their screen:
+                        \(formatted)
+                        Use this screen context to understand the user's current working environment.
+                        """
+                case .japanese:
+                    prompt += """
+
+                        \n以下はユーザーが現在画面上で見ている内容です:
+                        \(formatted)
+                        この画面コンテキストを参考にして、ユーザーの作業環境を理解してください。
+                        """
+                }
+            }
+        }
+
+        return prompt
     }
 }

@@ -27,6 +27,19 @@ enum SystemPromptProvider {
             """
     )
 
+    static let screenContextInstruction = LocalizedPrompt(
+        english: """
+            You can see what the user is currently looking at on their screen. \
+            Use this screen context to understand their working environment and provide more relevant responses. \
+            Reference specific content from the screen when it helps address the user's request.
+            """,
+        japanese: """
+            ユーザーが現在画面上で見ている内容が確認できます。\
+            この画面コンテキストを活用して作業環境を理解し、より的確な回答を提供してください。\
+            ユーザーのリクエストに関連する場合は、画面上の具体的な内容に言及してください。
+            """
+    )
+
     static let chat = LocalizedPrompt(
         english: """
             You are an IME text-generation assistant engaged in a multi-turn conversation. \

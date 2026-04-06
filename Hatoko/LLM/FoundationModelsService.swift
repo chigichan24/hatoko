@@ -4,19 +4,19 @@ import FoundationModels
 final class FoundationModelsService: LLMService, Sendable {
 
     func generate(messages: [LLMMessage], systemPrompt: String?) async throws -> String {
-        // 1. 最後のユーザーメッセージを抽出（これが現在のプロンプトになる）
+        // 1. Extract the last user message (this will be the current prompt)
         guard let lastMessage = messages.last, lastMessage.role == .user else {
             return ""
         }
         
-        // 2. それより前の履歴を Transcript として構築
+        // 2. Build the previous history as a Transcript
         let transcript = buildTranscript(history: Array(messages.dropLast()), systemPrompt: systemPrompt)
         
-        // 3. セッションを作成。transcript を渡す
+        // 3. Create a session, passing the transcript
         let session = LanguageModelSession(transcript: transcript)
         
         do {
-            // 4. 最新のメッセージで応答を生成
+            // 4. Generate a response with the latest message
             let response = try await session.respond(to: lastMessage.content)
             return response.content
         } catch {

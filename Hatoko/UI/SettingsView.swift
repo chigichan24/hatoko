@@ -6,12 +6,23 @@ struct SettingsView: View {
     @State private var selectedBackend: LLMBackend = .current
     @State private var cliPath: String = ""
     @State private var isSaved = false
+    /// Enable this flag when developing with local CLI tools.
+    private static let isDevelopmentMode: Bool = false
+
+    private static var availableBackends: [LLMBackend] {
+        LLMBackend.allCases.filter { backend in
+            if case .cli = backend.configKind {
+                return isDevelopmentMode
+            }
+            return true
+        }
+    }
 
     var body: some View {
         Form {
             Section(L10n.Settings.SectionHeader.llmBackend) {
                 Picker(L10n.Settings.Picker.backend, selection: $selectedBackend) {
-                    ForEach(LLMBackend.allCases, id: \.self) { backend in
+                    ForEach(Self.availableBackends, id: \.self) { backend in
                         VStack(alignment: .leading) {
                             Text(backend.displayName)
                             Text(backend.description)
@@ -45,7 +56,13 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .frame(minWidth: 420, idealWidth: 420, minHeight: 200, idealHeight: 400)
         .onAppear {
-            selectedBackend = .current
+            let current = LLMBackend.current
+            if Self.availableBackends.contains(current) {
+                selectedBackend = current
+            } else {
+                selectedBackend = .foundationModels
+                LLMBackend.current = .foundationModels
+            }
             loadSettingsForBackend(selectedBackend)
         }
     }

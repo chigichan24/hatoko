@@ -43,7 +43,7 @@ struct SettingsView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(minWidth: 420, idealWidth: 420, minHeight: 200, idealHeight: 400)
+        .frame(minWidth: 600, idealWidth: 600, minHeight: 600, idealHeight: 800)
         .onAppear {
             selectedBackend = .current
             loadSettingsForBackend(selectedBackend)

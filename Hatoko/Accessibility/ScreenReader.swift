@@ -23,30 +23,6 @@ actor ScreenReader {
 
     // MARK: - Public Capture Methods
 
-    func captureScreenContext() -> ScreenContext? {
-        guard let info = readAppAndWindow() else { return nil }
-
-        var focusedText: String?
-        var selectedText: String?
-
-        if let focusedElement = copyElementAttribute(info.app, kAXFocusedUIElementAttribute) {
-            focusedText = copyStringAttribute(focusedElement, kAXValueAttribute)
-            selectedText = copyStringAttribute(focusedElement, kAXSelectedTextAttribute)
-        }
-
-        guard info.appName != nil || info.windowTitle != nil
-                || focusedText != nil || selectedText != nil else {
-            return nil
-        }
-
-        return ScreenContext(
-            appName: info.appName,
-            windowTitle: info.windowTitle,
-            focusedText: focusedText,
-            selectedText: selectedText
-        )
-    }
-
     func captureFullWindowContext() -> ScreenContext? {
         guard let info = readAppAndWindow() else { return nil }
 

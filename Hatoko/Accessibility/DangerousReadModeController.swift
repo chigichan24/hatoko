@@ -16,9 +16,11 @@ final class DangerousReadModeController {
     private var countdownTask: Task<Void, Never>?
     private let indicatorWindow = DangerousReadIndicatorWindow()
 
-    private static let enabledKey = "dangerous_read_enabled"
-    private static let maxDurationKey = "dangerous_read_max_duration"
-    private static let captureIntervalKey = "dangerous_read_capture_interval"
+    static let enabledKey = "dangerous_read_enabled"
+    static let maxDurationKey = "dangerous_read_max_duration"
+    static let captureIntervalKey = "dangerous_read_capture_interval"
+    static let defaultMaxDuration = 300
+    static let defaultCaptureInterval = 3
 
     nonisolated var isActive: Bool {
         MainActor.assumeIsolated { activeState }
@@ -34,12 +36,12 @@ final class DangerousReadModeController {
 
     var maxSessionDuration: Int {
         let stored = UserDefaults.standard.integer(forKey: Self.maxDurationKey)
-        return stored > 0 ? stored : 300
+        return stored > 0 ? stored : Self.defaultMaxDuration
     }
 
     var captureInterval: Int {
         let stored = UserDefaults.standard.integer(forKey: Self.captureIntervalKey)
-        return stored > 0 ? stored : 3
+        return stored > 0 ? stored : Self.defaultCaptureInterval
     }
 
     nonisolated func toggleSession() {

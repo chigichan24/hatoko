@@ -7,15 +7,15 @@ struct SettingsView: View {
     @State private var cliPath: String = ""
     @State private var isSaved = false
     @State private var isDangerousReadEnabled = UserDefaults.standard.bool(
-        forKey: "dangerous_read_enabled"
+        forKey: DangerousReadModeController.enabledKey
     )
     @State private var dangerousReadDuration: Int = {
-        let stored = UserDefaults.standard.integer(forKey: "dangerous_read_max_duration")
-        return stored > 0 ? stored : 300
+        let stored = UserDefaults.standard.integer(forKey: DangerousReadModeController.maxDurationKey)
+        return stored > 0 ? stored : DangerousReadModeController.defaultMaxDuration
     }()
     @State private var dangerousReadInterval: Int = {
-        let stored = UserDefaults.standard.integer(forKey: "dangerous_read_capture_interval")
-        return stored > 0 ? stored : 3
+        let stored = UserDefaults.standard.integer(forKey: DangerousReadModeController.captureIntervalKey)
+        return stored > 0 ? stored : DangerousReadModeController.defaultCaptureInterval
     }()
     /// Enable this flag when developing with local CLI tools.
     private static let isDevelopmentMode: Bool = true
@@ -60,7 +60,7 @@ struct SettingsView: View {
             Section(L10n.Settings.SectionHeader.dangerousRead) {
                 Toggle(L10n.Settings.DangerousRead.enable, isOn: $isDangerousReadEnabled)
                     .onChange(of: isDangerousReadEnabled) {
-                        UserDefaults.standard.set(isDangerousReadEnabled, forKey: "dangerous_read_enabled")
+                        UserDefaults.standard.set(isDangerousReadEnabled, forKey: DangerousReadModeController.enabledKey)
                     }
 
                 Text(L10n.Settings.DangerousRead.warning)
@@ -75,7 +75,7 @@ struct SettingsView: View {
                         Text("10 min").tag(600)
                     }
                     .onChange(of: dangerousReadDuration) {
-                        UserDefaults.standard.set(dangerousReadDuration, forKey: "dangerous_read_max_duration")
+                        UserDefaults.standard.set(dangerousReadDuration, forKey: DangerousReadModeController.maxDurationKey)
                     }
 
                     Picker(L10n.Settings.DangerousRead.interval, selection: $dangerousReadInterval) {
@@ -85,7 +85,7 @@ struct SettingsView: View {
                     }
                     .onChange(of: dangerousReadInterval) {
                         UserDefaults.standard.set(
-                            dangerousReadInterval, forKey: "dangerous_read_capture_interval"
+                            dangerousReadInterval, forKey: DangerousReadModeController.captureIntervalKey
                         )
                     }
 

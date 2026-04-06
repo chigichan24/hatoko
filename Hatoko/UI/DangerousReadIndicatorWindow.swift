@@ -11,19 +11,19 @@ final class DangerousReadIndicatorWindow {
 
     private var panel: NSPanel?
     private var hostingController: NSHostingController<DangerousReadIndicatorView>?
+    private let state = DangerousReadIndicatorState()
 
     nonisolated func show(remainingSeconds: Int) {
         MainActor.assumeIsolated {
-            if panel != nil {
-                updateRemainingTime(remainingSeconds)
-                return
-            }
-            createPanel(remainingSeconds: remainingSeconds)
+            state.remainingSeconds = remainingSeconds
+            if panel != nil { return }
+            createPanel()
         }
     }
 
     nonisolated func hide() {
         MainActor.assumeIsolated {
+            state.isScanning = false
             panel?.orderOut(nil)
             panel = nil
             hostingController = nil
@@ -32,8 +32,13 @@ final class DangerousReadIndicatorWindow {
 
     nonisolated func updateRemainingTime(_ seconds: Int) {
         MainActor.assumeIsolated {
-            let view = DangerousReadIndicatorView(remainingSeconds: seconds)
-            hostingController?.rootView = view
+            state.remainingSeconds = seconds
+        }
+    }
+
+    nonisolated func setScanning(_ scanning: Bool) {
+        MainActor.assumeIsolated {
+            state.isScanning = scanning
         }
     }
 
@@ -43,8 +48,8 @@ final class DangerousReadIndicatorWindow {
         }
     }
 
-    private func createPanel(remainingSeconds: Int) {
-        let view = DangerousReadIndicatorView(remainingSeconds: remainingSeconds)
+    private func createPanel() {
+        let view = DangerousReadIndicatorView(state: state)
         let controller = NSHostingController(rootView: view)
         controller.view.layoutSubtreeIfNeeded()
         let size = controller.view.fittingSize
@@ -75,9 +80,22 @@ final class DangerousReadIndicatorWindow {
     }
 }
 
+// MARK: - Observable State
+
+@Observable
+final class DangerousReadIndicatorState: @unchecked Sendable {
+    var remainingSeconds: Int = 0
+    var isScanning: Bool = false
+    var scanFrame: Int = 0
+}
+
+// MARK: - Indicator View
+
 struct DangerousReadIndicatorView: View {
 
-    let remainingSeconds: Int
+    var state: DangerousReadIndicatorState
+
+    private static let pacmanFrames = ["ᗧ···", "ᗧ ··", "ᗧ  ·", "ᗧ   "]
 
     var body: some View {
         HStack(spacing: 6) {
@@ -86,6 +104,11 @@ struct DangerousReadIndicatorView: View {
             Text(L10n.DangerousRead.Indicator.active)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
+            if state.isScanning {
+                Text(Self.pacmanFrames[state.scanFrame])
+                    .monospacedDigit()
+                    .foregroundStyle(.white)
+            }
             Text(formattedTime)
                 .monospacedDigit()
                 .foregroundStyle(.white.opacity(0.9))
@@ -97,11 +120,23 @@ struct DangerousReadIndicatorView: View {
             Capsule()
                 .fill(Color.red)
         )
+        .task(id: state.isScanning) {
+            guard state.isScanning else { return }
+            state.scanFrame = 0
+            while !Task.isCancelled {
+                do {
+                    try await Task.sleep(for: .milliseconds(200))
+                } catch {
+                    return
+                }
+                state.scanFrame = (state.scanFrame + 1) % Self.pacmanFrames.count
+            }
+        }
     }
 
     private var formattedTime: String {
-        let minutes = remainingSeconds / 60
-        let seconds = remainingSeconds % 60
+        let minutes = state.remainingSeconds / 60
+        let seconds = state.remainingSeconds % 60
         return String(format: "(%d:%02d)", minutes, seconds)
     }
 }

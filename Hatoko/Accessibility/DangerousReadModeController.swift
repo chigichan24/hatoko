@@ -110,8 +110,10 @@ final class DangerousReadModeController {
         captureTask = Task {
             let reader = ScreenReader()
             while !Task.isCancelled {
-                let context = await reader.captureScreenContext()
+                self.indicatorWindow.setScanning(true)
+                let context = await reader.captureFullWindowContext()
                 guard !Task.isCancelled, self.activeState else { return }
+                self.indicatorWindow.setScanning(false)
                 self.latestScreenContext = context
                 do {
                     try await Task.sleep(for: .seconds(interval))

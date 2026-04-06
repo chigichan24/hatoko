@@ -65,6 +65,7 @@
 "backend.openaiCLI.name" = "Codex CLI (Experimental)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (Experimental)";
+"backend.foundationModels.name" = "Foundation Models (Apple Intelligence)";
 
 // MARK: - Backend Descriptions
 
@@ -75,6 +76,7 @@
 "backend.openaiCLI.description" = "Uses Codex CLI (Experimental). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Via Google Gemini API. API Key required";
 "backend.geminiCLI.description" = "Uses gemini CLI (Experimental). gemini-cli required";
+"backend.foundationModels.description" = "Use Apple Intelligence on-device models. macOS 15+";
 
 // MARK: - Errors
 

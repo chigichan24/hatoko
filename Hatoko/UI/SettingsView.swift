@@ -53,7 +53,7 @@ struct SettingsView: View {
     private func loadSettingsForBackend(_ backend: LLMBackend) {
         isSaved = false
         switch backend.configKind {
-        case .disabled:
+        case .disabled, .onDevice:
             apiKey = ""
             cliPath = ""
         case .api(let keychainKey, _):

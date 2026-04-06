@@ -2,40 +2,44 @@ import Foundation
 
 enum BackendConfigKind: Sendable {
     case disabled
+    case onDevice
     case api(keychainKey: String, envVariable: String)
     case cli(defaultsKey: String)
 }
 
 enum LLMBackend: String, CaseIterable, Sendable {
-    case disabled   = "disabled"
+    case foundationModels = "foundation_models"
     case claudeAPI  = "claude_api"
     case claudeCLI  = "claude_cli"
     case openaiAPI  = "openai_api"
     case openaiCLI  = "openai_cli"
     case geminiAPI  = "gemini_api"
     case geminiCLI  = "gemini_cli"
+    case disabled   = "disabled"
 
     var displayName: String {
         switch self {
-        case .disabled: L10n.Backend.Disabled.name
+        case .foundationModels: L10n.Backend.FoundationModels.name
         case .claudeAPI: L10n.Backend.ClaudeAPI.name
         case .claudeCLI: L10n.Backend.ClaudeCLI.name
         case .openaiAPI: L10n.Backend.OpenaiAPI.name
         case .openaiCLI: L10n.Backend.OpenaiCLI.name
         case .geminiAPI: L10n.Backend.GeminiAPI.name
         case .geminiCLI: L10n.Backend.GeminiCLI.name
+        case .disabled: L10n.Backend.Disabled.name
         }
     }
 
     var description: String {
         switch self {
-        case .disabled: L10n.Backend.Disabled.description
+        case .foundationModels: L10n.Backend.FoundationModels.description
         case .claudeAPI: L10n.Backend.ClaudeAPI.description
         case .claudeCLI: L10n.Backend.ClaudeCLI.description
         case .openaiAPI: L10n.Backend.OpenaiAPI.description
         case .openaiCLI: L10n.Backend.OpenaiCLI.description
         case .geminiAPI: L10n.Backend.GeminiAPI.description
         case .geminiCLI: L10n.Backend.GeminiCLI.description
+        case .disabled: L10n.Backend.Disabled.description
         }
     }
 
@@ -43,13 +47,14 @@ enum LLMBackend: String, CaseIterable, Sendable {
 
     var configKind: BackendConfigKind {
         switch self {
-        case .disabled: .disabled
+        case .foundationModels: .onDevice
         case .claudeAPI: .api(keychainKey: "claude_api_key", envVariable: "ANTHROPIC_API_KEY")
         case .openaiAPI: .api(keychainKey: "openai_api_key", envVariable: "OPENAI_API_KEY")
         case .geminiAPI: .api(keychainKey: "gemini_api_key", envVariable: "GEMINI_API_KEY")
         case .claudeCLI: .cli(defaultsKey: "claude_cli_path")
         case .openaiCLI: .cli(defaultsKey: "openai_cli_path")
         case .geminiCLI: .cli(defaultsKey: "gemini_cli_path")
+        case .disabled: .disabled
         }
     }
 
@@ -61,7 +66,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
         get {
             guard let raw = UserDefaults.standard.string(forKey: userDefaultsKey),
                   let backend = LLMBackend(rawValue: raw) else {
-                return .disabled
+                return .foundationModels
             }
             return backend
         }
@@ -96,6 +101,8 @@ enum LLMBackend: String, CaseIterable, Sendable {
             return OpenAICLIService(executablePath: resolvedCLIPathWithUserDefault())
         case .geminiCLI:
             return GeminiCLIService(executablePath: resolvedCLIPathWithUserDefault())
+        case .foundationModels:
+            return FoundationModelsService()
         }
     }
 
@@ -138,7 +145,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
             return Self.findExecutable(name: "gemini", extraPaths: [
                 NSString("~/.local/bin/gemini").expandingTildeInPath,
             ])
-        case .disabled, .claudeAPI, .openaiAPI, .geminiAPI:
+        case .disabled, .claudeAPI, .openaiAPI, .geminiAPI, .foundationModels:
             // Unreachable: only called from createService() via CLI cases.
             preconditionFailure("resolvedCLIPath called on non-CLI backend: \(self)")
         }

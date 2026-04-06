@@ -6,6 +6,7 @@ actor ScreenReader {
     private static let axBundleIdentifier = "AXBundleIdentifier"
     private static let maxTreeDepth = 30
     private static let maxElementTextLength = 2000
+    private static let maxCollectedFragments = 500
 
     private struct AppWindowInfo {
         let app: AXUIElement
@@ -88,7 +89,7 @@ actor ScreenReader {
         depth: Int,
         results: inout [TextFragment]
     ) {
-        guard depth < Self.maxTreeDepth else { return }
+        guard depth < Self.maxTreeDepth, results.count < Self.maxCollectedFragments else { return }
 
         let position = copyPositionAttribute(element)
 

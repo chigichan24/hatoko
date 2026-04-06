@@ -6,8 +6,19 @@ struct SettingsView: View {
     @State private var selectedBackend: LLMBackend = .current
     @State private var cliPath: String = ""
     @State private var isSaved = false
+    @State private var isDangerousReadEnabled = UserDefaults.standard.bool(
+        forKey: "dangerous_read_enabled"
+    )
+    @State private var dangerousReadDuration: Int = {
+        let stored = UserDefaults.standard.integer(forKey: "dangerous_read_max_duration")
+        return stored > 0 ? stored : 300
+    }()
+    @State private var dangerousReadInterval: Int = {
+        let stored = UserDefaults.standard.integer(forKey: "dangerous_read_capture_interval")
+        return stored > 0 ? stored : 3
+    }()
     /// Enable this flag when developing with local CLI tools.
-    private static let isDevelopmentMode: Bool = false
+    private static let isDevelopmentMode: Bool = true
 
     private static var availableBackends: [LLMBackend] {
         LLMBackend.allCases.filter { backend in
@@ -46,10 +57,60 @@ struct SettingsView: View {
                 isSaved: $isSaved
             )
 
+            Section(L10n.Settings.SectionHeader.dangerousRead) {
+                Toggle(L10n.Settings.DangerousRead.enable, isOn: $isDangerousReadEnabled)
+                    .onChange(of: isDangerousReadEnabled) {
+                        UserDefaults.standard.set(isDangerousReadEnabled, forKey: "dangerous_read_enabled")
+                    }
+
+                Text(L10n.Settings.DangerousRead.warning)
+                    .font(.caption)
+                    .foregroundStyle(.red)
+
+                if isDangerousReadEnabled {
+                    Picker(L10n.Settings.DangerousRead.duration, selection: $dangerousReadDuration) {
+                        Text("1 min").tag(60)
+                        Text("3 min").tag(180)
+                        Text("5 min").tag(300)
+                        Text("10 min").tag(600)
+                    }
+                    .onChange(of: dangerousReadDuration) {
+                        UserDefaults.standard.set(dangerousReadDuration, forKey: "dangerous_read_max_duration")
+                    }
+
+                    Picker(L10n.Settings.DangerousRead.interval, selection: $dangerousReadInterval) {
+                        Text("1 sec").tag(1)
+                        Text("3 sec").tag(3)
+                        Text("5 sec").tag(5)
+                    }
+                    .onChange(of: dangerousReadInterval) {
+                        UserDefaults.standard.set(
+                            dangerousReadInterval, forKey: "dangerous_read_capture_interval"
+                        )
+                    }
+
+                    Button(L10n.Settings.DangerousRead.checkPermission) {
+                        AccessibilityPermission.requestTrust()
+                    }
+
+                    if AccessibilityPermission.isTrusted {
+                        Text(L10n.Settings.DangerousRead.permissionGranted)
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                    } else {
+                        Text(L10n.Settings.DangerousRead.permissionNotGranted)
+                            .font(.caption)
+                            .foregroundStyle(.orange)
+                    }
+                }
+            }
+
             Section(L10n.Settings.SectionHeader.keybinding) {
                 Text(L10n.Settings.Keybinding.llmAssist)
                     .foregroundStyle(.secondary)
                 Text(L10n.Settings.Keybinding.toggleLanguage)
+                    .foregroundStyle(.secondary)
+                Text(L10n.Settings.Keybinding.dangerousRead)
                     .foregroundStyle(.secondary)
             }
         }

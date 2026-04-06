@@ -9,14 +9,8 @@ struct SettingsView: View {
     @State private var isDangerousReadEnabled = UserDefaults.standard.bool(
         forKey: DangerousReadModeController.enabledKey
     )
-    @State private var dangerousReadDuration: Int = {
-        let stored = UserDefaults.standard.integer(forKey: DangerousReadModeController.maxDurationKey)
-        return stored > 0 ? stored : DangerousReadModeController.defaultMaxDuration
-    }()
-    @State private var dangerousReadInterval: Int = {
-        let stored = UserDefaults.standard.integer(forKey: DangerousReadModeController.captureIntervalKey)
-        return stored > 0 ? stored : DangerousReadModeController.defaultCaptureInterval
-    }()
+    @State private var dangerousReadDuration: Int = DangerousReadModeController.storedMaxDuration()
+    @State private var dangerousReadInterval: Int = DangerousReadModeController.storedCaptureInterval()
     /// Enable this flag when developing with local CLI tools.
     private static let isDevelopmentMode: Bool = true
 

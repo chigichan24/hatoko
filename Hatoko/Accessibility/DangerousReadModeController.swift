@@ -38,15 +38,18 @@ final class DangerousReadModeController {
         UserDefaults.standard.bool(forKey: Self.enabledKey)
     }
 
-    var maxSessionDuration: Int {
-        let stored = UserDefaults.standard.integer(forKey: Self.maxDurationKey)
-        return stored > 0 ? stored : Self.defaultMaxDuration
+    static func storedMaxDuration() -> Int {
+        let stored = UserDefaults.standard.integer(forKey: maxDurationKey)
+        return stored > 0 ? stored : defaultMaxDuration
     }
 
-    var captureInterval: Int {
-        let stored = UserDefaults.standard.integer(forKey: Self.captureIntervalKey)
-        return stored > 0 ? stored : Self.defaultCaptureInterval
+    static func storedCaptureInterval() -> Int {
+        let stored = UserDefaults.standard.integer(forKey: captureIntervalKey)
+        return stored > 0 ? stored : defaultCaptureInterval
     }
+
+    var maxSessionDuration: Int { Self.storedMaxDuration() }
+    var captureInterval: Int { Self.storedCaptureInterval() }
 
     nonisolated func toggleSession() {
         MainActor.assumeIsolated {
@@ -83,11 +86,11 @@ final class DangerousReadModeController {
     }
 
     func stopSession() {
+        activeState = false
         captureTask?.cancel()
         captureTask = nil
         countdownTask?.cancel()
         countdownTask = nil
-        activeState = false
         sessionStartTime = nil
         sessionDuration = 0
         latestScreenContext = nil

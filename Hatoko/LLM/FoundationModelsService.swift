@@ -12,8 +12,8 @@ final class FoundationModelsService: LLMService, Sendable {
         // 2. それより前の履歴を Transcript として構築
         let transcript = buildTranscript(history: Array(messages.dropLast()), systemPrompt: systemPrompt)
         
-        // 3. 履歴を復元してセッションを作成
-        let session = LanguageModelSession(restoring: transcript)
+        // 3. セッションを作成。transcript を渡す
+        let session = LanguageModelSession(transcript: transcript)
         
         do {
             // 4. 最新のメッセージで応答を生成
@@ -31,15 +31,17 @@ final class FoundationModelsService: LLMService, Sendable {
         var entries: [Transcript.Entry] = []
         
         if let systemPrompt, !systemPrompt.isEmpty {
-            entries.append(.instructions(Instructions { systemPrompt }))
+            let textSegment = Transcript.TextSegment(content: systemPrompt)
+            entries.append(.instructions(Transcript.Instructions(segments: [.text(textSegment)], toolDefinitions: [])))
         }
         
         for message in history {
+            let textSegment = Transcript.TextSegment(content: message.content)
             switch message.role {
             case .user:
-                entries.append(.prompt(Prompt(content: message.content)))
+                entries.append(.prompt(Transcript.Prompt(segments: [.text(textSegment)])))
             case .assistant:
-                entries.append(.response(Response(content: message.content)))
+                entries.append(.response(Transcript.Response(assetIDs: [], segments: [.text(textSegment)])))
             }
         }
         

@@ -94,4 +94,45 @@ struct PasteContextTests {
         let context = PasteContext.create(text: longText)
         #expect(context?.text.count == PromptGuard.maxPasteContextLength)
     }
+
+    // MARK: - Japanese language support
+
+    @Test
+    func buildSystemPromptJapaneseUsesJapaneseWrapper() {
+        let base = "Base prompt"
+        let context = PasteContext.create(text: "some text")
+        let result = PasteContext.buildSystemPrompt(base: base, context: context, language: .japanese)
+        #expect(result.contains("ユーザーが以下の参照テキストをコンテキストとして提供しています"))
+    }
+
+    @Test
+    func buildSystemPromptJapaneseDoesNotContainEnglishWrapper() {
+        let base = "Base prompt"
+        let context = PasteContext.create(text: "some text")
+        let result = PasteContext.buildSystemPrompt(base: base, context: context, language: .japanese)
+        #expect(!result.contains("The user has provided the following reference text"))
+    }
+
+    @Test
+    func buildSystemPromptJapanesePreservesBaseAtStart() {
+        let base = "日本語ベースプロンプト"
+        let context = PasteContext.create(text: "some text")
+        let result = PasteContext.buildSystemPrompt(base: base, context: context, language: .japanese)
+        #expect(result.hasPrefix(base))
+    }
+
+    @Test
+    func buildSystemPromptJapaneseWrapsContextWithDelimiters() {
+        let base = "Base"
+        let context = PasteContext.create(text: "重要な参照テキスト")
+        let result = PasteContext.buildSystemPrompt(base: base, context: context, language: .japanese)
+        #expect(result.contains("<context>\n重要な参照テキスト\n</context>"))
+    }
+
+    @Test
+    func buildSystemPromptJapaneseWithNilContextReturnsBase() {
+        let base = "日本語ベースプロンプト"
+        let result = PasteContext.buildSystemPrompt(base: base, context: nil, language: .japanese)
+        #expect(result == base)
+    }
 }

@@ -12,6 +12,7 @@ final class DangerousReadModeController {
     private var activeState = false
     private var latestScreenContext: ScreenContext?
     private var sessionStartTime: Date?
+    private var sessionDuration = 0
     private var captureTask: Task<Void, Never>?
     private var countdownTask: Task<Void, Never>?
     private let indicatorWindow = DangerousReadIndicatorWindow()
@@ -73,8 +74,9 @@ final class DangerousReadModeController {
         activeState = true
         sessionStartTime = Date()
         latestScreenContext = nil
+        sessionDuration = maxSessionDuration
 
-        let duration = maxSessionDuration
+        let duration = sessionDuration
         indicatorWindow.show(remainingSeconds: duration)
         startCaptureLoop()
         startCountdown(totalSeconds: duration)
@@ -87,6 +89,7 @@ final class DangerousReadModeController {
         countdownTask = nil
         activeState = false
         sessionStartTime = nil
+        sessionDuration = 0
         latestScreenContext = nil
         indicatorWindow.hide()
     }
@@ -94,7 +97,7 @@ final class DangerousReadModeController {
     var remainingSeconds: Int {
         guard let start = sessionStartTime else { return 0 }
         let elapsed = Int(Date().timeIntervalSince(start))
-        return max(0, maxSessionDuration - elapsed)
+        return max(0, sessionDuration - elapsed)
     }
 
     // MARK: - Private

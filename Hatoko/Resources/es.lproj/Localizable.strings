@@ -65,16 +65,19 @@
 "backend.openaiCLI.name" = "Codex CLI (Experimental)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (Experimental)";
+"backend.foundationModels.name" = "Foundation Models (Apple Intelligence)";
 
 // MARK: - Backend Descriptions
 
-"backend.disabled.description" = "No se utilizan funciones de LLM";
+"backend.disabled.description" = "No se utilizan las funciones de LLM";
 "backend.claudeAPI.description" = "Vía API de Anthropic. Se requiere clave API";
-"backend.claudeCLI.description" = "Usa la CLI local de Claude. No requiere clave API";
+"backend.claudeCLI.description" = "Usa Claude CLI local. No se requiere clave API";
 "backend.openaiAPI.description" = "Vía API de OpenAI. Se requiere clave API";
 "backend.openaiCLI.description" = "Usa Codex CLI (Experimental). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Vía API de Google Gemini. Se requiere clave API";
-"backend.geminiCLI.description" = "Usa la CLI de gemini (Experimental). Se requiere gemini-cli";
+"backend.geminiCLI.description" = "Usa gemini CLI (Experimental). Se requiere gemini-cli";
+"backend.foundationModels.description" = "Usa modelos locales de Apple Intelligence. macOS 15+";
+"backend.foundationModels.note" = "Nota sobre Apple Intelligence: El motor de Foundation Models funciona completamente en el dispositivo y no requiere clave API, pero la calidad del modelo es notablemente limitada para casos de uso de IME. Las respuestas pueden carecer del matiz y la precisión contextual que proporcionan los LLM basados en la nube. Considérelo una opción de privacidad primero en lugar de una de calidad primero.";
 
 // MARK: - Errors
 

@@ -31,6 +31,11 @@ struct SettingsBackendSection: View {
         Section(backend.displayName) {
             Text(backend.description)
                 .foregroundStyle(.secondary)
+            if let note = backend.note {
+                Text(note)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -47,6 +52,11 @@ struct SettingsBackendSection: View {
                     .font(.caption)
                     .foregroundStyle(.green)
             }
+            if let note = backend.note {
+                Text(note)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -61,6 +71,11 @@ struct SettingsBackendSection: View {
             Text(backend.description)
                 .font(.caption)
                 .foregroundStyle(.secondary)
+            if let note = backend.note {
+                Text(note)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

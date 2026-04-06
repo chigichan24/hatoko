@@ -2,6 +2,7 @@ import Foundation
 
 enum BackendConfigKind: Sendable {
     case disabled
+    case onDevice
     case api(keychainKey: String, envVariable: String)
     case cli(defaultsKey: String)
 }
@@ -14,6 +15,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
     case openaiCLI  = "openai_cli"
     case geminiAPI  = "gemini_api"
     case geminiCLI  = "gemini_cli"
+    case foundationModels = "foundation_models"
 
     var displayName: String {
         switch self {
@@ -24,6 +26,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
         case .openaiCLI: L10n.Backend.OpenaiCLI.name
         case .geminiAPI: L10n.Backend.GeminiAPI.name
         case .geminiCLI: L10n.Backend.GeminiCLI.name
+        case .foundationModels: L10n.Backend.FoundationModels.name
         }
     }
 
@@ -36,6 +39,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
         case .openaiCLI: L10n.Backend.OpenaiCLI.description
         case .geminiAPI: L10n.Backend.GeminiAPI.description
         case .geminiCLI: L10n.Backend.GeminiCLI.description
+        case .foundationModels: L10n.Backend.FoundationModels.description
         }
     }
 
@@ -44,6 +48,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
     var configKind: BackendConfigKind {
         switch self {
         case .disabled: .disabled
+        case .foundationModels: .onDevice
         case .claudeAPI: .api(keychainKey: "claude_api_key", envVariable: "ANTHROPIC_API_KEY")
         case .openaiAPI: .api(keychainKey: "openai_api_key", envVariable: "OPENAI_API_KEY")
         case .geminiAPI: .api(keychainKey: "gemini_api_key", envVariable: "GEMINI_API_KEY")
@@ -96,6 +101,8 @@ enum LLMBackend: String, CaseIterable, Sendable {
             return OpenAICLIService(executablePath: resolvedCLIPathWithUserDefault())
         case .geminiCLI:
             return GeminiCLIService(executablePath: resolvedCLIPathWithUserDefault())
+        case .foundationModels:
+            return FoundationModelsService()
         }
     }
 
@@ -138,7 +145,7 @@ enum LLMBackend: String, CaseIterable, Sendable {
             return Self.findExecutable(name: "gemini", extraPaths: [
                 NSString("~/.local/bin/gemini").expandingTildeInPath,
             ])
-        case .disabled, .claudeAPI, .openaiAPI, .geminiAPI:
+        case .disabled, .claudeAPI, .openaiAPI, .geminiAPI, .foundationModels:
             // Unreachable: only called from createService() via CLI cases.
             preconditionFailure("resolvedCLIPath called on non-CLI backend: \(self)")
         }

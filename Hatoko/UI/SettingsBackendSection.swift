@@ -11,6 +11,8 @@ struct SettingsBackendSection: View {
         switch backend.configKind {
         case .disabled:
             disabledSection
+        case .onDevice:
+            onDeviceSection
         case .api(let keychainKey, _):
             apiSection(keychainKey: keychainKey)
         case .cli(let defaultsKey):
@@ -21,6 +23,13 @@ struct SettingsBackendSection: View {
     private var disabledSection: some View {
         Section(L10n.Settings.Backend.Disabled.title) {
             Text(L10n.Settings.Backend.Disabled.description)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var onDeviceSection: some View {
+        Section(backend.displayName) {
+            Text(backend.description)
                 .foregroundStyle(.secondary)
         }
     }

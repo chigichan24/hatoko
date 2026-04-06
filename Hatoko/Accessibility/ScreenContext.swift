@@ -16,7 +16,7 @@ struct ScreenContext: Sendable, Equatable {
         capturedAt: Date = Date()
     ) {
         self.appName = appName
-        self.windowTitle = windowTitle
+        self.windowTitle = Self.truncateShort(windowTitle)
         self.focusedText = Self.truncate(focusedText)
         self.selectedText = Self.truncate(selectedText)
         self.capturedAt = capturedAt
@@ -41,8 +41,15 @@ struct ScreenContext: Sendable, Equatable {
         return "<screen_context>\n\(body)\n</screen_context>"
     }
 
+    private static let maxShortFieldLength = 500
+
     private static func truncate(_ text: String?) -> String? {
         guard let text, !text.isEmpty else { return nil }
         return String(text.prefix(PromptGuard.maxScreenContextLength))
+    }
+
+    private static func truncateShort(_ text: String?) -> String? {
+        guard let text, !text.isEmpty else { return nil }
+        return String(text.prefix(maxShortFieldLength))
     }
 }

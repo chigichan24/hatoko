@@ -8,9 +8,7 @@ extension HatokoInputController {
         pasteContext: PasteContext?,
         language: InstructionLanguage
     ) -> String {
-        let screenCtx = Self.dangerousReadController.isActive
-            ? Self.dangerousReadController.currentScreenContext
-            : nil
+        let screenCtx = Self.dangerousReadController.activeScreenContext()
         let baseText = screenCtx != nil
             ? base.text(for: language) + "\n"
                 + SystemPromptProvider.screenContextInstruction.text(for: language)

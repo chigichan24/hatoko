@@ -10,7 +10,7 @@ import Cocoa
 final class DangerousReadModeController {
 
     private var activeState = false
-    private(set) var latestScreenContext: ScreenContext?
+    private var latestScreenContext: ScreenContext?
     private var sessionStartTime: Date?
     private var captureTask: Task<Void, Never>?
     private var countdownTask: Task<Void, Never>?
@@ -26,8 +26,11 @@ final class DangerousReadModeController {
         MainActor.assumeIsolated { activeState }
     }
 
-    nonisolated var currentScreenContext: ScreenContext? {
-        MainActor.assumeIsolated { latestScreenContext }
+    nonisolated func activeScreenContext() -> ScreenContext? {
+        MainActor.assumeIsolated {
+            guard activeState else { return nil }
+            return latestScreenContext
+        }
     }
 
     var isEnabledInSettings: Bool {

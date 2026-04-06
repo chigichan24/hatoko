@@ -11,6 +11,7 @@ struct SettingsView: View {
     )
     @State private var dangerousReadDuration: Int = DangerousReadModeController.storedMaxDuration()
     @State private var dangerousReadInterval: Int = DangerousReadModeController.storedCaptureInterval()
+    @State private var isAccessibilityTrusted = AccessibilityPermission.isTrusted
     /// Enable this flag when developing with local CLI tools.
     private static let isDevelopmentMode: Bool = true
 
@@ -60,6 +61,7 @@ struct SettingsView: View {
                 Text(L10n.Settings.DangerousRead.warning)
                     .font(.caption)
                     .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
 
                 if isDangerousReadEnabled {
                     Picker(L10n.Settings.DangerousRead.duration, selection: $dangerousReadDuration) {
@@ -82,12 +84,16 @@ struct SettingsView: View {
                             dangerousReadInterval, forKey: DangerousReadModeController.captureIntervalKey
                         )
                     }
+                }
 
+                HStack {
                     Button(L10n.Settings.DangerousRead.checkPermission) {
                         AccessibilityPermission.requestTrust()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                            isAccessibilityTrusted = AccessibilityPermission.isTrusted
+                        }
                     }
-
-                    if AccessibilityPermission.isTrusted {
+                    if isAccessibilityTrusted {
                         Text(L10n.Settings.DangerousRead.permissionGranted)
                             .font(.caption)
                             .foregroundStyle(.green)
@@ -110,6 +116,9 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .frame(minWidth: 600, idealWidth: 600, minHeight: 600, idealHeight: 800)
+        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+            isAccessibilityTrusted = AccessibilityPermission.isTrusted
+        }
         .onAppear {
             let current = LLMBackend.current
             if Self.availableBackends.contains(current) {
@@ -119,6 +128,7 @@ struct SettingsView: View {
                 LLMBackend.current = .foundationModels
             }
             loadSettingsForBackend(selectedBackend)
+            isAccessibilityTrusted = AccessibilityPermission.isTrusted
         }
     }
 

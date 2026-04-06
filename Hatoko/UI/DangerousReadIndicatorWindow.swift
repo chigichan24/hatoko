@@ -128,6 +128,7 @@ struct DangerousReadIndicatorView: View {
         .font(.system(size: 12))
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
+        .frame(minWidth: 280)
         .background(
             Capsule()
                 .fill(Color.red)

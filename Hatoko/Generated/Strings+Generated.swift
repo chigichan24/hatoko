@@ -29,6 +29,12 @@ internal enum L10n {
       /// 無効 (Disabled)
       internal static let name = L10n.tr("Localizable", "backend.disabled.name", fallback: "無効 (Disabled)")
     }
+    internal enum FoundationModels {
+      /// Apple Intelligenceのオンデバイスモデルを使用。macOS 15+
+      internal static let description = L10n.tr("Localizable", "backend.foundationModels.description", fallback: "Apple Intelligenceのオンデバイスモデルを使用。macOS 15+")
+      /// Foundation Models (Apple Intelligence)
+      internal static let name = L10n.tr("Localizable", "backend.foundationModels.name", fallback: "Foundation Models (Apple Intelligence)")
+    }
     internal enum GeminiAPI {
       /// Google Gemini API経由。API Keyが必要
       internal static let description = L10n.tr("Localizable", "backend.geminiAPI.description", fallback: "Google Gemini API経由。API Keyが必要")

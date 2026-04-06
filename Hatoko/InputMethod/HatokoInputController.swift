@@ -35,7 +35,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     /// to protect the LLM API from excessive requests.
     static let inlineRateLimiter = RateLimiter()
     static let chatRateLimiter = RateLimiter()
-    let dangerousReadController = DangerousReadModeController()
+    static let dangerousReadController = DangerousReadModeController()
 
     lazy var convertOptions: ConvertRequestOptions = {
         let dir = applicationSupportDirectory()
@@ -193,7 +193,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     /// Returns a Bool result if a Ctrl+Space shortcut was handled, or nil to continue normal handling.
     private func handleCtrlSpaceShortcuts(event: NSEvent, client: any IMKTextInput) -> Bool? {
         if isCtrlShiftSpace(event: event) {
-            dangerousReadController.toggleSession()
+            Self.dangerousReadController.toggleSession()
             return true
         }
         if isCtrlSpace(event: event) {

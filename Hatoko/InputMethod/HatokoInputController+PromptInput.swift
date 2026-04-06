@@ -263,7 +263,7 @@ extension HatokoInputController {
     }
 
     private func updatePromptMarkedText(client: any IMKTextInput) {
-        let dangerousPrefix = dangerousReadController.isActive ? "⚠️" : ""
+        let dangerousPrefix = Self.dangerousReadController.isActive ? "⚠️" : ""
         let prefix = pasteContext != nil
             ? "\(dangerousPrefix)✦\(PasteContext.displayIcon) "
             : "\(dangerousPrefix)✦ "

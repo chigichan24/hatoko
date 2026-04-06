@@ -263,7 +263,10 @@ extension HatokoInputController {
     }
 
     private func updatePromptMarkedText(client: any IMKTextInput) {
-        let prefix = pasteContext != nil ? "✦\(PasteContext.displayIcon) " : "✦ "
+        let dangerousPrefix = dangerousReadController.isActive ? "⚠️" : ""
+        let prefix = pasteContext != nil
+            ? "\(dangerousPrefix)✦\(PasteContext.displayIcon) "
+            : "\(dangerousPrefix)✦ "
         let result = NSMutableAttributedString()
 
         // Prefix + promptBuffer: pink, single underline

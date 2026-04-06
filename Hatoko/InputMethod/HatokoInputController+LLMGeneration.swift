@@ -111,7 +111,6 @@ extension HatokoInputController {
                     systemPrompt: systemPrompt
                 )
                 await MainActor.run {
-                    self.llmSuggestion = result
                     self.chatWindowController.addAssistantMessage(result)
                 }
             } catch {

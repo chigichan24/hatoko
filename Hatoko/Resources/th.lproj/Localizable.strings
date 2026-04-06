@@ -65,16 +65,19 @@
 "backend.openaiCLI.name" = "Codex CLI (ทดลอง)";
 "backend.geminiAPI.name" = "Gemini API";
 "backend.geminiCLI.name" = "Gemini CLI (ทดลอง)";
+"backend.foundationModels.name" = "Foundation Models (Apple Intelligence)";
 
 // MARK: - Backend Descriptions
 
-"backend.disabled.description" = "ไม่ใช้ฟังก์ชัน LLM";
+"backend.disabled.description" = "ไม่เปิดใช้งานคุณสมบัติ LLM";
 "backend.claudeAPI.description" = "ผ่าน Anthropic API ต้องใช้คีย์ API";
-"backend.claudeCLI.description" = "ใช้ Claude CLI ภายในเครื่อง ไม่ต้องใช้คีย์ API";
+"backend.claudeCLI.description" = "ใช้ Claude CLI ในเครื่อง ไม่ต้องใช้คีย์ API";
 "backend.openaiAPI.description" = "ผ่าน OpenAI API ต้องใช้คีย์ API";
 "backend.openaiCLI.description" = "ใช้ Codex CLI (ทดลอง) npm install -g @openai/codex";
 "backend.geminiAPI.description" = "ผ่าน Google Gemini API ต้องใช้คีย์ API";
 "backend.geminiCLI.description" = "ใช้ gemini CLI (ทดลอง) ต้องใช้ gemini-cli";
+"backend.foundationModels.description" = "ใช้โมเดลในเครื่องของ Apple Intelligence. macOS 15+";
+"backend.foundationModels.note" = "หมายเหตุเกี่ยวกับ Apple Intelligence: แบ็กเอนด์ Foundation Models ในเครื่องทำงานบนอุปกรณ์ทั้งหมดและไม่จำเป็นต้องใช้คีย์ API แต่คุณภาพของโมเดลมีข้อจำกัดอย่างมากสำหรับกรณีการใช้งาน IME คำตอบอาจขาดความละเอียดอ่อนและความแม่นยำตามบริบทที่ LLM บนคลาวด์มีให้ โปรดพิจารณาว่าเป็นตัวเลือกที่เน้นความเป็นส่วนตัวมากกว่าคุณภาพ";
 
 // MARK: - Errors
 

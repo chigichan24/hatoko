@@ -77,6 +77,7 @@
 "backend.geminiAPI.description" = "Via Google Gemini API. API Key required";
 "backend.geminiCLI.description" = "Uses gemini CLI (Experimental). gemini-cli required";
 "backend.foundationModels.description" = "Use Apple Intelligence on-device models. macOS 15+";
+"backend.foundationModels.note" = "Note on Apple Intelligence: The on-device Foundation Models backend runs entirely on-device and requires no API key, but the model quality is noticeably limited for IME use cases. Responses may lack the nuance and contextual accuracy that cloud-based LLMs provide. Consider it a privacy-first option rather than a quality-first one.";
 
 // MARK: - Errors
 

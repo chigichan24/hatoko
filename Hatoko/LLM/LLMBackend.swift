@@ -43,6 +43,13 @@ enum LLMBackend: String, CaseIterable, Sendable {
         }
     }
 
+    var note: String? {
+        switch self {
+        case .foundationModels: L10n.Backend.FoundationModels.note
+        default: nil
+        }
+    }
+
     var isEnabled: Bool { self != .disabled }
 
     var configKind: BackendConfigKind {

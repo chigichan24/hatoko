@@ -64,17 +64,20 @@
 "backend.openaiAPI.name" = "OpenAI API";
 "backend.openaiCLI.name" = "Codex CLI（實驗性）";
 "backend.geminiAPI.name" = "Gemini API";
-"backend.geminiCLI.name" = "Gemini CLI（實驗性）";
+"backend.geminiCLI.name" = "Gemini CLI (實驗性)";
+"backend.foundationModels.name" = "Foundation Models (Apple Intelligence)";
 
 // MARK: - Backend Descriptions
 
 "backend.disabled.description" = "不使用 LLM 功能";
-"backend.claudeAPI.description" = "透過 Anthropic API。需要 API 金鑰";
-"backend.claudeCLI.description" = "使用本機 Claude CLI。無需 API 金鑰";
-"backend.openaiAPI.description" = "透過 OpenAI API。需要 API 金鑰";
-"backend.openaiCLI.description" = "使用 Codex CLI（實驗性）。npm install -g @openai/codex";
-"backend.geminiAPI.description" = "透過 Google Gemini API。需要 API 金鑰";
-"backend.geminiCLI.description" = "使用 gemini CLI（實驗性）。需要 gemini-cli";
+"backend.claudeAPI.description" = "經由 Anthropic API。需要 API 金鑰";
+"backend.claudeCLI.description" = "使用本地 Claude CLI。不需要 API 金鑰";
+"backend.openaiAPI.description" = "經由 OpenAI API。需要 API 金鑰";
+"backend.openaiCLI.description" = "使用 Codex CLI (實驗性)。npm install -g @openai/codex";
+"backend.geminiAPI.description" = "經由 Google Gemini API。需要 API 金鑰";
+"backend.geminiCLI.description" = "使用 gemini CLI (實驗性)。需要 gemini-cli";
+"backend.foundationModels.description" = "使用 Apple Intelligence 裝置端模型。macOS 15+";
+"backend.foundationModels.note" = "關於 Apple Intelligence 的說明：裝置端 Foundation Models 後端完全在裝置上執行，不需要 API 金鑰，但對於 IME 使用情境，模型品質有明顯限制。回覆可能缺乏雲端 LLM 所提供的細微差別和語境準確性。請將其視為隱私優先而非品質優先的選項。";
 
 // MARK: - Errors
 

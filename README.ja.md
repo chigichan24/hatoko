@@ -22,12 +22,12 @@ Hatoko は macOS 向けの Input Method Engine (IME) です。日本語のかな
 
   | バックエンド | API | CLI |
   |---------------------|-----|-----|
-  | Claude              | ❓  | ✅  |
-  | OpenAI              | ⚠️  | ❓  |
-  | Gemini              | ✅  | ✅  |
+  | Claude              | ❓  | 💻  |
+  | OpenAI              | ⚠️  | 💻  |
+  | Gemini              | ✅  | 💻  |
   | Apple Intelligence  | ✅  | -   |
 
-  > ✅ 動作確認済み &nbsp; ⚠️ 実験的 &nbsp; ❓ 未検証
+  > ✅ 動作確認済み &nbsp; ⚠️ 実験的 &nbsp; ❓ 未検証 &nbsp; 💻 開発目的のみ
 
   > **Apple Intelligence に関する注記:** オンデバイスの Foundation Models バックエンドは完全にデバイス上で動作し、API キーは不要です。ただし、IME 用途においてはモデルの品質に明らかな限界があります。クラウドベースの LLM と比較して、応答の精度や文脈理解が劣る場合があります。品質よりもプライバシーを重視する場合の選択肢として位置づけてください。
 

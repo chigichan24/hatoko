@@ -30,8 +30,8 @@ internal enum L10n {
       internal static let name = L10n.tr("Localizable", "backend.disabled.name", fallback: "無効 (Disabled)")
     }
     internal enum FoundationModels {
-      /// Apple Intelligenceのオンデバイスモデルを使用。macOS 15+
-      internal static let description = L10n.tr("Localizable", "backend.foundationModels.description", fallback: "Apple Intelligenceのオンデバイスモデルを使用。macOS 15+")
+      /// Apple Intelligenceのオンデバイスモデルを使用。macOS 26+
+      internal static let description = L10n.tr("Localizable", "backend.foundationModels.description", fallback: "Apple Intelligenceのオンデバイスモデルを使用。macOS 26+")
       /// Foundation Models (Apple Intelligence)
       internal static let name = L10n.tr("Localizable", "backend.foundationModels.name", fallback: "Foundation Models (Apple Intelligence)")
       /// Apple Intelligenceに関する注意: オンデバイスのFoundation Modelsバックエンドは完全にデバイス上で動作し、APIキーは不要ですが、IMEとしての利用におけるモデルの品質には顕著な制限があります。クラウドベースのLLMと比較して、回答のニュアンスや文脈の正確さが不足する場合があります。品質よりもプライバシーを優先する場合の選択肢として検討してください。

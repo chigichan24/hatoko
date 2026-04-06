@@ -76,7 +76,7 @@
 "backend.openaiCLI.description" = "Usa Codex CLI (Experimental). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Vía API de Google Gemini. Se requiere clave API";
 "backend.geminiCLI.description" = "Usa gemini CLI (Experimental). Se requiere gemini-cli";
-"backend.foundationModels.description" = "Usa modelos locales de Apple Intelligence. macOS 15+";
+"backend.foundationModels.description" = "Usa modelos locales de Apple Intelligence. macOS 26+";
 "backend.foundationModels.note" = "Nota sobre Apple Intelligence: El motor de Foundation Models funciona completamente en el dispositivo y no requiere clave API, pero la calidad del modelo es notablemente limitada para casos de uso de IME. Las respuestas pueden carecer del matiz y la precisión contextual que proporcionan los LLM basados en la nube. Considérelo una opción de privacidad primero en lugar de una de calidad primero.";
 
 // MARK: - Errors

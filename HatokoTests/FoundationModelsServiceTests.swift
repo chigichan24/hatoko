@@ -15,12 +15,12 @@ struct FoundationModelsServiceTests {
             LLMMessage(role: .assistant, content: "Hi there!")
         ]
         let systemPrompt = "You are a helpful assistant."
-        
+
         let transcript = service.buildTranscript(history: history, systemPrompt: systemPrompt)
-        
+
         // Transcript should have 3 entries: system instructions, user prompt, and assistant response
         #expect(transcript.count == 3)
-        
+
         // Check types if possible (based on search results, Entry is an enum)
         // Note: Actual implementation details might vary slightly, but this is the general idea
         var entryIndex = 0
@@ -57,11 +57,11 @@ struct FoundationModelsServiceTests {
         let history = [
             LLMMessage(role: .user, content: "Hello")
         ]
-        
+
         let transcript = service.buildTranscript(history: history, systemPrompt: nil)
-        
+
         #expect(transcript.count == 1)
-        
+
         for entry in transcript {
             if case .prompt = entry {
                 // Success

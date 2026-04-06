@@ -77,9 +77,9 @@
 "backend.openaiCLI.description" = "Verwendet Codex CLI (Experimentell). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Über Google Gemini API. API-Schlüssel erforderlich";
 "backend.geminiCLI.description" = "Verwendet gemini CLI (Experimentell). gemini-cli erforderlich";
-"backend.foundationModels.description" = "Verwendet Apple Intelligence On-Device-Modelle. macOS 15+";
+"backend.foundationModels.description" = "Verwendet Apple Intelligence On-Device-Modelle. macOS 26+";
 "backend.foundationModels.note" = "Hinweis zu Apple Intelligence: Das On-Device-Back-End für Foundation Models läuft vollständig lokal und benötigt keinen API-Schlüssel. Die Modellqualität ist jedoch für IME-Anwendungsfälle spürbar eingeschränkt. Antworten können Nuancen und kontextuelle Genauigkeit vermissen lassen, die Cloud-basierte LLMs bieten. Betrachten Sie es als eine Option, bei der Datenschutz vor Qualität geht.";
-"backend.foundationModels.description" = "Apple Intelligence On-Device-Modelle verwenden. macOS 15+";
+"backend.foundationModels.description" = "Apple Intelligence On-Device-Modelle verwenden. macOS 26+";
 "backend.foundationModels.note" = "Hinweis zu Apple Intelligence: Das On-Device-Backend für Foundation Models läuft vollständig auf dem Gerät und erfordert keinen API-Schlüssel, aber die Modellqualität ist für IME-Anwendungsfälle spürbar begrenzt. Antworten können die Nuancen und die kontextuelle Genauigkeit vermissen lassen, die cloudbasierte LLMs bieten. Betrachten Sie es als eine Option, bei der der Datenschutz im Vordergrund steht, nicht die Qualität.";
 
 // MARK: - Errors

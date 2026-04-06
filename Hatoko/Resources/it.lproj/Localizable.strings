@@ -76,7 +76,7 @@
 "backend.openaiCLI.description" = "Utilizza Codex CLI (Sperimentale). npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Tramite Google Gemini API. Chiave API richiesta";
 "backend.geminiCLI.description" = "Utilizza gemini CLI (Sperimentale). gemini-cli richiesto";
-"backend.foundationModels.description" = "Usa modelli on-device di Apple Intelligence. macOS 15+";
+"backend.foundationModels.description" = "Usa modelli on-device di Apple Intelligence. macOS 26+";
 "backend.foundationModels.note" = "Nota su Apple Intelligence: Il backend Foundation Models on-device viene eseguito interamente sul dispositivo e non richiede chiavi API, ma la qualità del modello è notevolmente limitata per i casi d'uso IME. Le risposte potrebbero mancare delle sfumature e della precisione contestuale fornite dai modelli LLM basati su cloud. Considerala un'opzione orientata alla privacy piuttosto che alla qualità.";
 
 // MARK: - Errors

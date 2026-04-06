@@ -76,7 +76,7 @@
 "backend.openaiCLI.description" = "Codex CLIを使用（Experimental）。npm install -g @openai/codex";
 "backend.geminiAPI.description" = "Google Gemini API経由。API Keyが必要";
 "backend.geminiCLI.description" = "gemini CLIを使用（Experimental）。gemini-cliが必要";
-"backend.foundationModels.description" = "Apple Intelligenceのオンデバイスモデルを使用。macOS 15+";
+"backend.foundationModels.description" = "Apple Intelligenceのオンデバイスモデルを使用。macOS 26+";
 "backend.foundationModels.note" = "Apple Intelligenceに関する注意: オンデバイスのFoundation Modelsバックエンドは完全にデバイス上で動作し、APIキーは不要ですが、IMEとしての利用におけるモデルの品質には顕著な制限があります。クラウドベースのLLMと比較して、回答のニュアンスや文脈の正確さが不足する場合があります。品質よりもプライバシーを優先する場合の選択肢として検討してください。";
 
 // MARK: - Errors

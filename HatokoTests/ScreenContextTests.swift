@@ -103,4 +103,61 @@ struct ScreenContextTests {
         #expect(windowRange.lowerBound < selectedRange.lowerBound)
         #expect(selectedRange.lowerBound < focusedRange.lowerBound)
     }
+
+    // MARK: - visibleText
+
+    @Test
+    func formattedWithVisibleText() {
+        let context = ScreenContext(
+            appName: "Slack",
+            windowTitle: "#general",
+            focusedText: nil,
+            selectedText: nil,
+            visibleText: "Alice: hello\nBob: hi"
+        )
+        let result = context.formatted()
+        #expect(result.contains("Visible text:\nAlice: hello\nBob: hi"))
+        #expect(result.contains("Application: Slack"))
+    }
+
+    @Test
+    func formattedPrefersVisibleTextOverFocusedText() {
+        let context = ScreenContext(
+            appName: nil,
+            windowTitle: nil,
+            focusedText: "focused only",
+            selectedText: nil,
+            visibleText: "full window text"
+        )
+        let result = context.formatted()
+        #expect(result.contains("Visible text:"))
+        #expect(!result.contains("Focused text:"))
+    }
+
+    @Test
+    func formattedFallsBackToFocusedText() {
+        let context = ScreenContext(
+            appName: nil,
+            windowTitle: nil,
+            focusedText: "fallback text",
+            selectedText: nil,
+            visibleText: nil
+        )
+        let result = context.formatted()
+        #expect(result.contains("Focused text: fallback text"))
+        #expect(!result.contains("Visible text:"))
+    }
+
+    @Test
+    func truncatesLongVisibleText() {
+        let longText = String(repeating: "v", count: PromptGuard.maxScreenContextLength + 200)
+        let context = ScreenContext(
+            appName: nil,
+            windowTitle: nil,
+            focusedText: nil,
+            selectedText: nil,
+            visibleText: longText
+        )
+        #expect(context.visibleText?.count == PromptGuard.maxScreenContextLength)
+    }
 }

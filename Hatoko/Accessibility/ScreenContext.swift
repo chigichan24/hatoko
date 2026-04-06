@@ -6,6 +6,7 @@ struct ScreenContext: Sendable, Equatable {
     let windowTitle: String?
     let focusedText: String?
     let selectedText: String?
+    let visibleText: String?
     let capturedAt: Date
 
     init(
@@ -13,12 +14,14 @@ struct ScreenContext: Sendable, Equatable {
         windowTitle: String?,
         focusedText: String?,
         selectedText: String?,
+        visibleText: String? = nil,
         capturedAt: Date = Date()
     ) {
         self.appName = appName
         self.windowTitle = Self.truncateShort(windowTitle)
         self.focusedText = Self.truncate(focusedText)
         self.selectedText = Self.truncate(selectedText)
+        self.visibleText = Self.truncate(visibleText)
         self.capturedAt = capturedAt
     }
 
@@ -33,7 +36,10 @@ struct ScreenContext: Sendable, Equatable {
         if let selectedText {
             lines.append("Selected text: \(selectedText)")
         }
-        if let focusedText {
+        // Prefer visibleText (full window) over focusedText (single element)
+        if let visibleText {
+            lines.append("Visible text:\n\(visibleText)")
+        } else if let focusedText {
             lines.append("Focused text: \(focusedText)")
         }
         guard !lines.isEmpty else { return "" }

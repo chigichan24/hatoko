@@ -82,11 +82,23 @@ final class DangerousReadIndicatorWindow {
 
 // MARK: - Observable State
 
+/// All access occurs on MainActor via `DangerousReadIndicatorWindow` (which is `@MainActor`)
+/// and SwiftUI view body/task. `@unchecked Sendable` is required because `@MainActor` on this
+/// class causes compilation failure in the static initializer chain
+/// (HatokoInputController → DangerousReadModeController → DangerousReadIndicatorWindow → State).
 @Observable
 final class DangerousReadIndicatorState: @unchecked Sendable {
     var remainingSeconds: Int = 0
     var isScanning: Bool = false
-    var scanFrame: Int = 0
+    private(set) var scanFrame: Int = 0
+
+    func advanceScanFrame(count: Int) {
+        scanFrame = (scanFrame + 1) % count
+    }
+
+    func resetScanFrame() {
+        scanFrame = 0
+    }
 }
 
 // MARK: - Indicator View
@@ -105,7 +117,7 @@ struct DangerousReadIndicatorView: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
             if state.isScanning {
-                Text(Self.pacmanFrames[state.scanFrame])
+                Text(Self.pacmanFrames[state.scanFrame % Self.pacmanFrames.count])
                     .monospacedDigit()
                     .foregroundStyle(.white)
             }
@@ -122,14 +134,14 @@ struct DangerousReadIndicatorView: View {
         )
         .task(id: state.isScanning) {
             guard state.isScanning else { return }
-            state.scanFrame = 0
+            state.resetScanFrame()
             while !Task.isCancelled {
                 do {
                     try await Task.sleep(for: .milliseconds(200))
                 } catch {
                     return
                 }
-                state.scanFrame = (state.scanFrame + 1) % Self.pacmanFrames.count
+                state.advanceScanFrame(count: Self.pacmanFrames.count)
             }
         }
     }

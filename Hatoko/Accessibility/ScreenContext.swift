@@ -17,7 +17,7 @@ struct ScreenContext: Sendable, Equatable {
         visibleText: String? = nil,
         capturedAt: Date = Date()
     ) {
-        self.appName = appName
+        self.appName = Self.truncateShort(appName)
         self.windowTitle = Self.truncateShort(windowTitle)
         self.focusedText = Self.truncate(focusedText)
         self.selectedText = Self.truncate(selectedText)

@@ -108,10 +108,11 @@ final class DangerousReadModeController {
 
     private func startCaptureLoop() {
         let interval = captureInterval
-        captureTask = Task {
-            defer { self.indicatorWindow.setScanning(false) }
+        captureTask = Task { [weak self] in
+            defer { self?.indicatorWindow.setScanning(false) }
             let reader = ScreenReader()
             while !Task.isCancelled {
+                guard let self else { return }
                 self.indicatorWindow.setScanning(true)
                 let context = await reader.captureFullWindowContext()
                 self.indicatorWindow.setScanning(false)
@@ -129,20 +130,21 @@ final class DangerousReadModeController {
     }
 
     private func startCountdown() {
-        countdownTask = Task {
+        countdownTask = Task { [weak self] in
             while !Task.isCancelled {
+                guard let self else { return }
                 let remaining = self.remainingSeconds
                 guard remaining > 0 else { break }
-                indicatorWindow.updateRemainingTime(remaining)
+                self.indicatorWindow.updateRemainingTime(remaining)
                 do {
                     try await Task.sleep(for: .seconds(1))
                 } catch {
                     return
                 }
             }
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, let self else { return }
             NSSound.beep()
-            stopSession()
+            self.stopSession()
         }
     }
 

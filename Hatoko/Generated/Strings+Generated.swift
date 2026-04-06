@@ -182,8 +182,8 @@ internal enum L10n {
       internal static let warning = L10n.tr("Localizable", "settings.dangerousRead.warning", fallback: "警告: このモードは画面の内容（フォーカス中のアプリ、ウィンドウタイトル、テキスト）を定期的に読み取り、LLMにコンテキストとして送信します。プライバシーへの影響を理解した上で有効化してください。")
     }
     internal enum Keybinding {
-      /// Ctrl + Shift + Space: デンジャラス読み取りモード切替
-      internal static let dangerousRead = L10n.tr("Localizable", "settings.keybinding.dangerousRead", fallback: "Ctrl + Shift + Space: デンジャラス読み取りモード切替")
+      /// Ctrl + Shift + D: デンジャラス読み取りモード切替
+      internal static let dangerousRead = L10n.tr("Localizable", "settings.keybinding.dangerousRead", fallback: "Ctrl + Shift + D: デンジャラス読み取りモード切替")
       /// Ctrl + Space: LLMアシストモード
       internal static let llmAssist = L10n.tr("Localizable", "settings.keybinding.llmAssist", fallback: "Ctrl + Space: LLMアシストモード")
       /// Ctrl + Space (LLM入力中): 日本語/英語切替

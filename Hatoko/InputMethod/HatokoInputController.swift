@@ -145,8 +145,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         if inputMode == .llmPrompt {
             return handlePromptInput(event: event, client: client)
         }
-        // Handle Ctrl-based space shortcuts
-        if let result = handleCtrlSpaceShortcuts(event: event, client: client) {
+        // Handle keyboard shortcuts (Ctrl+Shift+D, Ctrl+Space)
+        if let result = handleKeyboardShortcuts(event: event, client: client) {
             return result
         }
 
@@ -178,21 +178,18 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     // MARK: - LLM Mode Trigger
     func isCtrlSpace(event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        return event.keyCode == KeyCode.space
-            && modifiers.contains(.control)
-            && !modifiers.contains(.shift)
+        return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }
 
-    private func isCtrlShiftSpace(event: NSEvent) -> Bool {
+    private func isCtrlShiftD(event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        return event.keyCode == KeyCode.space
+        return event.keyCode == KeyCode.d
             && modifiers.contains(.control)
             && modifiers.contains(.shift)
     }
 
-    /// Returns a Bool result if a Ctrl+Space shortcut was handled, or nil to continue normal handling.
-    private func handleCtrlSpaceShortcuts(event: NSEvent, client: any IMKTextInput) -> Bool? {
-        if isCtrlShiftSpace(event: event) {
+    private func handleKeyboardShortcuts(event: NSEvent, client: any IMKTextInput) -> Bool? {
+        if isCtrlShiftD(event: event) {
             Self.dangerousReadController.toggleSession()
             return true
         }

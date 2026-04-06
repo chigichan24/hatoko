@@ -89,7 +89,7 @@
 "settings.dangerousRead.checkPermission" = "アクセシビリティ権限を確認";
 "settings.dangerousRead.permissionGranted" = "権限付与済み";
 "settings.dangerousRead.permissionNotGranted" = "権限が必要です";
-"settings.keybinding.dangerousRead" = "Ctrl + Shift + Space: デンジャラス読み取りモード切替";
+"settings.keybinding.dangerousRead" = "Ctrl + Shift + D: デンジャラス読み取りモード切替";
 
 "dangerousRead.consent.title" = "デンジャラス読み取りモードを有効にしますか？";
 "dangerousRead.consent.message" = "このモードは、画面の内容（フォーカス中のアプリケーション、ウィンドウタイトル、カーソル周辺のテキスト）を定期的に読み取り、LLMにコンテキストとして送信します。\n\nデータは設定されたLLMバックエンドに送信されます。セッションは設定された時間が経過すると自動的に終了します。\n\n続行しますか？";

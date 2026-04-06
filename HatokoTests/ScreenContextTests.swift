@@ -149,6 +149,30 @@ struct ScreenContextTests {
     }
 
     @Test
+    func emptyVisibleTextTreatedAsNil() {
+        let context = ScreenContext(
+            appName: "App",
+            windowTitle: nil,
+            focusedText: nil,
+            selectedText: nil,
+            visibleText: ""
+        )
+        #expect(context.visibleText == nil)
+    }
+
+    @Test
+    func truncatesLongWindowTitle() {
+        let longTitle = String(repeating: "w", count: 600)
+        let context = ScreenContext(
+            appName: nil,
+            windowTitle: longTitle,
+            focusedText: nil,
+            selectedText: nil
+        )
+        #expect(context.windowTitle?.count == 500)
+    }
+
+    @Test
     func truncatesLongVisibleText() {
         let longText = String(repeating: "v", count: PromptGuard.maxScreenContextLength + 200)
         let context = ScreenContext(

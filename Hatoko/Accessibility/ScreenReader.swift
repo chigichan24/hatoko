@@ -193,6 +193,7 @@ actor ScreenReader {
         var ref: CFTypeRef?
         let result = AXUIElementCopyAttributeValue(element, kAXPositionAttribute as CFString, &ref)
         guard result == .success, let ref else { return nil }
+        guard CFGetTypeID(ref) == AXValueGetTypeID() else { return nil }
         var point = CGPoint.zero
         // swiftlint:disable:next force_cast
         guard AXValueGetValue(ref as! AXValue, .cgPoint, &point) else { return nil }

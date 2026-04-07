@@ -79,6 +79,26 @@
 "backend.foundationModels.description" = "Use Apple Intelligence on-device models. macOS 26+";
 "backend.foundationModels.note" = "Note on Apple Intelligence: The on-device Foundation Models backend runs entirely on-device and requires no API key, but the model quality is noticeably limited for IME use cases. Responses may lack the nuance and contextual accuracy that cloud-based LLMs provide. Consider it a privacy-first option rather than a quality-first one.";
 
+// MARK: - Dangerous Read Mode
+
+"settings.sectionHeader.dangerousRead" = "Dangerous Read Mode";
+"settings.dangerousRead.enable" = "Enable Dangerous Read Mode";
+"settings.dangerousRead.warning" = "WARNING: This mode periodically reads your screen content (focused app, window title, text) and sends it to the LLM as context. Only enable if you understand the privacy implications.";
+"settings.dangerousRead.duration" = "Auto-stop after";
+"settings.dangerousRead.interval" = "Capture interval";
+"settings.dangerousRead.checkPermission" = "Check Accessibility Permission";
+"settings.dangerousRead.permissionGranted" = "Permission granted";
+"settings.dangerousRead.permissionNotGranted" = "Permission required";
+"settings.keybinding.dangerousRead" = "Ctrl + Shift + D: Toggle Dangerous Read Mode";
+
+"dangerousRead.consent.title" = "Enable Dangerous Read Mode?";
+"dangerousRead.consent.message" = "This mode will periodically read your screen content (focused application, window title, text around the cursor) and send it to the LLM as context.\n\nThis data is transmitted to the configured LLM backend. The session will automatically end after the configured duration.\n\nDo you want to proceed?";
+"dangerousRead.consent.start" = "I Understand, Enable";
+"dangerousRead.consent.cancel" = "Cancel";
+
+"dangerousRead.indicator.active" = "Screen Read Active";
+"dangerousRead.accessibilityNotTrusted" = "Accessibility permission is required. Please grant access in System Settings > Privacy & Security > Accessibility.";
+
 // MARK: - Errors
 
 "error.tooLong" = "Message is too long. Please shorten it.";

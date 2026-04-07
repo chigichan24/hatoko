@@ -86,6 +86,28 @@ internal enum L10n {
     /// あなた
     internal static let userRole = L10n.tr("Localizable", "chat.userRole", fallback: "あなた")
   }
+  internal enum DangerousRead {
+    /// アクセシビリティ権限が必要です。システム設定 > プライバシーとセキュリティ > アクセシビリティ でアクセスを許可してください。
+    internal static let accessibilityNotTrusted = L10n.tr("Localizable", "dangerousRead.accessibilityNotTrusted", fallback: "アクセシビリティ権限が必要です。システム設定 > プライバシーとセキュリティ > アクセシビリティ でアクセスを許可してください。")
+    internal enum Consent {
+      /// キャンセル
+      internal static let cancel = L10n.tr("Localizable", "dangerousRead.consent.cancel", fallback: "キャンセル")
+      /// このモードは、画面の内容（フォーカス中のアプリケーション、ウィンドウタイトル、カーソル周辺のテキスト）を定期的に読み取り、LLMにコンテキストとして送信します。
+      /// 
+      /// データは設定されたLLMバックエンドに送信されます。セッションは設定された時間が経過すると自動的に終了します。
+      /// 
+      /// 続行しますか？
+      internal static let message = L10n.tr("Localizable", "dangerousRead.consent.message", fallback: "このモードは、画面の内容（フォーカス中のアプリケーション、ウィンドウタイトル、カーソル周辺のテキスト）を定期的に読み取り、LLMにコンテキストとして送信します。\n\nデータは設定されたLLMバックエンドに送信されます。セッションは設定された時間が経過すると自動的に終了します。\n\n続行しますか？")
+      /// 理解した上で有効化
+      internal static let start = L10n.tr("Localizable", "dangerousRead.consent.start", fallback: "理解した上で有効化")
+      /// デンジャラス読み取りモードを有効にしますか？
+      internal static let title = L10n.tr("Localizable", "dangerousRead.consent.title", fallback: "デンジャラス読み取りモードを有効にしますか？")
+    }
+    internal enum Indicator {
+      /// 画面読み取り中
+      internal static let active = L10n.tr("Localizable", "dangerousRead.indicator.active", fallback: "画面読み取り中")
+    }
+  }
   internal enum Error {
     /// 設定エラー: バックエンドの構成を確認してください。
     internal static let config = L10n.tr("Localizable", "error.config", fallback: "設定エラー: バックエンドの構成を確認してください。")
@@ -143,7 +165,25 @@ internal enum L10n {
         internal static let title = L10n.tr("Localizable", "settings.backend.disabled.title", fallback: "LLM 無効")
       }
     }
+    internal enum DangerousRead {
+      /// アクセシビリティ権限を確認
+      internal static let checkPermission = L10n.tr("Localizable", "settings.dangerousRead.checkPermission", fallback: "アクセシビリティ権限を確認")
+      /// 自動停止までの時間
+      internal static let duration = L10n.tr("Localizable", "settings.dangerousRead.duration", fallback: "自動停止までの時間")
+      /// デンジャラス読み取りモードを有効化
+      internal static let enable = L10n.tr("Localizable", "settings.dangerousRead.enable", fallback: "デンジャラス読み取りモードを有効化")
+      /// キャプチャ間隔
+      internal static let interval = L10n.tr("Localizable", "settings.dangerousRead.interval", fallback: "キャプチャ間隔")
+      /// 権限付与済み
+      internal static let permissionGranted = L10n.tr("Localizable", "settings.dangerousRead.permissionGranted", fallback: "権限付与済み")
+      /// 権限が必要です
+      internal static let permissionNotGranted = L10n.tr("Localizable", "settings.dangerousRead.permissionNotGranted", fallback: "権限が必要です")
+      /// 警告: このモードは画面の内容（フォーカス中のアプリ、ウィンドウタイトル、テキスト）を定期的に読み取り、LLMにコンテキストとして送信します。プライバシーへの影響を理解した上で有効化してください。
+      internal static let warning = L10n.tr("Localizable", "settings.dangerousRead.warning", fallback: "警告: このモードは画面の内容（フォーカス中のアプリ、ウィンドウタイトル、テキスト）を定期的に読み取り、LLMにコンテキストとして送信します。プライバシーへの影響を理解した上で有効化してください。")
+    }
     internal enum Keybinding {
+      /// Ctrl + Shift + D: デンジャラス読み取りモード切替
+      internal static let dangerousRead = L10n.tr("Localizable", "settings.keybinding.dangerousRead", fallback: "Ctrl + Shift + D: デンジャラス読み取りモード切替")
       /// Ctrl + Space: LLMアシストモード
       internal static let llmAssist = L10n.tr("Localizable", "settings.keybinding.llmAssist", fallback: "Ctrl + Space: LLMアシストモード")
       /// Ctrl + Space (LLM入力中): 日本語/英語切替
@@ -154,6 +194,8 @@ internal enum L10n {
       internal static let backend = L10n.tr("Localizable", "settings.picker.backend", fallback: "バックエンド")
     }
     internal enum SectionHeader {
+      /// デンジャラス読み取りモード
+      internal static let dangerousRead = L10n.tr("Localizable", "settings.sectionHeader.dangerousRead", fallback: "デンジャラス読み取りモード")
       /// キーバインド
       internal static let keybinding = L10n.tr("Localizable", "settings.sectionHeader.keybinding", fallback: "キーバインド")
       /// LLM バックエンド

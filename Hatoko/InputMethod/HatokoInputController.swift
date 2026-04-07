@@ -25,16 +25,17 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     var pasteContext: PasteContext?
     /// The input mode that was active before entering LLM prompt mode.
     var llmBaseMode: LLMBaseMode = .japanese
-    private var llmSuggestion: String?
+    var llmSuggestion: String?
     let inlineSuggestionWindow = InlineSuggestionWindow()
-    private let chatWindowController = ChatWindowController()
+    let chatWindowController = ChatWindowController()
     var lastCursorRect: NSRect = .zero
     /// Text waiting to be committed after the host app regains focus from the chat window.
     private var pendingChatText: String?
     /// Process-wide rate limiters shared across all input controller instances
     /// to protect the LLM API from excessive requests.
-    private static let inlineRateLimiter = RateLimiter()
-    private static let chatRateLimiter = RateLimiter()
+    static let inlineRateLimiter = RateLimiter()
+    static let chatRateLimiter = RateLimiter()
+    static let dangerousReadController = DangerousReadModeController()
 
     lazy var convertOptions: ConvertRequestOptions = {
         let dir = applicationSupportDirectory()
@@ -144,11 +145,9 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         if inputMode == .llmPrompt {
             return handlePromptInput(event: event, client: client)
         }
-        // Check for Ctrl+Space to activate LLM mode
-        if isCtrlSpace(event: event) {
-            guard LLMBackend.current.isEnabled else { NSSound.beep(); return true }
-            activateLLMMode(client: client)
-            return true
+        // Handle keyboard shortcuts (Ctrl+Shift+D, Ctrl+Space)
+        if let result = handleKeyboardShortcuts(event: event, client: client) {
+            return result
         }
 
         if inputMode == .roman { return false }
@@ -182,6 +181,26 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         return event.keyCode == KeyCode.space && modifiers.contains(.control)
     }
 
+    private func isCtrlShiftD(event: NSEvent) -> Bool {
+        let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        return event.keyCode == KeyCode.d
+            && modifiers.contains(.control)
+            && modifiers.contains(.shift)
+    }
+
+    private func handleKeyboardShortcuts(event: NSEvent, client: any IMKTextInput) -> Bool? {
+        if isCtrlShiftD(event: event) {
+            Self.dangerousReadController.toggleSession()
+            return true
+        }
+        if isCtrlSpace(event: event) {
+            guard LLMBackend.current.isEnabled else { NSSound.beep(); return true }
+            activateLLMMode(client: client)
+            return true
+        }
+        return nil
+    }
+
     private func isCommandComma(event: NSEvent) -> Bool {
         let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         return event.keyCode == KeyCode.comma
@@ -198,7 +217,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         if let client { clearMarkedText(client: client) }
     }
 
-    private func resetLLMState() {
+    func resetLLMState() {
         inputMode = llmBaseMode.inputMode
         promptBuffer = ""
         llmSuggestion = nil
@@ -286,65 +305,13 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             }
     }
 
-    private func validateChatMessage(_ text: String) -> Bool {
+    func validateChatMessage(_ text: String) -> Bool {
         switch PromptGuard.validate(text, maxLength: PromptGuard.maxChatMessageLength) {
         case .valid: return true
         case .tooLong:
             chatWindowController.addAssistantMessage(L10n.Error.tooLong)
             return false
         case .empty: return false
-        }
-    }
-
-    private func sendChatMessage(chatHistory: [ChatMessage]) {
-        guard let lastMessage = chatHistory.last, lastMessage.role == .user else {
-            assertionFailure("[Hatoko] sendChatMessage called without trailing user message")
-            return
-        }
-        guard validateChatMessage(lastMessage.text) else { return }
-
-        let llmMessages = Self.buildLLMMessages(from: chatHistory)
-        let backend = LLMBackend.current
-        let language = backend.instructionLanguage
-        let systemPrompt = PasteContext.buildSystemPrompt(
-            base: SystemPromptProvider.chat.text(for: language),
-            context: pasteContext,
-            language: language
-        )
-
-        Task {
-            let service: any LLMService
-            do {
-                service = try await backend.createService()
-            } catch {
-                NSLog("[Hatoko] LLM backend configuration error: \(error)")
-                await MainActor.run {
-                    self.chatWindowController.addAssistantMessage(L10n.Error.config)
-                }
-                return
-            }
-            guard await Self.chatRateLimiter.tryAcquire() else {
-                NSLog("[Hatoko] LLM chat request rate limited")
-                await MainActor.run {
-                    self.chatWindowController.addAssistantMessage(L10n.Error.rateLimit)
-                }
-                return
-            }
-            do {
-                let result = try await service.generate(
-                    messages: llmMessages,
-                    systemPrompt: systemPrompt
-                )
-                await MainActor.run {
-                    self.llmSuggestion = result
-                    self.chatWindowController.addAssistantMessage(result)
-                }
-            } catch {
-                NSLog("[Hatoko] LLM chat generation failed: \(error)")
-                await MainActor.run {
-                    self.chatWindowController.addAssistantMessage(L10n.Error.generic)
-                }
-            }
         }
     }
 
@@ -524,57 +491,6 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         var rect = NSRect.zero
         client.attributes(forCharacterIndex: 0, lineHeightRectangle: &rect)
         return rect
-    }
-
-    // MARK: - LLM Generation
-
-    func requestLLMGeneration(prompt: String, cursorRect: NSRect, pasteContext: PasteContext? = nil) {
-        let backend = LLMBackend.current
-        let language = backend.instructionLanguage
-        let systemPrompt = PasteContext.buildSystemPrompt(
-            base: SystemPromptProvider.inline.text(for: language),
-            context: pasteContext,
-            language: language
-        )
-        Task {
-            let service: any LLMService
-            do {
-                service = try await backend.createService()
-            } catch {
-                NSLog("[Hatoko] LLM backend configuration error: \(error)")
-                await MainActor.run {
-                    NSSound.beep()
-                    self.inlineSuggestionWindow.hide()
-                    self.resetLLMState()
-                }
-                return
-            }
-            guard await Self.inlineRateLimiter.tryAcquire() else {
-                NSLog("[Hatoko] LLM request rate limited")
-                await MainActor.run {
-                    self.inlineSuggestionWindow.hide()
-                    self.resetLLMState()
-                }
-                return
-            }
-            do {
-                let result = try await service.generate(
-                    messages: [LLMMessage(role: .user, content: prompt)],
-                    systemPrompt: systemPrompt
-                )
-                await MainActor.run {
-                    self.llmSuggestion = result
-                    self.inlineSuggestionWindow.show(
-                        suggestion: result, cursorRect: cursorRect, hasContext: pasteContext != nil)
-                }
-            } catch {
-                NSLog("[Hatoko] LLM generation failed: \(error)")
-                await MainActor.run {
-                    self.inlineSuggestionWindow.hide()
-                    self.resetLLMState()
-                }
-            }
-        }
     }
 
     // MARK: - State Management

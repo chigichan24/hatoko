@@ -116,11 +116,9 @@ struct DangerousReadIndicatorView: View {
             Text(L10n.DangerousRead.Indicator.active)
                 .fontWeight(.semibold)
                 .foregroundStyle(.white)
-            if state.isScanning {
-                Text(Self.pacmanFrames[state.scanFrame % Self.pacmanFrames.count])
-                    .monospacedDigit()
-                    .foregroundStyle(.white)
-            }
+            Text(Self.pacmanFrames[state.scanFrame % Self.pacmanFrames.count])
+                .monospacedDigit()
+                .foregroundStyle(.white)
             Text(formattedTime)
                 .monospacedDigit()
                 .foregroundStyle(.white.opacity(0.9))
@@ -133,8 +131,7 @@ struct DangerousReadIndicatorView: View {
             Capsule()
                 .fill(Color.red)
         )
-        .task(id: state.isScanning) {
-            guard state.isScanning else { return }
+        .task {
             state.resetScanFrame()
             while !Task.isCancelled {
                 do {

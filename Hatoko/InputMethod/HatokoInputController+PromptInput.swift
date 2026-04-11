@@ -200,7 +200,7 @@ extension HatokoInputController {
             }
             let candidates = conversionService.requestCandidates(
                 composingText: composingText,
-                options: convertOptions
+                options: makeConvertOptions()
             ).mainResults
             guard !candidates.isEmpty else { return true }
             japaneseInputState = .converting(candidates: candidates, selectedIndex: 0)

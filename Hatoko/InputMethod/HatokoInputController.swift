@@ -37,8 +37,23 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     static let chatRateLimiter = RateLimiter()
     static let dangerousReadController = DangerousReadModeController()
 
-    lazy var convertOptions: ConvertRequestOptions = {
+    func makeConvertOptions(leftSideContext: String? = nil) -> ConvertRequestOptions {
         let dir = applicationSupportDirectory()
+        let zenzaiMode: ConvertRequestOptions.ZenzaiMode
+        if let modelURL = ZenzaiModelManager.shared.modelFileURL,
+           UserDefaults.standard.bool(forKey: "zenzai_enabled") {
+            let stored = UserDefaults.standard.integer(forKey: "zenzai_inference_limit")
+            let inferenceLimit = stored == 0 ? 3 : max(1, stored)
+            zenzaiMode = .on(
+                weight: modelURL,
+                inferenceLimit: inferenceLimit,
+                requestRichCandidates: false,
+                personalizationMode: nil,
+                versionDependentMode: .v3(.init(leftSideContext: leftSideContext))
+            )
+        } else {
+            zenzaiMode = .off
+        }
         return ConvertRequestOptions(
             N_best: 9,
             requireJapanesePrediction: .disabled,
@@ -49,9 +64,12 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             sharedContainerURL: dir,
             textReplacer: .empty,
             specialCandidateProviders: nil,
-            metadata: .init(versionString: "Hatoko \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0")")
+            zenzaiMode: zenzaiMode,
+            metadata: .init(
+                versionString: "Hatoko \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0")"
+            )
         )
-    }()
+    }
 
     private func applicationSupportDirectory() -> URL {
         guard let base = FileManager.default.urls(
@@ -389,7 +407,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             guard !composingText.convertTarget.isEmpty else { return false }
             let candidates = conversionService.requestCandidates(
                 composingText: composingText,
-                options: convertOptions
+                options: makeConvertOptions()
             ).mainResults
             guard let first = candidates.first else { return true }
             japaneseInputState = .converting(candidates: candidates, selectedIndex: 0)

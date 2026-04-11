@@ -15,8 +15,8 @@ final class ZenzaiModelManager {
         return stored == 0 ? defaultInferenceLimit : max(1, stored)
     }
 
-    private static let modelURLString = "https://huggingface.co/Miwa-Keita/zenz-v3-small-gguf/resolve/main/ggml-model-Q5_K_M.gguf"
-    private static let modelFileName = "ggml-model-Q5_K_M.gguf"
+    private nonisolated static let modelURLString = "https://huggingface.co/Miwa-Keita/zenz-v3-small-gguf/resolve/main/ggml-model-Q5_K_M.gguf"
+    private nonisolated static let modelFileName = "ggml-model-Q5_K_M.gguf"
 
     enum DownloadState: Equatable {
         case notDownloaded
@@ -27,12 +27,16 @@ final class ZenzaiModelManager {
 
     private(set) var state: DownloadState = .notDownloaded
 
-    var modelFileURL: URL? {
-        let url = Self.modelDirectory.appendingPathComponent(Self.modelFileName)
+    nonisolated static func resolvedModelFileURL() -> URL? {
+        let url = modelDirectory.appendingPathComponent(modelFileName)
         return FileManager.default.fileExists(atPath: url.path) ? url : nil
     }
 
-    private static var modelDirectory: URL {
+    var modelFileURL: URL? {
+        Self.resolvedModelFileURL()
+    }
+
+    private nonisolated static var modelDirectory: URL {
         guard let appSupport = FileManager.default.urls(
             for: .applicationSupportDirectory,
             in: .userDomainMask

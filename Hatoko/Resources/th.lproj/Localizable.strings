@@ -79,6 +79,20 @@
 "backend.foundationModels.description" = "ใช้โมเดลในเครื่องของ Apple Intelligence. macOS 26+";
 "backend.foundationModels.note" = "หมายเหตุเกี่ยวกับ Apple Intelligence: แบ็กเอนด์ Foundation Models ในเครื่องทำงานบนอุปกรณ์ทั้งหมดและไม่จำเป็นต้องใช้คีย์ API แต่คุณภาพของโมเดลมีข้อจำกัดอย่างมากสำหรับกรณีการใช้งาน IME คำตอบอาจขาดความละเอียดอ่อนและความแม่นยำตามบริบทที่ LLM บนคลาวด์มีให้ โปรดพิจารณาว่าเป็นตัวเลือกที่เน้นความเป็นส่วนตัวมากกว่าคุณภาพ";
 
+// MARK: - Zenzai
+
+"settings.sectionHeader.zenzai" = "การแปลงด้วยนิวรอล (Zenzai)";
+"settings.zenzai.enable" = "เปิดใช้งาน Zenzai";
+"settings.zenzai.description" = "ปรับปรุงความแม่นยำในการแปลงโดยใช้โครงข่ายประสาทเทียม โมเดล (~150 MB) จะถูกดาวน์โหลดเมื่อเปิดใช้งานครั้งแรก";
+"settings.zenzai.modelNotDownloaded" = "ยังไม่ได้ดาวน์โหลดโมเดล";
+"settings.zenzai.downloading" = "กำลังดาวน์โหลดโมเดล...";
+"settings.zenzai.modelReady" = "โมเดลพร้อมใช้งาน";
+"settings.zenzai.inferenceLimit" = "จำนวนรอบการอนุมาน";
+"settings.zenzai.fast" = "เร็ว";
+"settings.zenzai.balanced" = "สมดุล";
+"settings.zenzai.highQuality" = "คุณภาพสูง";
+"settings.zenzai.deleteModel" = "ลบโมเดล";
+
 // MARK: - Errors
 
 "error.tooLong" = "ข้อความยาวเกินไป กรุณาย่อให้สั้นลง";

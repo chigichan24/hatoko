@@ -79,6 +79,20 @@
 "backend.foundationModels.description" = "Utiliser les modèles locaux Apple Intelligence. macOS 26+";
 "backend.foundationModels.note" = "Note sur Apple Intelligence : Le moteur Foundation Models fonctionne entièrement sur l'appareil et ne nécessite aucune clé API, mais la qualité du modèle est sensiblement limitée pour les cas d'utilisation de l'IME. Les réponses peuvent manquer de nuance et de précision contextuelle par rapport aux LLM basés sur le cloud. Considérez cela comme une option privilégiant la confidentialité plutôt que la qualité.";
 
+// MARK: - Zenzai
+
+"settings.sectionHeader.zenzai" = "Conversion neuronale (Zenzai)";
+"settings.zenzai.enable" = "Activer Zenzai";
+"settings.zenzai.description" = "Améliore la précision de conversion grâce à un réseau neuronal. Un modèle (~150 Mo) sera téléchargé lors de la première activation.";
+"settings.zenzai.modelNotDownloaded" = "Modèle non téléchargé";
+"settings.zenzai.downloading" = "Téléchargement du modèle...";
+"settings.zenzai.modelReady" = "Modèle prêt";
+"settings.zenzai.inferenceLimit" = "Passes d'inférence";
+"settings.zenzai.fast" = "Rapide";
+"settings.zenzai.balanced" = "Équilibré";
+"settings.zenzai.highQuality" = "Haute qualité";
+"settings.zenzai.deleteModel" = "Supprimer le modèle";
+
 // MARK: - Errors
 
 "error.tooLong" = "Le message est trop long. Veuillez le raccourcir.";

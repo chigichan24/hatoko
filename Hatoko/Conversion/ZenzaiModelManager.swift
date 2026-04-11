@@ -83,7 +83,11 @@ final class ZenzaiModelManager {
 
     func deleteModel() {
         let url = Self.modelDirectory.appendingPathComponent(Self.modelFileName)
-        try? FileManager.default.removeItem(at: url)
-        state = .notDownloaded
+        do {
+            try FileManager.default.removeItem(at: url)
+            state = .notDownloaded
+        } catch {
+            state = .error(error.localizedDescription)
+        }
     }
 }

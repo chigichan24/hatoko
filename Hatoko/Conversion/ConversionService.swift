@@ -1,4 +1,4 @@
-import KanaKanjiConverterModuleWithDefaultDictionary
+import ZenzaiConverter
 
 /// Wraps KanaKanjiConverter for use in HatokoInputController.
 ///

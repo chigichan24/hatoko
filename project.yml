@@ -7,9 +7,8 @@ options:
   groupSortPosition: top
 
 packages:
-  AzooKeyKanaKanjiConverter:
-    url: https://github.com/azooKey/AzooKeyKanaKanjiConverter
-    branch: main
+  ZenzaiConverter:
+    path: LocalPackages/ZenzaiConverter
 
 targets:
   Hatoko:
@@ -17,8 +16,8 @@ targets:
     platform: macOS
     sources: [Hatoko]
     dependencies:
-      - package: AzooKeyKanaKanjiConverter
-        product: KanaKanjiConverterModuleWithDefaultDictionary
+      - package: ZenzaiConverter
+        product: ZenzaiConverter
     settings:
       base:
         INFOPLIST_FILE: Resources/Info.plist
@@ -27,6 +26,8 @@ targets:
         SWIFT_STRICT_CONCURRENCY: complete
         SWIFT_TREAT_WARNINGS_AS_ERRORS: true
         GCC_TREAT_WARNINGS_AS_ERRORS: true
+        CLANG_CXX_LANGUAGE_STANDARD: c++17
+        SWIFT_OBJC_INTEROP_MODE: objcxx
         PRODUCT_BUNDLE_IDENTIFIER: com.chigichan24.inputmethod.Hatoko
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: 1
@@ -65,6 +66,8 @@ targets:
         SWIFT_STRICT_CONCURRENCY: complete
         SWIFT_TREAT_WARNINGS_AS_ERRORS: true
         GCC_TREAT_WARNINGS_AS_ERRORS: true
+        CLANG_CXX_LANGUAGE_STANDARD: c++17
+        SWIFT_OBJC_INTEROP_MODE: objcxx
         GENERATE_INFOPLIST_FILE: true
     dependencies:
       - target: Hatoko

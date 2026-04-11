@@ -1,6 +1,6 @@
 import Cocoa
 @preconcurrency import InputMethodKit
-import KanaKanjiConverterModuleWithDefaultDictionary
+import ZenzaiConverter
 
 extension HatokoInputController {
 

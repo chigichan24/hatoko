@@ -1,5 +1,5 @@
 @testable import Hatoko
-import KanaKanjiConverterModuleWithDefaultDictionary
+import ZenzaiConverter
 import Testing
 
 @Suite

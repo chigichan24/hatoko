@@ -6,6 +6,15 @@ import Observation
 final class ZenzaiModelManager {
     static let shared = ZenzaiModelManager()
 
+    static let enabledKey = "zenzai_enabled"
+    static let inferenceLimitKey = "zenzai_inference_limit"
+    static let defaultInferenceLimit = 3
+
+    static func storedInferenceLimit() -> Int {
+        let stored = UserDefaults.standard.integer(forKey: inferenceLimitKey)
+        return stored == 0 ? defaultInferenceLimit : max(1, stored)
+    }
+
     private static let modelURLString = "https://huggingface.co/Miwa-Keita/zenz-v3-small-gguf/resolve/main/ggml-model-Q5_K_M.gguf"
     private static let modelFileName = "ggml-model-Q5_K_M.gguf"
 

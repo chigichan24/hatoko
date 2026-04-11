@@ -6,11 +6,8 @@ struct SettingsView: View {
     @State private var selectedBackend: LLMBackend = .current
     @State private var cliPath: String = ""
     @State private var isSaved = false
-    @State private var isZenzaiEnabled = UserDefaults.standard.bool(forKey: "zenzai_enabled")
-    @State private var zenzaiInferenceLimit: Int = {
-        let stored = UserDefaults.standard.integer(forKey: "zenzai_inference_limit")
-        return stored == 0 ? 3 : stored
-    }()
+    @State private var isZenzaiEnabled = UserDefaults.standard.bool(forKey: ZenzaiModelManager.enabledKey)
+    @State private var zenzaiInferenceLimit: Int = ZenzaiModelManager.storedInferenceLimit()
     @State private var isDangerousReadEnabled = UserDefaults.standard.bool(
         forKey: DangerousReadModeController.enabledKey
     )
@@ -60,7 +57,7 @@ struct SettingsView: View {
             Section(L10n.Settings.SectionHeader.zenzai) {
                 Toggle(L10n.Settings.Zenzai.enable, isOn: $isZenzaiEnabled)
                     .onChange(of: isZenzaiEnabled) {
-                        UserDefaults.standard.set(isZenzaiEnabled, forKey: "zenzai_enabled")
+                        UserDefaults.standard.set(isZenzaiEnabled, forKey: ZenzaiModelManager.enabledKey)
                         if isZenzaiEnabled {
                             Task {
                                 await ZenzaiModelManager.shared.downloadModelIfNeeded()
@@ -189,14 +186,14 @@ struct SettingsView: View {
             Text("10 (\(L10n.Settings.Zenzai.highQuality))").tag(10)
         }
         .onChange(of: zenzaiInferenceLimit) {
-            UserDefaults.standard.set(zenzaiInferenceLimit, forKey: "zenzai_inference_limit")
+            UserDefaults.standard.set(zenzaiInferenceLimit, forKey: ZenzaiModelManager.inferenceLimitKey)
         }
 
         if ZenzaiModelManager.shared.state == .downloaded {
             Button(L10n.Settings.Zenzai.deleteModel, role: .destructive) {
                 ZenzaiModelManager.shared.deleteModel()
                 isZenzaiEnabled = false
-                UserDefaults.standard.set(false, forKey: "zenzai_enabled")
+                UserDefaults.standard.set(false, forKey: ZenzaiModelManager.enabledKey)
             }
         }
     }

@@ -62,11 +62,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     @MainActor
     private func resolveZenzaiMode(leftSideContext: String?) -> ConvertRequestOptions.ZenzaiMode {
         guard let modelURL = ZenzaiModelManager.shared.modelFileURL,
-              UserDefaults.standard.bool(forKey: "zenzai_enabled") else {
+              UserDefaults.standard.bool(forKey: ZenzaiModelManager.enabledKey) else {
             return .off
         }
-        let stored = UserDefaults.standard.integer(forKey: "zenzai_inference_limit")
-        let inferenceLimit = stored == 0 ? 3 : max(1, stored)
+        let inferenceLimit = ZenzaiModelManager.storedInferenceLimit()
         return .on(
             weight: modelURL,
             inferenceLimit: inferenceLimit,

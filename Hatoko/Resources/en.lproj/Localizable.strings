@@ -99,6 +99,20 @@
 "dangerousRead.indicator.active" = "Screen Read Active";
 "dangerousRead.accessibilityNotTrusted" = "Accessibility permission is required. Please grant access in System Settings > Privacy & Security > Accessibility.";
 
+// MARK: - Zenzai
+
+"settings.sectionHeader.zenzai" = "Neural Conversion (Zenzai)";
+"settings.zenzai.enable" = "Enable Zenzai";
+"settings.zenzai.description" = "Improves conversion accuracy using a neural network. A model (~150 MB) will be downloaded on first activation.";
+"settings.zenzai.modelNotDownloaded" = "Model not downloaded";
+"settings.zenzai.downloading" = "Downloading model...";
+"settings.zenzai.modelReady" = "Model ready";
+"settings.zenzai.inferenceLimit" = "Inference passes";
+"settings.zenzai.fast" = "Fast";
+"settings.zenzai.balanced" = "Balanced";
+"settings.zenzai.highQuality" = "High quality";
+"settings.zenzai.deleteModel" = "Delete model";
+
 // MARK: - Errors
 
 "error.tooLong" = "Message is too long. Please shorten it.";

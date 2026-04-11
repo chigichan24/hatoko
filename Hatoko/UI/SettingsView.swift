@@ -6,6 +6,8 @@ struct SettingsView: View {
     @State private var selectedBackend: LLMBackend = .current
     @State private var cliPath: String = ""
     @State private var isSaved = false
+    @State private var isZenzaiEnabled = UserDefaults.standard.bool(forKey: ZenzaiModelManager.enabledKey)
+    @State private var zenzaiInferenceLimit: Int = ZenzaiModelManager.storedInferenceLimit()
     @State private var isDangerousReadEnabled = UserDefaults.standard.bool(
         forKey: DangerousReadModeController.enabledKey
     )
@@ -51,6 +53,27 @@ struct SettingsView: View {
                 cliPath: $cliPath,
                 isSaved: $isSaved
             )
+
+            Section(L10n.Settings.SectionHeader.zenzai) {
+                Toggle(L10n.Settings.Zenzai.enable, isOn: $isZenzaiEnabled)
+                    .onChange(of: isZenzaiEnabled) {
+                        UserDefaults.standard.set(isZenzaiEnabled, forKey: ZenzaiModelManager.enabledKey)
+                        if isZenzaiEnabled {
+                            Task {
+                                await ZenzaiModelManager.shared.downloadModelIfNeeded()
+                            }
+                        }
+                    }
+
+                Text(L10n.Settings.Zenzai.description)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                if isZenzaiEnabled {
+                    zenzaiStatusView
+                    zenzaiOptionsView
+                }
+            }
 
             Section(L10n.Settings.SectionHeader.dangerousRead) {
                 Toggle(L10n.Settings.DangerousRead.enable, isOn: $isDangerousReadEnabled)
@@ -129,6 +152,49 @@ struct SettingsView: View {
             }
             loadSettingsForBackend(selectedBackend)
             isAccessibilityTrusted = AccessibilityPermission.isTrusted
+        }
+    }
+
+    @ViewBuilder
+    private var zenzaiStatusView: some View {
+        switch ZenzaiModelManager.shared.state {
+        case .notDownloaded:
+            Text(L10n.Settings.Zenzai.modelNotDownloaded)
+                .font(.caption)
+                .foregroundStyle(.orange)
+        case .downloading:
+            ProgressView()
+            Text(L10n.Settings.Zenzai.downloading)
+                .font(.caption)
+        case .downloaded:
+            Text(L10n.Settings.Zenzai.modelReady)
+                .font(.caption)
+                .foregroundStyle(.green)
+        case .error(let message):
+            Text(message)
+                .font(.caption)
+                .foregroundStyle(.red)
+        }
+    }
+
+    @ViewBuilder
+    private var zenzaiOptionsView: some View {
+        Picker(L10n.Settings.Zenzai.inferenceLimit, selection: $zenzaiInferenceLimit) {
+            Text("1 (\(L10n.Settings.Zenzai.fast))").tag(1)
+            Text("3 (\(L10n.Settings.Zenzai.balanced))").tag(3)
+            Text("5").tag(5)
+            Text("10 (\(L10n.Settings.Zenzai.highQuality))").tag(10)
+        }
+        .onChange(of: zenzaiInferenceLimit) {
+            UserDefaults.standard.set(zenzaiInferenceLimit, forKey: ZenzaiModelManager.inferenceLimitKey)
+        }
+
+        if ZenzaiModelManager.shared.state == .downloaded {
+            Button(L10n.Settings.Zenzai.deleteModel, role: .destructive) {
+                ZenzaiModelManager.shared.deleteModel()
+                isZenzaiEnabled = false
+                UserDefaults.standard.set(false, forKey: ZenzaiModelManager.enabledKey)
+            }
         }
     }
 

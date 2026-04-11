@@ -1,4 +1,4 @@
-import KanaKanjiConverterModuleWithDefaultDictionary
+import ZenzaiConverter
 
 enum JapaneseInputState {
     case composing

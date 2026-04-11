@@ -1,6 +1,6 @@
 import Cocoa
 @preconcurrency import InputMethodKit
-import KanaKanjiConverterModuleWithDefaultDictionary
+import ZenzaiConverter
 
 /// macOS IME input controller.
 ///
@@ -37,8 +37,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
     static let chatRateLimiter = RateLimiter()
     static let dangerousReadController = DangerousReadModeController()
 
-    lazy var convertOptions: ConvertRequestOptions = {
+    func makeConvertOptions(leftSideContext: String? = nil) -> ConvertRequestOptions {
         let dir = applicationSupportDirectory()
+        let modelURL = ZenzaiModelManager.resolvedModelFileURL()
+        let zenzaiMode = resolveZenzaiMode(modelURL: modelURL, leftSideContext: leftSideContext)
         return ConvertRequestOptions(
             N_best: 9,
             requireJapanesePrediction: .disabled,
@@ -49,9 +51,30 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             sharedContainerURL: dir,
             textReplacer: .empty,
             specialCandidateProviders: nil,
-            metadata: .init(versionString: "Hatoko \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0")")
+            zenzaiMode: zenzaiMode,
+            metadata: .init(
+                versionString: "Hatoko \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0")"
+            )
         )
-    }()
+    }
+
+    private func resolveZenzaiMode(
+        modelURL: URL?,
+        leftSideContext: String?
+    ) -> ConvertRequestOptions.ZenzaiMode {
+        guard let modelURL,
+              UserDefaults.standard.bool(forKey: ZenzaiModelManager.enabledKey) else {
+            return .off
+        }
+        let inferenceLimit = ZenzaiModelManager.storedInferenceLimit()
+        return .on(
+            weight: modelURL,
+            inferenceLimit: inferenceLimit,
+            requestRichCandidates: false,
+            personalizationMode: nil,
+            versionDependentMode: .v3(.init(leftSideContext: leftSideContext))
+        )
+    }
 
     private func applicationSupportDirectory() -> URL {
         guard let base = FileManager.default.urls(
@@ -389,7 +412,7 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             guard !composingText.convertTarget.isEmpty else { return false }
             let candidates = conversionService.requestCandidates(
                 composingText: composingText,
-                options: convertOptions
+                options: makeConvertOptions()
             ).mainResults
             guard let first = candidates.first else { return true }
             japaneseInputState = .converting(candidates: candidates, selectedIndex: 0)

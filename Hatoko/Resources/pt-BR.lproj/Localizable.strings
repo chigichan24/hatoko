@@ -76,6 +76,20 @@
 "backend.geminiAPI.description" = "Via API do Google Gemini. Chave API necessária";
 "backend.geminiCLI.description" = "Usa a CLI gemini (Experimental). gemini-cli necessário";
 
+// MARK: - Zenzai
+
+"settings.sectionHeader.zenzai" = "Conversão neural (Zenzai)";
+"settings.zenzai.enable" = "Ativar Zenzai";
+"settings.zenzai.description" = "Melhora a precisão da conversão usando uma rede neural. Um modelo (~150 MB) será baixado na primeira ativação.";
+"settings.zenzai.modelNotDownloaded" = "Modelo não baixado";
+"settings.zenzai.downloading" = "Baixando modelo...";
+"settings.zenzai.modelReady" = "Modelo pronto";
+"settings.zenzai.inferenceLimit" = "Passadas de inferência";
+"settings.zenzai.fast" = "Rápido";
+"settings.zenzai.balanced" = "Equilibrado";
+"settings.zenzai.highQuality" = "Alta qualidade";
+"settings.zenzai.deleteModel" = "Excluir modelo";
+
 // MARK: - Errors
 
 "error.tooLong" = "A mensagem é muito longa. Por favor, encurte-a.";

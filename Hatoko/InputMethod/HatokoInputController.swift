@@ -39,20 +39,8 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     func makeConvertOptions(leftSideContext: String? = nil) -> ConvertRequestOptions {
         let dir = applicationSupportDirectory()
-        let zenzaiMode: ConvertRequestOptions.ZenzaiMode
-        if let modelURL = ZenzaiModelManager.shared.modelFileURL,
-           UserDefaults.standard.bool(forKey: "zenzai_enabled") {
-            let stored = UserDefaults.standard.integer(forKey: "zenzai_inference_limit")
-            let inferenceLimit = stored == 0 ? 3 : max(1, stored)
-            zenzaiMode = .on(
-                weight: modelURL,
-                inferenceLimit: inferenceLimit,
-                requestRichCandidates: false,
-                personalizationMode: nil,
-                versionDependentMode: .v3(.init(leftSideContext: leftSideContext))
-            )
-        } else {
-            zenzaiMode = .off
+        let zenzaiMode = MainActor.assumeIsolated {
+            resolveZenzaiMode(leftSideContext: leftSideContext)
         }
         return ConvertRequestOptions(
             N_best: 9,
@@ -68,6 +56,23 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
             metadata: .init(
                 versionString: "Hatoko \(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.1.0")"
             )
+        )
+    }
+
+    @MainActor
+    private func resolveZenzaiMode(leftSideContext: String?) -> ConvertRequestOptions.ZenzaiMode {
+        guard let modelURL = ZenzaiModelManager.shared.modelFileURL,
+              UserDefaults.standard.bool(forKey: "zenzai_enabled") else {
+            return .off
+        }
+        let stored = UserDefaults.standard.integer(forKey: "zenzai_inference_limit")
+        let inferenceLimit = stored == 0 ? 3 : max(1, stored)
+        return .on(
+            weight: modelURL,
+            inferenceLimit: inferenceLimit,
+            requestRichCandidates: false,
+            personalizationMode: nil,
+            versionDependentMode: .v3(.init(leftSideContext: leftSideContext))
         )
     }
 

@@ -53,6 +53,7 @@ final class ZenzaiModelManager {
             state = .downloaded
             return
         }
+        guard state != .downloading else { return }
         state = .downloading
 
         do {

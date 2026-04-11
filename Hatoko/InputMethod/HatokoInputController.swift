@@ -39,9 +39,10 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
 
     func makeConvertOptions(leftSideContext: String? = nil) -> ConvertRequestOptions {
         let dir = applicationSupportDirectory()
-        let zenzaiMode = MainActor.assumeIsolated {
-            resolveZenzaiMode(leftSideContext: leftSideContext)
+        let modelURL = MainActor.assumeIsolated {
+            ZenzaiModelManager.shared.modelFileURL
         }
+        let zenzaiMode = resolveZenzaiMode(modelURL: modelURL, leftSideContext: leftSideContext)
         return ConvertRequestOptions(
             N_best: 9,
             requireJapanesePrediction: .disabled,
@@ -59,9 +60,11 @@ final class HatokoInputController: IMKInputController, @unchecked Sendable {
         )
     }
 
-    @MainActor
-    private func resolveZenzaiMode(leftSideContext: String?) -> ConvertRequestOptions.ZenzaiMode {
-        guard let modelURL = ZenzaiModelManager.shared.modelFileURL,
+    private func resolveZenzaiMode(
+        modelURL: URL?,
+        leftSideContext: String?
+    ) -> ConvertRequestOptions.ZenzaiMode {
+        guard let modelURL,
               UserDefaults.standard.bool(forKey: ZenzaiModelManager.enabledKey) else {
             return .off
         }

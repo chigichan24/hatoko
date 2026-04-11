@@ -16,7 +16,13 @@ final class ConversionService {
         composingText: ComposingText,
         options: ConvertRequestOptions
     ) -> ConversionResult {
-        converter.requestCandidates(composingText, options: options)
+        let result = converter.requestCandidates(composingText, options: options)
+        if result.mainResults.isEmpty, options.zenzaiMode != .off {
+            var fallbackOptions = options
+            fallbackOptions.zenzaiMode = .off
+            return converter.requestCandidates(composingText, options: fallbackOptions)
+        }
+        return result
     }
 
     func stopComposition() {

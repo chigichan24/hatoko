@@ -33,10 +33,12 @@ final class ZenzaiModelManager {
     }
 
     private static var modelDirectory: URL {
-        let appSupport = FileManager.default.urls(
+        guard let appSupport = FileManager.default.urls(
             for: .applicationSupportDirectory,
             in: .userDomainMask
-        ).first ?? FileManager.default.temporaryDirectory
+        ).first else {
+            fatalError("Application Support directory is unavailable")
+        }
         return appSupport.appendingPathComponent("Hatoko/Models")
     }
 

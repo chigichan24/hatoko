@@ -47,6 +47,7 @@ else
   # Build from source
   echo "[1/5] Generating Xcode project..."
   mint run xcodegen generate
+  ./scripts/inject_package_traits.sh
 
   echo "[2/5] Building..."
   xcodebuild -project Hatoko.xcodeproj \

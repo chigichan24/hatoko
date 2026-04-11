@@ -28,7 +28,9 @@ jobs:
           mint bootstrap
 
       - name: Generate Xcode project
-        run: mint run xcodegen generate
+        run: |
+          mint run xcodegen generate
+          ./scripts/inject_package_traits.sh
 
       - name: Archive
         run: |

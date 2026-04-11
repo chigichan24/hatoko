@@ -47,4 +47,11 @@ awk '
 
 mv "${PBXPROJ}.tmp" "$PBXPROJ"
 
+# Verify injection
+count=$(grep -c 'traits = (Zenzai)' "$PBXPROJ")
+if [ "$count" -ne 1 ]; then
+  echo "ERROR: Expected exactly 1 traits injection, found $count"
+  exit 1
+fi
+
 echo "Done. Traits injected successfully."

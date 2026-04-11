@@ -20,7 +20,7 @@ final class ZenzaiModelManager {
 
     enum DownloadState: Equatable {
         case notDownloaded
-        case downloading(progress: Double)
+        case downloading
         case downloaded
         case error(String)
     }
@@ -53,7 +53,7 @@ final class ZenzaiModelManager {
             state = .downloaded
             return
         }
-        state = .downloading(progress: 0)
+        state = .downloading
 
         do {
             try FileManager.default.createDirectory(

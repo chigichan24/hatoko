@@ -162,8 +162,8 @@ struct SettingsView: View {
             Text(L10n.Settings.Zenzai.modelNotDownloaded)
                 .font(.caption)
                 .foregroundStyle(.orange)
-        case .downloading(let progress):
-            ProgressView(value: progress)
+        case .downloading:
+            ProgressView()
             Text(L10n.Settings.Zenzai.downloading)
                 .font(.caption)
         case .downloaded:

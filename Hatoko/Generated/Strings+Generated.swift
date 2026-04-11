@@ -200,6 +200,30 @@ internal enum L10n {
       internal static let keybinding = L10n.tr("Localizable", "settings.sectionHeader.keybinding", fallback: "キーバインド")
       /// LLM バックエンド
       internal static let llmBackend = L10n.tr("Localizable", "settings.sectionHeader.llmBackend", fallback: "LLM バックエンド")
+      /// ニューラル変換 (Zenzai)
+      internal static let zenzai = L10n.tr("Localizable", "settings.sectionHeader.zenzai", fallback: "ニューラル変換 (Zenzai)")
+    }
+    internal enum Zenzai {
+      /// バランス
+      internal static let balanced = L10n.tr("Localizable", "settings.zenzai.balanced", fallback: "バランス")
+      /// モデルを削除
+      internal static let deleteModel = L10n.tr("Localizable", "settings.zenzai.deleteModel", fallback: "モデルを削除")
+      /// ニューラルネットワークを使用して変換精度を向上させます。初回有効化時にモデル（約150MB）をダウンロードします。
+      internal static let description = L10n.tr("Localizable", "settings.zenzai.description", fallback: "ニューラルネットワークを使用して変換精度を向上させます。初回有効化時にモデル（約150MB）をダウンロードします。")
+      /// モデルをダウンロード中...
+      internal static let downloading = L10n.tr("Localizable", "settings.zenzai.downloading", fallback: "モデルをダウンロード中...")
+      /// Zenzaiを有効にする
+      internal static let enable = L10n.tr("Localizable", "settings.zenzai.enable", fallback: "Zenzaiを有効にする")
+      /// 高速
+      internal static let fast = L10n.tr("Localizable", "settings.zenzai.fast", fallback: "高速")
+      /// 高品質
+      internal static let highQuality = L10n.tr("Localizable", "settings.zenzai.highQuality", fallback: "高品質")
+      /// 推論回数
+      internal static let inferenceLimit = L10n.tr("Localizable", "settings.zenzai.inferenceLimit", fallback: "推論回数")
+      /// モデル未ダウンロード
+      internal static let modelNotDownloaded = L10n.tr("Localizable", "settings.zenzai.modelNotDownloaded", fallback: "モデル未ダウンロード")
+      /// モデル準備完了
+      internal static let modelReady = L10n.tr("Localizable", "settings.zenzai.modelReady", fallback: "モデル準備完了")
     }
   }
   internal enum Thinking {

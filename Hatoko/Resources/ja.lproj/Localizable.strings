@@ -99,6 +99,20 @@
 "dangerousRead.indicator.active" = "画面読み取り中";
 "dangerousRead.accessibilityNotTrusted" = "アクセシビリティ権限が必要です。システム設定 > プライバシーとセキュリティ > アクセシビリティ でアクセスを許可してください。";
 
+// MARK: - Zenzai
+
+"settings.sectionHeader.zenzai" = "ニューラル変換 (Zenzai)";
+"settings.zenzai.enable" = "Zenzaiを有効にする";
+"settings.zenzai.description" = "ニューラルネットワークを使用して変換精度を向上させます。初回有効化時にモデル（約150MB）をダウンロードします。";
+"settings.zenzai.modelNotDownloaded" = "モデル未ダウンロード";
+"settings.zenzai.downloading" = "モデルをダウンロード中...";
+"settings.zenzai.modelReady" = "モデル準備完了";
+"settings.zenzai.inferenceLimit" = "推論回数";
+"settings.zenzai.fast" = "高速";
+"settings.zenzai.balanced" = "バランス";
+"settings.zenzai.highQuality" = "高品質";
+"settings.zenzai.deleteModel" = "モデルを削除";
+
 // MARK: - Errors
 
 "error.tooLong" = "メッセージが長すぎます。短くしてください。";
